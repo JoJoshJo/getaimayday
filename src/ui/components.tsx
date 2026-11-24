@@ -1,5 +1,6 @@
 import { useI18n } from '../i18n'
 import { LANGUAGES } from '../i18n/messages'
+import type { Source } from '../ai/router'
 import type { ConnectionState } from './useConnection'
 
 /** Mono status chip. Status colors (ok/warn) are used only here. */
@@ -55,6 +56,13 @@ export function Stamp({ at }: { at: Date }) {
       {t('plan.stamp', { time })}
     </span>
   )
+}
+
+const SOURCE_LABEL: Record<Source, string> = { 'on-device': 'On-device AI', cloud: 'Cloud AI', pack: 'Offline Pack', checklist: 'Checklist' }
+
+/** Every AI answer shows its REAL source (MASTER.md §3). */
+export function SourceBadge({ source }: { source: Source }) {
+  return <span className={`badge badge--${source}`}>{SOURCE_LABEL[source]}</span>
 }
 
 export function DoNot({ children }: { children: string }) {

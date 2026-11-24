@@ -159,3 +159,29 @@ npm run preview                            # open http://localhost:4173/#/styleg
 - J: review `.brain/screens/` and `/#/styleguide`; confirm the look, the stamp, and the mobile layout.
 - J: install Claude Code CLI + Firebase agent skills; Firebase project setup (MASTER §15).
 - Session 3: Firebase init + App Check + Remote Config (MUST #2), then the remaining part of spike S1; then the "Something's wrong" entry flow (MUST #4) using `.btn-mayday`.
+
+## 2026-11-24 — Session 3: Firebase + AI Logic foundation + spikes S1/S2 (Claude Code) — IN PROGRESS
+
+### Step 0 — Session start
+- `pwd && git remote -v` → correct repo. `git pull --ff-only origin main` → up to date at `1ce847e`.
+- `claude` CLI still not installed → Firebase agent skills (MASTER rule 7) still NOT installed. Working from official docs + SDK type definitions instead.
+- Firebase project id `getaimayday`; web appId `1:550940735818:web:b7a94b2181f8466fc769b3` (public web config, given by J). AI Logic on Gemini Developer API (free tier); AI monitoring off on purpose.
+
+### Step 1 — Investigation (no code changes), waiting for J's OK
+**How:** `npm view firebase version` → **13.4.0** (modified 2026-11-16). Dependencies: `@firebase/ai` 3.1.0, `@firebase/app-check` 0.13.2, `@firebase/remote-config` 0.10.0, `@firebase/app` 0.16.7. Downloaded those three with `npm pack` into the scratch dir and read their `.d.ts` files and the ESM source. Read the official docs via fetch: hybrid web get-started, configuration-options, hybrid overview, generate-structured-output; App Check reCAPTCHA Enterprise + debug provider; AI Logic + App Check; Remote Config web get-started; AI Logic models; Gemini models + pricing.
+
+**Findings (verified in typings/source):**
+- Imports: `firebase/app` → `initializeApp`; `firebase/app-check` → `initializeAppCheck`, `ReCaptchaEnterpriseProvider`; `firebase/remote-config` → `getRemoteConfig`, `fetchAndActivate`, `ensureInitialized`, `getString`, `isSupported`; `firebase/ai` → `getAI`, `getGenerativeModel`, `GoogleAIBackend`, `InferenceMode`, `InferenceSource`, `Schema`.
+- `InferenceMode` = `PREFER_ON_DEVICE | ONLY_ON_DEVICE | PREFER_IN_CLOUD | ONLY_IN_CLOUD` (string values `prefer_on_device`…).
+- `result.response.inferenceSource` ∈ `InferenceSource.ON_DEVICE` (`"on_device"`) | `InferenceSource.IN_CLOUD` (`"in_cloud"`).
+- Structured output must be configured twice: on-device `onDeviceParams.promptOptions.responseConstraint` (JSON Schema / `Schema`), cloud `inCloudParams.generationConfig.{responseMimeType:'application/json', responseSchema}`.
+- `model.initializeDeviceModel(onProgress)` must be called on/after a user gesture; `ONLY_ON_DEVICE` waits for that download promise, otherwise throws (`API_NOT_ENABLED` if the Prompt API is unavailable; `UNSUPPORTED` if the model is unavailable).
+- `onDeviceParams.createOptions` defaults to image input + English text; set `expectedInputs`/`expectedOutputs` languages to include `fr`.
+- On-device images: PNG/JPEG only, inline base64. On-device limit 9216 tokens.
+- **App Check vs offline (from SDK source `callCloudOrDevice` + request builder):** the App Check token is fetched only when building the cloud HTTP request (`X-Firebase-AppCheck`). The on-device branch calls Chrome's Prompt API directly, with no token and no network. Expect on-device to work offline with App Check on; S1 must confirm.
+- App Check for AI Logic was auto-enforced in all projects on 2026-11-02 (can't be unenforced after 2027-01-21). The debug provider (`self.FIREBASE_APPCHECK_DEBUG_TOKEN = true | "<token>"`, set before `initializeAppCheck`) works with enforcement on. Optional `getAI(app, { useLimitedUseAppCheckTokens: true })` = replay protection.
+- Remote Config persists activated values in IndexedDB (`firebase_remote_config`); `ensureInitialized` loads them; defaults apply before the first fetch; settings `minimumFetchIntervalMillis`, `fetchTimeoutMillis`.
+- `gemini-3.5-flash-lite` exists: Stable (2026-07-21), supported by AI Logic, free tier, image input + structured output; it is also the SDK's default cloud model since v13.0.0. No shutdown date.
+- Docs list Chrome flag `chrome://flags/#prompt-api-for-gemini-nano-multimodal-input` for image input (may already be on in Chrome 158; check in S2).
+
+**Next:** J's OK + reCAPTCHA Enterprise site key → Step 2.

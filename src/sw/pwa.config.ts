@@ -30,7 +30,8 @@ export const pwaOptions: Partial<VitePWAOptions> = {
     // Fonts: only latin + latin-ext subsets are precached (EN/FR need nothing
     // else). Other subsets are still referenced by the @font-face CSS but only
     // download if such characters ever appear. .woff (non-2) is never cached.
-    globIgnores: ['**/*-{cyrillic,cyrillic-ext,greek,greek-ext,vietnamese,math,symbols}-*.woff2'],
+    // public/lab/ = spike S2 test images for the hidden /#/lab page: never precached.
+    globIgnores: ['**/*-{cyrillic,cyrillic-ext,greek,greek-ext,vietnamese,math,symbols}-*.woff2', '**/lab/**'],
     navigateFallback: '/index.html',
     cleanupOutdatedCaches: true,
   },

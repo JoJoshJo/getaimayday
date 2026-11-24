@@ -6,8 +6,10 @@ import { LangToggle, StatusChip, Wordmark } from './ui/components'
 import { useConnection } from './ui/useConnection'
 
 const Styleguide = lazy(() => import('./features/styleguide/Styleguide'))
+// Hidden dev page; its chunk pulls in Firebase. The main shell never loads Firebase.
+const Lab = lazy(() => import('./features/lab/Lab'))
 
-/** Tiny hash router: '#/styleguide' → styleguide, anything else → app. Works offline. */
+/** Tiny hash router: '#/styleguide', '#/lab' (hidden), anything else → app. Works offline. */
 function useRoute(): string {
   const read = () => window.location.hash.replace(/^#/, '') || '/'
   const [route, setRoute] = useState(read)
@@ -38,10 +40,17 @@ export default function App() {
   const { lang, t } = useI18n()
   const route = useRoute()
 
-  if (route === '/styleguide') {
+  if (route === '/styleguide' || route === '/lab') {
     return (
       <Suspense fallback={null}>
-        <Styleguide />
+        {route === '/lab' ? (
+          <div className="page">
+            <TopBar />
+            <Lab />
+          </div>
+        ) : (
+          <Styleguide />
+        )}
       </Suspense>
     )
   }

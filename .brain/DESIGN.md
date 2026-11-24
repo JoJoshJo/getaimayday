@@ -157,6 +157,8 @@ Status colors appear **only** here (and later on the readiness screen).
 
 **Focus** — 3px solid `focus` outline, 3px offset, on every interactive element. Keyboard: Tab through controls; in one-step view, `←`/`→` move between steps (focus follows to the new step), and `Space` toggles a focused checkbox (native).
 
+**Source badge** (added Session 3) — mono uppercase label with a 1px border, text color: `ON-DEVICE AI`, `CLOUD AI`, `OFFLINE PACK`; `CHECKLIST` (no AI answer) is muted with a dashed border. It shows the real source reported by the SDK, never a guess. Not the accent, not status colors.
+
 **Icons** — none for now. Words first. If one is ever needed, `lucide-react` only, 1.5px stroke, ink.
 
 ---
