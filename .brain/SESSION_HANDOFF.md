@@ -46,7 +46,7 @@ Append one entry per session: date, what was done, files changed, commit hashes,
 - J: install Claude Code CLI + Firebase agent skills; Firebase project + web app + AI Logic + App Check (MASTER §15).
 - Session 2: Firebase init + App Check + Remote Config (MUST #2), then S1 remaining part.
 
-## 2026-11-24 — Session 2: design system + anti-slop pass (Claude Code) — IN PROGRESS
+## 2026-11-24 — Session 2: design system + anti-slop pass (Claude Code)
 
 ### Step 0 — Session start
 - `pwd && git remote -v` → `/Users/joshlawson/Desktop/getaimayday`, origin `github.com/JoJoshJo/getaimayday` ✔
@@ -71,6 +71,91 @@ Append one entry per session: date, what was done, files changed, commit hashes,
 ### J's standing rule (added this session)
 - J: document every step for future reference. Updated MASTER.md §0 rule 3 to say exactly that (log each step in order: commands, decisions + why, files, commit hashes, keys/IDs (never secrets), gotchas, how tested, next step; the file alone must be enough to repeat the work).
 
-**Files so far (uncommitted):** `.brain/DESIGN.md` (new), `.brain/MASTER.md` (rule 3), `.brain/SESSION_HANDOFF.md` (this entry).
+- J approved DESIGN.md ("OK, go") with both recommendations: `accent-text #c22a10`, and the do-not label "AVOID" / "À ÉVITER". DESIGN.md §10 updated to record this.
 
-**Next:** J's OK on DESIGN.md + the two decisions → Step 2 (fonts, tokens, restyle, styleguide).
+### Step 2a — Fonts + precache
+- `npm i @fontsource-variable/archivo @fontsource-variable/figtree @fontsource/ibm-plex-mono` (all 5.3.0).
+- Imports in `src/main.tsx`: `@fontsource-variable/archivo/wdth.css` (weight + width axes; family `"Archivo Variable"`), `@fontsource-variable/figtree` (family `"Figtree Variable"`), `@fontsource/ibm-plex-mono/400.css` (family `"IBM Plex Mono"`).
+- `src/sw/pwa.config.ts`: added `globIgnores: ['**/*-{cyrillic,cyrillic-ext,greek,greek-ext,vietnamese,math,symbols}-*.woff2']`. Vite emits 10 woff2 files; 6 (latin + latin-ext of each family) are precached. `.woff` files are never matched by `globPatterns`.
+- **How to check:** `npm run build` then `grep -o 'url:"[^"]*woff2"' dist/sw.js` → 6 lines. Precache went from 12 entries (250 KB) to 19 (500 KB).
+- **Why only latin subsets:** EN and FR (é è ç à ô œ « ») are fully in latin + latin-ext. Skipping the other subsets halves the font cache.
+
+### Step 2b — Tokens
+- `src/ui/tokens.ts` rewritten as **pure data** (no DOM) so `src/sw/pwa.config.ts` (Node build side) and tests can import it. Contents: `color.paper` / `color.ink` (12 tokens each), `font`, `weight`, `type`, `leading`, `tracking`, `space` (4px base, 1–9), `radius` (0/2/4), `border`, `size`, `motion`.
+- New `src/ui/applyTokens.ts`: converts tokens into CSS variables (camelCase → kebab: `textMuted` → `--color-text-muted`, `bg2` → `--color-bg2`) and injects one `<style id="design-tokens">`. Theme rules: `:root` = Paper; OS dark → Ink unless `data-theme="light"`; any element with `data-theme="light|dark"` forces that theme for its subtree; `prefers-reduced-motion` → motion vars 0ms.
+- New `src/ui/contrast.ts`: WCAG ratio function + `CONTRAST_PAIRS` (12 pairs); used by the styleguide and asserted in tests.
+- The PWA manifest `background_color` / `theme_color` now come from tokens (paper bg / ink bg).
+- `public/logo.svg` recolored to the palette (placeholder mark; logo is still open).
+
+### Step 2c — Restyle
+- `src/i18n/{en,fr}.json`: new keys `status.label/offlineReady/preparing/offline`, `action.somethingWrong`, `plan.kicker`, `plan.stamp`, `plan.keys`; `plan.doNot` = "Avoid" / "À éviter"; removed `status.online`, `plan.heading`; no em dashes left.
+- New `src/ui/useConnection.ts`: `offline` (navigator offline) / `offlineReady` (online + SW controls the page) / `preparing` (online, SW not in control yet). Listens to online/offline and `controllerchange`.
+- New `src/ui/components.tsx`: `StatusChip`, `LangToggle`, `Wordmark`, `Progress` (one segment per step: done / current / todo), `Stamp`, `DoNot`.
+- New `src/features/incident/StepRow.tsx`: QRH row: number in the margin (2-digit), meta, checkbox + title (+ stamp when done), detail, AVOID box, Why/Source in a `<dl>`.
+- `src/features/incident/PlanView.tsx`: state is now `doneAt: Record<stepId, Date>` (the stamp shows the time). "Current" = the viewed step (one-step view) or the first unchecked step (all view). ←/→ keys move steps (ignored with modifiers or in text inputs); focus moves to the new step.
+- `src/App.tsx`: top bar; tiny hash router (`#/styleguide` → lazy-loaded styleguide chunk, precached like all JS).
+- `src/ui/styles.css` rewritten. It only references CSS variables. Rules not cards, no shadows, square checkbox (28px drawn, 44px hit area), stamp keyframes `stamp-in` (scale 1.6→0.96→1, rotate −10°→−4°, 250ms). The step grid collapses with a **container query** (`.plan` is `container-type: inline-size`, ≤40rem → one column), so it also works inside the narrow styleguide panels.
+
+### Step 2d — Styleguide
+- `src/features/styleguide/Styleguide.tsx` at `/#/styleguide`: two panels (`data-theme="light"` Paper, `data-theme="dark"` Ink), each with color swatches + hex, a live contrast table, type samples, space/radius, top bar parts (3 chip states, toggle), buttons (incl. "Something's wrong"), progress, AVOID box + stamp, and steps in done/current/todo states. A "Replay stamp" button remounts the stamps.
+
+### Step 2e — Guard-rail tests
+- New `tests/design.test.ts`, which fails if:
+  - a hex/rgb/hsl/oklch color appears outside `src/ui/tokens.ts`, or a named color appears in CSS
+  - `gradient(`, `backdrop-filter`, `blur(`, or a box/text/drop shadow is used
+  - a banned font name appears
+  - any token has a purple/violet/indigo hue (230–320°, saturation > 0.15)
+  - any radius is above 4px
+  - any `CONTRAST_PAIRS` pair is below its AA minimum, in either theme
+  - buzzwords appear in UI copy, or em dashes, emoji or `!` appear in UI copy and plans
+- **Decision:** the buzzword check runs on i18n strings only. Plan content uses "unlock files" literally (EN ransomware step 7), which is correct wording.
+- New `tsconfig.test.json` (extends app config, adds `node` types, includes `tests`), referenced in `tsconfig.json`; `tsconfig.app.json` now includes only `src`. **Why:** the design test uses `node:fs`, and the browser config has no Node types, so `tsc -b` failed.
+
+### Step 3 — Verification
+- `npx oxlint` → 0 warnings. `npm test` → 49/49 (2 files). `npm run build` ✔ (precache 19 entries, 500 KB).
+- Offline + fonts in real headless Chrome (scratch script with `playwright-core` driving `/Applications/Google Chrome.app`, not a project dependency), against `vite preview --port 4174`:
+  1. first load → SW ready, reload → 19 cached URLs incl. 6 woff2; chip "Offline ready".
+  2. `context.setOffline(true)` + reload → EN plan renders, chip "Offline", `document.fonts` loaded: Archivo Variable, Figtree Variable, IBM Plex Mono.
+  3. FR toggle + reload offline → "Rançongiciel".
+  4. Server killed + reload → still renders, fonts loaded; `#/styleguide` loads offline (2 panels); ArrowRight → "Étape 2 sur 15". **PASS.**
+- Reduced motion (Playwright `reducedMotion`): no-preference → stamp `animation-duration: 0.25s`; reduce → `0s`, opacity 1. **PASS.**
+- Screenshots (Chrome, deviceScaleFactor 2) in `.brain/screens/`: `plan-{light,dark}-{en,fr}.png` (1280×1000, all-steps view, step 1 checked: stamp + step 2 current), `plan-{light,dark}-en-mobile.png` (390 wide, full page), `styleguide.png` (1440 wide, full page).
+- **Banned-list self-check** (grep over `src`, `public`, `index.html`):
+
+  | Check | Result |
+  |---|---|
+  | purple/violet/indigo | clean |
+  | gradients | clean |
+  | glassmorphism / blur | clean |
+  | glows / shadows | clean |
+  | banned fonts | clean |
+  | buzzwords | 1 hit, false positive: plan text "unlock files" (literal) |
+  | em dashes | 4 hits, all in code comments, none in UI strings |
+  | sparkle/AI icons, emoji | clean |
+  | radius > 4px | 1 hit, false positive: `clip-path: inset(50%)` (visually-hidden helper) |
+  | icon libraries, Tailwind/shadcn, stock images | clean |
+  | hero / feature cards | 2 hits, false positive: the `src/features/` folder path |
+
+### Gotchas
+- **zsh doesn't word-split `$VAR`.** `F="src public"; grep -r x $F` searches one path called "src public" and silently finds nothing. My first self-check run reported all "clean" for that reason. Write the paths out (or use an array).
+- Playwright `check()` refused the checkbox because the drawn `.check__box` span covered the invisible input. Fix: `pointer-events: none` on the box and `z-index: 1` on the input. Users weren't affected (clicks hit the label anyway), but tests were.
+- Lint rule `react(purity)`: no `new Date()` during render. The styleguide uses a module-level `SAMPLE_TIME`.
+- In EN the stamp time follows the locale (12-hour "03:22 PM"); FR shows "15:22".
+- Fonts in the dev server come from node_modules; offline font checks are only meaningful on `build` + `preview`.
+
+### Commits
+- `7facd5a` Session 2 code + DESIGN.md + screenshots + MASTER rule 3.
+- (this handoff entry is the next commit)
+
+### How to repeat the checks
+```
+npm run build && npm test && npx oxlint
+grep -o 'url:"[^"]*woff2"' dist/sw.js      # expect 6
+npm run preview                            # open http://localhost:4173/#/styleguide
+# Chrome DevTools → Network → Offline → reload: app + fonts must still render.
+```
+
+### Next step
+- J: review `.brain/screens/` and `/#/styleguide`; confirm the look, the stamp, and the mobile layout.
+- J: install Claude Code CLI + Firebase agent skills; Firebase project setup (MASTER §15).
+- Session 3: Firebase init + App Check + Remote Config (MUST #2), then the remaining part of spike S1; then the "Something's wrong" entry flow (MUST #4) using `.btn-mayday`.
