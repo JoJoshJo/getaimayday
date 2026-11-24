@@ -1,0 +1,23 @@
+{
+  "app.name": "AIMayday",
+  "app.tagline": "Une aide calme, étape par étape, quand quelque chose ne va pas.",
+  "lang.label": "Langue",
+  "lang.en": "English",
+  "lang.fr": "Français",
+  "status.online": "En ligne",
+  "status.offline": "Hors ligne — l’application fonctionne quand même",
+  "incident.ransomware": "Rançongiciel",
+  "plan.heading": "Plan : {incident}",
+  "plan.progress": "{done} étape(s) sur {total} terminée(s)",
+  "plan.stepOf": "Étape {n} sur {total}",
+  "plan.why": "Pourquoi",
+  "plan.doNot": "À ne pas faire",
+  "plan.source": "Source",
+  "plan.markDone": "Fait",
+  "plan.prev": "Étape précédente",
+  "plan.next": "Étape suivante",
+  "plan.viewOne": "Une étape à la fois",
+  "plan.viewAll": "Voir toutes les étapes",
+  "plan.allDone": "Toutes les étapes sont cochées. Continuez à suivre les conseils de votre contact informatique.",
+  "disclaimer": "Conseils fondés sur les recommandations de la CISA, du NIST et du FBI. Ne remplace pas l’aide d’un professionnel de l’informatique, du droit ou des forces de l’ordre."
+}

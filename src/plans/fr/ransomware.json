@@ -1,0 +1,135 @@
+{
+  "id": "ransomware",
+  "incident": "ransomware",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "id": "use-clean-device",
+      "title": "Utilisez un appareil sain, pas l’ordinateur infecté",
+      "detail": "Faites tout depuis votre téléphone ou un ordinateur qui n’affiche aucun avertissement. Utilisez-le pour lire ce plan, appeler et envoyer des messages.",
+      "why": "Les attaquants peuvent surveiller l’ordinateur infecté et votre messagerie. Un appareil sain garde vos prochaines actions privées.",
+      "source_name": "CISA #StopRansomware Guide",
+      "source_url": "https://www.cisa.gov/stopransomware/ransomware-guide",
+      "do_not": "Ne tapez aucun mot de passe, ne faites aucune recherche et n’envoyez aucun e-mail depuis l’ordinateur infecté."
+    },
+    {
+      "id": "disconnect-network",
+      "title": "Débranchez l’ordinateur infecté du réseau",
+      "detail": "Débranchez son câble réseau et désactivez son Wi-Fi. Laissez l’ordinateur allumé.",
+      "why": "Le rançongiciel se propage aux autres ordinateurs par le réseau. Couper la connexion l’empêche d’atteindre d’autres fichiers.",
+      "source_name": "CISA #StopRansomware Guide",
+      "source_url": "https://www.cisa.gov/stopransomware/ransomware-guide",
+      "do_not": "N’éteignez pas et ne redémarrez pas l’ordinateur. Éteignez-le seulement si vous ne pouvez pas le débrancher du réseau."
+    },
+    {
+      "id": "check-other-devices",
+      "title": "Vérifiez vos autres ordinateurs",
+      "detail": "Regardez chaque autre ordinateur, portable et serveur : même message, noms de fichiers étranges ou fichiers qui ne s’ouvrent plus. Débranchez ceux qui semblent touchés.",
+      "why": "Un rançongiciel touche souvent plusieurs machines à la fois. Il faut savoir lesquelles sont touchées avant de demander de l’aide.",
+      "source_name": "CISA #StopRansomware Guide",
+      "source_url": "https://www.cisa.gov/stopransomware/ransomware-guide"
+    },
+    {
+      "id": "protect-backups",
+      "title": "Débranchez vos sauvegardes",
+      "detail": "Débranchez tout disque ou boîtier de sauvegarde (NAS) des ordinateurs et du réseau. Rangez-le en lieu sûr.",
+      "why": "Les attaquants essaient aussi de bloquer ou d’effacer les sauvegardes. Une sauvegarde saine est souvent le moyen le plus rapide de repartir.",
+      "source_name": "CISA #StopRansomware Guide",
+      "source_url": "https://www.cisa.gov/stopransomware/ransomware-guide",
+      "do_not": "Ne rebranchez la sauvegarde sur aucun ordinateur tant que votre contact informatique ne l’a pas validé."
+    },
+    {
+      "id": "photo-ransom-note",
+      "title": "Prenez une photo du message de rançon",
+      "detail": "Avec votre téléphone, prenez une photo nette de l’écran, avec les noms de fichiers, montants, délais et coordonnées affichés.",
+      "why": "Les enquêteurs et votre contact informatique utilisent ces détails pour identifier le rançongiciel et vous aider.",
+      "source_name": "NIST SP 800-61r3",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+    },
+    {
+      "id": "write-down-events",
+      "title": "Notez ce qui s’est passé et quand",
+      "detail": "Sur papier ou sur votre téléphone, notez l’heure où vous avez vu le problème, qui l’a vu, quels ordinateurs sont touchés et ce que vous avez déjà fait.",
+      "why": "Une chronologie claire aide l’informatique, votre assureur et la police à réagir plus vite.",
+      "source_name": "NIST SP 800-61r3",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+    },
+    {
+      "id": "call-it-contact",
+      "title": "Appelez votre contact informatique",
+      "detail": "Appelez maintenant votre informaticien ou votre prestataire. Dites-lui que cela ressemble à un rançongiciel, quels ordinateurs sont touchés et ce que vous avez fait.",
+      "why": "Supprimer un rançongiciel et remettre les systèmes en marche sans risque demande un expert.",
+      "source_name": "CISA #StopRansomware Guide",
+      "source_url": "https://www.cisa.gov/stopransomware/ransomware-guide",
+      "do_not": "N’essayez pas de supprimer le rançongiciel ou de débloquer les fichiers vous-même."
+    },
+    {
+      "id": "tell-staff",
+      "title": "Prévenez votre équipe par téléphone ou SMS",
+      "detail": "Dites à votre équipe qu’il y a un problème informatique et demandez-leur de ne plus utiliser les ordinateurs ni la messagerie du travail jusqu’à nouvel ordre.",
+      "why": "Cela évite que le problème s’étende. Le téléphone et les SMS évitent les systèmes que les attaquants pourraient lire.",
+      "source_name": "CISA #StopRansomware Guide",
+      "source_url": "https://www.cisa.gov/stopransomware/ransomware-guide",
+      "do_not": "N’envoyez pas l’alerte depuis la messagerie du travail."
+    },
+    {
+      "id": "do-not-contact-attackers",
+      "title": "Ne contactez pas les attaquants",
+      "detail": "Ne répondez pas au message, n’ouvrez pas ses liens et n’appelez aucun numéro affiché. Laissez toute décision sur la demande de rançon à votre contact informatique, votre assureur et les forces de l’ordre.",
+      "why": "Le FBI déconseille de payer une rançon. Payer ne garantit pas de récupérer vos fichiers et peut entraîner d’autres attaques.",
+      "source_name": "FBI IC3",
+      "source_url": "https://www.ic3.gov/"
+    },
+    {
+      "id": "keep-evidence",
+      "title": "Laissez les ordinateurs touchés tels quels",
+      "detail": "Gardez les ordinateurs et fichiers touchés exactement dans leur état actuel, jusqu’à ce que votre contact informatique ou les enquêteurs vous disent le contraire.",
+      "why": "Les enquêteurs ont besoin des ordinateurs intacts pour comprendre comment les attaquants sont entrés.",
+      "source_name": "NIST SP 800-61r3",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+      "do_not": "N’effacez pas, ne réinitialisez pas et ne réinstallez pas les ordinateurs, et ne supprimez aucun fichier."
+    },
+    {
+      "id": "call-insurer",
+      "title": "Appelez votre assureur",
+      "detail": "Si vous avez une assurance cyber ou professionnelle, appelez leur service sinistres et dites-leur que vous avez peut-être un rançongiciel.",
+      "why": "Beaucoup de contrats exigent une déclaration rapide, et certains assureurs fournissent des experts en réponse aux incidents.",
+      "source_name": "CISA #StopRansomware Guide",
+      "source_url": "https://www.cisa.gov/stopransomware/ransomware-guide"
+    },
+    {
+      "id": "report-ic3",
+      "title": "Signalez-le au FBI",
+      "detail": "Depuis un appareil sain, faites un signalement sur ic3.gov. Joignez votre chronologie et la photo du message de rançon.",
+      "why": "Votre signalement aide le FBI à suivre les attaquants et peut vous aider à vous rétablir.",
+      "source_name": "FBI IC3",
+      "source_url": "https://www.ic3.gov/"
+    },
+    {
+      "id": "report-cisa",
+      "title": "Signalez-le à la CISA",
+      "detail": "Depuis un appareil sain, signalez l’incident sur cisa.gov/report.",
+      "why": "La CISA peut offrir une aide gratuite et prévenir d’autres entreprises de la même attaque.",
+      "source_name": "CISA",
+      "source_url": "https://www.cisa.gov/report"
+    },
+    {
+      "id": "change-passwords",
+      "title": "Changez les mots de passe importants depuis un appareil sain",
+      "detail": "Depuis un appareil sain, changez les mots de passe de votre messagerie, de votre banque et des comptes administrateur. Activez la validation en deux étapes quand c’est possible.",
+      "why": "Les attaquants volent souvent des mots de passe avant de bloquer les fichiers.",
+      "source_name": "CISA #StopRansomware Guide",
+      "source_url": "https://www.cisa.gov/stopransomware/ransomware-guide",
+      "do_not": "Ne changez pas les mots de passe sur l’ordinateur infecté."
+    },
+    {
+      "id": "restore-with-it",
+      "title": "Restaurez uniquement avec votre contact informatique",
+      "detail": "Laissez votre contact informatique décider quand et comment restaurer vos systèmes à partir de sauvegardes saines.",
+      "why": "Restaurer avant que les attaquants soient éliminés peut bloquer vos fichiers à nouveau.",
+      "source_name": "CISA #StopRansomware Guide",
+      "source_url": "https://www.cisa.gov/stopransomware/ransomware-guide",
+      "do_not": "Ne restaurez pas les sauvegardes vous-même avant que la cause soit trouvée et corrigée."
+    }
+  ]
+}

@@ -1,0 +1,135 @@
+{
+  "id": "ransomware",
+  "incident": "ransomware",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "id": "use-clean-device",
+      "title": "Use a clean device, not the infected computer",
+      "detail": "Do everything from your phone or from a computer that shows no warning. Use it to read this plan, make calls and send messages.",
+      "why": "The attackers may be watching the infected computer and your email. A clean device keeps your next steps private.",
+      "source_name": "CISA #StopRansomware Guide",
+      "source_url": "https://www.cisa.gov/stopransomware/ransomware-guide",
+      "do_not": "Do not type passwords, search the web or send email on the infected computer."
+    },
+    {
+      "id": "disconnect-network",
+      "title": "Disconnect the infected computer from the network",
+      "detail": "Unplug its network cable and turn off its Wi-Fi. Leave the computer switched on.",
+      "why": "Ransomware spreads to other computers over the network. Cutting the connection stops it from reaching more of your files.",
+      "source_name": "CISA #StopRansomware Guide",
+      "source_url": "https://www.cisa.gov/stopransomware/ransomware-guide",
+      "do_not": "Do not turn the computer off or restart it. Only turn it off if you cannot disconnect it from the network."
+    },
+    {
+      "id": "check-other-devices",
+      "title": "Check your other computers",
+      "detail": "Look at every other computer, laptop and server for the same message, strange file names or files that will not open. Disconnect any that look affected.",
+      "why": "Ransomware often hits several machines at once. You need to know which ones are affected before you get help.",
+      "source_name": "CISA #StopRansomware Guide",
+      "source_url": "https://www.cisa.gov/stopransomware/ransomware-guide"
+    },
+    {
+      "id": "protect-backups",
+      "title": "Unplug your backups",
+      "detail": "Disconnect any backup drive or backup box (NAS) from computers and from the network. Put it somewhere safe.",
+      "why": "Attackers try to lock or delete backups too. A clean backup is often the fastest way to recover.",
+      "source_name": "CISA #StopRansomware Guide",
+      "source_url": "https://www.cisa.gov/stopransomware/ransomware-guide",
+      "do_not": "Do not plug the backup into any computer until your IT contact says it is safe."
+    },
+    {
+      "id": "photo-ransom-note",
+      "title": "Take a photo of the ransom message",
+      "detail": "Use your phone to take a clear photo of the screen, including any file names, amounts, deadlines and contact details shown.",
+      "why": "Investigators and your IT contact use these details to identify the ransomware and help you.",
+      "source_name": "NIST SP 800-61r3",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+    },
+    {
+      "id": "write-down-events",
+      "title": "Write down what happened and when",
+      "detail": "On paper or your phone, note the time you first saw the problem, who saw it, which computers are affected and what you have done so far.",
+      "why": "A clear timeline helps IT, your insurer and the police respond faster.",
+      "source_name": "NIST SP 800-61r3",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+    },
+    {
+      "id": "call-it-contact",
+      "title": "Call your IT contact",
+      "detail": "Phone your IT person or IT company now. Tell them it looks like ransomware, which computers are affected and what you have done.",
+      "why": "Removing ransomware and restoring systems safely needs an expert.",
+      "source_name": "CISA #StopRansomware Guide",
+      "source_url": "https://www.cisa.gov/stopransomware/ransomware-guide",
+      "do_not": "Do not try to remove the ransomware or unlock files yourself."
+    },
+    {
+      "id": "tell-staff",
+      "title": "Tell your staff by phone or text",
+      "detail": "Let staff know there is a computer problem and ask them not to use work computers or work email until you say so.",
+      "why": "This stops the problem from spreading. Phone and text avoid systems the attackers may be able to read.",
+      "source_name": "CISA #StopRansomware Guide",
+      "source_url": "https://www.cisa.gov/stopransomware/ransomware-guide",
+      "do_not": "Do not send the warning from work email."
+    },
+    {
+      "id": "do-not-contact-attackers",
+      "title": "Do not contact the attackers",
+      "detail": "Do not reply to the message, visit its links or call any number it shows. Leave every decision about the ransom note to your IT contact, insurer and law enforcement.",
+      "why": "The FBI does not recommend paying a ransom. Paying does not guarantee you get your files back and can lead to more attacks.",
+      "source_name": "FBI IC3",
+      "source_url": "https://www.ic3.gov/"
+    },
+    {
+      "id": "keep-evidence",
+      "title": "Leave affected computers as they are",
+      "detail": "Keep the affected computers and files exactly as they are until your IT contact or investigators say otherwise.",
+      "why": "Investigators need the computers untouched to find out how the attackers got in.",
+      "source_name": "NIST SP 800-61r3",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+      "do_not": "Do not wipe, reset or reinstall the computers, and do not delete any files."
+    },
+    {
+      "id": "call-insurer",
+      "title": "Call your insurance company",
+      "detail": "If you have cyber or business insurance, call their claims line and tell them you may have ransomware.",
+      "why": "Many policies require you to report quickly, and some insurers provide incident response experts.",
+      "source_name": "CISA #StopRansomware Guide",
+      "source_url": "https://www.cisa.gov/stopransomware/ransomware-guide"
+    },
+    {
+      "id": "report-ic3",
+      "title": "Report it to the FBI",
+      "detail": "From a clean device, file a report at ic3.gov. Include your timeline and the photo of the ransom message.",
+      "why": "Your report helps the FBI track attackers and may help you recover.",
+      "source_name": "FBI IC3",
+      "source_url": "https://www.ic3.gov/"
+    },
+    {
+      "id": "report-cisa",
+      "title": "Report it to CISA",
+      "detail": "From a clean device, report the incident at cisa.gov/report.",
+      "why": "CISA can offer free help and warn other businesses about the same attack.",
+      "source_name": "CISA",
+      "source_url": "https://www.cisa.gov/report"
+    },
+    {
+      "id": "change-passwords",
+      "title": "Change important passwords from a clean device",
+      "detail": "From a clean device, change the passwords for your email, bank and admin accounts. Turn on two-step sign-in where you can.",
+      "why": "Attackers often steal passwords before they lock files.",
+      "source_name": "CISA #StopRansomware Guide",
+      "source_url": "https://www.cisa.gov/stopransomware/ransomware-guide",
+      "do_not": "Do not change passwords on the infected computer."
+    },
+    {
+      "id": "restore-with-it",
+      "title": "Restore only with your IT contact",
+      "detail": "Let your IT contact decide when and how to restore your systems from clean backups.",
+      "why": "Restoring before the attackers are removed can lock your files again.",
+      "source_name": "CISA #StopRansomware Guide",
+      "source_url": "https://www.cisa.gov/stopransomware/ransomware-guide",
+      "do_not": "Do not restore backups yourself before the cause has been found and fixed."
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "app.name": "AIMayday",
+  "app.tagline": "Calm, step-by-step help when something goes wrong.",
+  "lang.label": "Language",
+  "lang.en": "English",
+  "lang.fr": "Français",
+  "status.online": "Online",
+  "status.offline": "Offline — this app still works",
+  "incident.ransomware": "Ransomware",
+  "plan.heading": "{incident} plan",
+  "plan.progress": "{done} of {total} steps done",
+  "plan.stepOf": "Step {n} of {total}",
+  "plan.why": "Why",
+  "plan.doNot": "Do not",
+  "plan.source": "Source",
+  "plan.markDone": "Done",
+  "plan.prev": "Previous step",
+  "plan.next": "Next step",
+  "plan.viewOne": "One step at a time",
+  "plan.viewAll": "Show all steps",
+  "plan.allDone": "All steps checked. Keep following your IT contact's advice.",
+  "disclaimer": "Guidance based on CISA, NIST and FBI advice. Not a replacement for professional IT, legal or law-enforcement help."
+}
