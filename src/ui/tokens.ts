@@ -1,77 +1,96 @@
 /**
- * ALL design tokens live here. Placeholder, neutral values only — the final
- * design direction (MASTER.md §11) replaces this file, not the components.
+ * AIMayday design tokens — the ONLY place colors, fonts and sizes are defined.
+ * Spec: .brain/DESIGN.md ("Editorial emergency manual").
  *
- * Tokens are written to CSS custom properties (--color-bg, --space-3, …) by
- * applyTokens(); components and styles.css reference only those variables.
+ * Pure data (no DOM) so build config (PWA manifest) and tests can import it.
+ * src/ui/applyTokens.ts turns these into CSS custom properties:
+ *   color.paper.textMuted → --color-text-muted, type.stepNum → --type-step-num, …
  */
 
-const light = {
-  bg: '#ffffff',
-  surface: '#f4f4f5',
-  text: '#18181b',
-  textMuted: '#52525b',
-  border: '#d4d4d8',
-  accent: '#1f2937',
-  accentText: '#ffffff',
-  warnBg: '#fef2f2',
-  warnText: '#7f1d1d',
-  warnBorder: '#fca5a5',
-  done: '#166534',
-  focus: '#2563eb',
+/** Paper = light theme (default). */
+const paper = {
+  bg: '#fbf9f5',
+  bg2: '#f3eee6',
+  rule: '#ddd5c8',
+  ruleStrong: '#171412',
+  text: '#171412',
+  textMuted: '#5b544d',
+  accent: '#ff4829', // Mayday signal. Only: main action, current step, urgent do-not.
+  accentText: '#c22a10', // same hue, darker: accent as SMALL text on paper (5.50:1)
+  onAccent: '#171412',
+  ok: '#2e6b3f',
+  warn: '#8a5a0b',
+  focus: '#171412',
 }
 
-const dark: typeof light = {
-  bg: '#18181b',
-  surface: '#27272a',
-  text: '#f4f4f5',
-  textMuted: '#a1a1aa',
-  border: '#3f3f46',
-  accent: '#e4e4e7',
-  accentText: '#18181b',
-  warnBg: '#3b1212',
-  warnText: '#fecaca',
-  warnBorder: '#7f1d1d',
-  done: '#86efac',
-  focus: '#60a5fa',
+/** Ink = dark theme. Same single accent. */
+const ink: typeof paper = {
+  bg: '#171412',
+  bg2: '#221e1b',
+  rule: '#3d3631',
+  ruleStrong: '#fbf9f5',
+  text: '#fbf9f5',
+  textMuted: '#b3aaa0',
+  accent: '#ff4829',
+  accentText: '#ff4829', // 5.42:1 on ink, fine at any size
+  onAccent: '#171412',
+  ok: '#7cc08f',
+  warn: '#d9a441',
+  focus: '#fbf9f5',
 }
+
+export type ColorToken = keyof typeof paper
 
 export const tokens = {
-  color: { light, dark },
+  color: { paper, ink },
+
   font: {
-    family: 'system-ui, -apple-system, "Segoe UI", Roboto, sans-serif',
-    sizeSm: '0.9375rem',
-    sizeBase: '1.125rem', // large by default: readable under stress
-    sizeLg: '1.375rem',
-    sizeXl: '1.75rem',
-    lineHeight: '1.5',
-    weightBold: '700',
+    display: '"Archivo Variable", sans-serif',
+    body: '"Figtree Variable", sans-serif',
+    mono: '"IBM Plex Mono", monospace',
+    displayStretch: '112%',
   },
-  space: { 1: '4px', 2: '8px', 3: '12px', 4: '16px', 5: '24px', 6: '32px' },
-  radius: { sm: '6px', md: '10px' },
-  size: { tapTarget: '48px', checkbox: '28px', maxWidth: '720px' },
+
+  weight: { light: '300', regular: '400', medium: '500', semibold: '600', heavy: '800', black: '900' },
+
+  /** Font sizes. Body never below 1rem. */
+  type: {
+    stepNum: 'clamp(3.5rem, 9vw, 6rem)',
+    displayXl: 'clamp(2.25rem, 5vw, 3.5rem)',
+    displayMd: '1.375rem',
+    title: '1.5rem',
+    body: '1.125rem',
+    small: '1rem',
+    mono: '0.8125rem',
+    monoSm: '0.75rem',
+  },
+
+  leading: { tight: '0.9', title: '1.25', body: '1.55', mono: '1.4' },
+
+  tracking: { display: '-0.015em', mono: '0.12em' },
+
+  /** 4px base. */
+  space: { 1: '4px', 2: '8px', 3: '12px', 4: '16px', 5: '24px', 6: '32px', 7: '48px', 8: '64px', 9: '96px' },
+
+  /** Max 4px. No pills. */
+  radius: { none: '0', sm: '2px', md: '4px' },
+
+  border: { hair: '1px', strong: '2px', accent: '4px' },
+
+  size: {
+    tap: '44px',
+    tapLg: '56px',
+    checkbox: '28px',
+    margin: '9rem', // left margin column (step numbers)
+    content: '44rem',
+    measure: '68ch',
+    page: '72rem',
+  },
+
+  motion: {
+    fast: '120ms',
+    stamp: '250ms',
+    ease: 'cubic-bezier(.2,.8,.2,1)',
+    easeStamp: 'cubic-bezier(.3,1.4,.5,1)',
+  },
 } as const
-
-const kebab = (s: string) => s.replace(/[A-Z]/g, (c) => '-' + c.toLowerCase())
-
-function vars(prefix: string, obj: Record<string | number, string>): string {
-  return Object.entries(obj)
-    .map(([k, v]) => `--${prefix}-${kebab(String(k))}: ${v};`)
-    .join('\n')
-}
-
-/** Injects tokens as CSS variables, with a dark-mode override. Call once at startup. */
-export function applyTokens(): void {
-  const t = tokens
-  const base = [vars('font', t.font), vars('space', t.space), vars('radius', t.radius), vars('size', t.size)].join('\n')
-  const css = `
-:root { ${base}
-${vars('color', t.color.light)}
-color-scheme: light dark; }
-@media (prefers-color-scheme: dark) { :root { ${vars('color', t.color.dark)} } }
-`
-  const el = document.createElement('style')
-  el.id = 'design-tokens'
-  el.textContent = css
-  document.head.prepend(el)
-}

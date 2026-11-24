@@ -1,7 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <!-- Placeholder logo. Final logo comes later (MASTER.md §4). -->
-  <rect width="512" height="512" rx="96" fill="#1f2937"/>
-  <path d="M256 104 L408 384 H104 Z" fill="none" stroke="#ffffff" stroke-width="36" stroke-linejoin="round"/>
-  <rect x="238" y="200" width="36" height="104" rx="18" fill="#ffffff"/>
-  <circle cx="256" cy="340" r="20" fill="#ffffff"/>
+  <!-- Placeholder mark (palette from src/ui/tokens.ts: ink #171412, paper #fbf9f5, accent #ff4829). Final logo later. -->
+  <rect width="512" height="512" fill="#171412"/>
+  <rect x="96" y="120" width="40" height="272" fill="#ff4829"/>
+  <path d="M184 392 V120 L256 248 L328 120 V392" fill="none" stroke="#fbf9f5" stroke-width="44" stroke-linejoin="miter"/>
 </svg>

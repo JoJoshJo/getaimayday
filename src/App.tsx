@@ -1,58 +1,59 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { PlanView } from './features/incident/PlanView'
 import { useI18n } from './i18n'
-import { LANGUAGES } from './i18n/messages'
 import { getPlan } from './plans'
+import { LangToggle, StatusChip, Wordmark } from './ui/components'
+import { useConnection } from './ui/useConnection'
 
-function useOnline(): boolean {
-  const [online, setOnline] = useState(() => navigator.onLine)
+const Styleguide = lazy(() => import('./features/styleguide/Styleguide'))
+
+/** Tiny hash router: '#/styleguide' → styleguide, anything else → app. Works offline. */
+function useRoute(): string {
+  const read = () => window.location.hash.replace(/^#/, '') || '/'
+  const [route, setRoute] = useState(read)
   useEffect(() => {
-    const on = () => setOnline(true)
-    const off = () => setOnline(false)
-    window.addEventListener('online', on)
-    window.addEventListener('offline', off)
-    return () => {
-      window.removeEventListener('online', on)
-      window.removeEventListener('offline', off)
-    }
+    const on = () => setRoute(read())
+    window.addEventListener('hashchange', on)
+    return () => window.removeEventListener('hashchange', on)
   }, [])
-  return online
+  return route
 }
 
-function LangToggle() {
-  const { lang, setLang, t } = useI18n()
+function TopBar() {
+  const connection = useConnection()
   return (
-    <div className="lang-toggle" role="group" aria-label={t('lang.label')}>
-      {LANGUAGES.map((l) => (
-        <button key={l} lang={l} aria-pressed={lang === l} onClick={() => setLang(l)} title={t(`lang.${l}`)}>
-          {l.toUpperCase()}
-        </button>
-      ))}
-    </div>
+    <header className="topbar">
+      <a className="topbar__home" href="#/">
+        <Wordmark />
+      </a>
+      <div className="topbar__end">
+        <StatusChip state={connection} />
+        <LangToggle />
+      </div>
+    </header>
   )
 }
 
 export default function App() {
   const { lang, t } = useI18n()
-  const online = useOnline()
+  const route = useRoute()
+
+  if (route === '/styleguide') {
+    return (
+      <Suspense fallback={null}>
+        <Styleguide />
+      </Suspense>
+    )
+  }
+
   const plan = getPlan(lang, 'ransomware')
-
   return (
-    <div className="app">
-      <header className="topbar">
-        <div className="brand">
-          <h1>{t('app.name')}</h1>
-          <p>{t('app.tagline')}</p>
-        </div>
-        <span className="status" role="status">
-          {online ? t('status.online') : t('status.offline')}
-        </span>
-        <LangToggle />
-      </header>
-
-      <main>{plan && <PlanView plan={plan} />}</main>
-
-      <footer className="disclaimer">{t('disclaimer')}</footer>
+    <div className="page">
+      <TopBar />
+      <main className="main">{plan && <PlanView plan={plan} />}</main>
+      <footer className="footer">
+        <p>{t('disclaimer')}</p>
+      </footer>
     </div>
   )
 }

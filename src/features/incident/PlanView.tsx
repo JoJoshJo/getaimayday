@@ -1,85 +1,106 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useI18n } from '../../i18n'
-import type { Plan, PlanStep } from '../../plans/schema'
+import type { Plan } from '../../plans/schema'
+import { Progress } from '../../ui/components'
+import { StepRow, type StepState } from './StepRow'
 
 type Props = { plan: Plan }
 
-// Check state is in memory for now; the incident log (MASTER.md §6 #5) will persist it.
+// Check state (with the time each step was logged) is in memory for now;
+// the incident log (MASTER.md §6 #5) will persist it.
 export function PlanView({ plan }: Props) {
   const { t } = useI18n()
-  const [done, setDone] = useState<Record<string, boolean>>({})
-  const [current, setCurrent] = useState(0)
+  const [doneAt, setDoneAt] = useState<Record<string, Date | undefined>>({})
+  const [view, setView] = useState(0)
   const [showAll, setShowAll] = useState(false)
+  const stepRef = useRef<HTMLElement>(null)
+  const navigated = useRef(false)
 
   const total = plan.steps.length
-  const doneCount = plan.steps.filter((s) => done[s.id]).length
-  const toggle = (id: string) => setDone((d) => ({ ...d, [id]: !d[id] }))
+  const isDone = (id: string) => !!doneAt[id]
+  const firstOpen = plan.steps.findIndex((s) => !isDone(s.id))
+  const currentIdx = showAll ? firstOpen : view
+  const stateOf = (i: number): StepState => (isDone(plan.steps[i].id) ? 'done' : i === currentIdx ? 'current' : 'todo')
+  const states = plan.steps.map((_, i) => stateOf(i))
+  const doneCount = states.filter((s) => s === 'done').length
 
-  const visible = showAll ? plan.steps.map((s, i) => [s, i] as const) : [[plan.steps[current], current] as const]
+  const toggle = (id: string) => setDoneAt((d) => ({ ...d, [id]: d[id] ? undefined : new Date() }))
+  const go = (i: number) => {
+    navigated.current = true
+    setView(Math.max(0, Math.min(total - 1, i)))
+  }
+
+  // Keyboard: ←/→ move between steps in one-step view.
+  useEffect(() => {
+    if (showAll) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return
+      const el = e.target as HTMLElement
+      if (el.isContentEditable || ['TEXTAREA', 'SELECT'].includes(el.tagName) || (el.tagName === 'INPUT' && (el as HTMLInputElement).type === 'text')) return
+      if (e.key === 'ArrowRight') go(view + 1)
+      else if (e.key === 'ArrowLeft') go(view - 1)
+      else return
+      e.preventDefault()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  })
+
+  // Move focus to the new step after prev/next so screen readers and keyboard users follow.
+  useEffect(() => {
+    if (navigated.current) stepRef.current?.focus()
+    navigated.current = false
+  }, [view])
+
+  const pct = (n: number) => String(n).padStart(2, '0')
+  const rows = showAll ? plan.steps.map((_, i) => i) : [view]
 
   return (
-    <section aria-labelledby="plan-title">
-      <header className="plan-header">
-        <h2 id="plan-title">{t('plan.heading', { incident: t(`incident.${plan.incident}` as 'incident.ransomware') })}</h2>
-        <div aria-live="polite">{t('plan.progress', { done: doneCount, total })}</div>
-        <progress className="progress" max={total} value={doneCount} />
+    <section className="plan" aria-labelledby="plan-title">
+      <header className="plan__head">
+        <p className="kicker mono">{t('plan.kicker', { version: plan.version })}</p>
+        <h2 id="plan-title" className="plan__title">
+          {t(`incident.${plan.incident}` as 'incident.ransomware')}
+        </h2>
+        <Progress states={states} label={t('plan.progress', { done: pct(doneCount), total: pct(total) })} />
       </header>
 
       <div className="toolbar">
         {!showAll && (
           <>
-            <button className="btn" onClick={() => setCurrent((c) => c - 1)} disabled={current === 0}>
-              ← {t('plan.prev')}
+            <button type="button" className="btn" onClick={() => go(view - 1)} disabled={view === 0}>
+              <span aria-hidden="true">←</span> {t('plan.prev')}
             </button>
-            <button className="btn btn-primary" onClick={() => setCurrent((c) => c + 1)} disabled={current === total - 1}>
-              {t('plan.next')} →
+            <button type="button" className="btn btn--strong" onClick={() => go(view + 1)} disabled={view === total - 1}>
+              {t('plan.next')} <span aria-hidden="true">→</span>
             </button>
           </>
         )}
-        <button className="btn" onClick={() => setShowAll((v) => !v)} aria-pressed={showAll}>
+        <button type="button" className="btn btn--quiet" onClick={() => setShowAll((v) => !v)} aria-pressed={showAll}>
           {showAll ? t('plan.viewOne') : t('plan.viewAll')}
         </button>
       </div>
 
-      <ol className="steps">
-        {visible.map(([step, i]) => (
-          <StepCard key={step.id} step={step} index={i} total={total} done={!!done[step.id]} onToggle={() => toggle(step.id)} />
-        ))}
-      </ol>
+      <div className="steps">
+        {rows.map((i) => {
+          const s = plan.steps[i]
+          return (
+            <StepRow
+              key={s.id}
+              ref={!showAll ? stepRef : undefined}
+              step={s}
+              index={i}
+              total={total}
+              state={states[i]}
+              doneAt={doneAt[s.id]}
+              onToggle={() => toggle(s.id)}
+            />
+          )
+        })}
+      </div>
 
+      {!showAll && <p className="hint">{t('plan.keys')}</p>}
       {doneCount === total && <p className="all-done">{t('plan.allDone')}</p>}
     </section>
-  )
-}
-
-type StepProps = { step: PlanStep; index: number; total: number; done: boolean; onToggle: () => void }
-
-function StepCard({ step, index, total, done, onToggle }: StepProps) {
-  const { t } = useI18n()
-  return (
-    <li className={`step${done ? ' is-done' : ''}`}>
-      <div className="step-num">{t('plan.stepOf', { n: index + 1, total })}</div>
-      <label className="step-check">
-        <input type="checkbox" checked={done} onChange={onToggle} aria-describedby={`detail-${step.id}`} />
-        <span className="step-title">{step.title}</span>
-      </label>
-      <p id={`detail-${step.id}`}>{step.detail}</p>
-      {step.do_not && (
-        <p className="do-not">
-          <span className="label">{t('plan.doNot')}: </span>
-          {step.do_not}
-        </p>
-      )}
-      <p>
-        <span className="label">{t('plan.why')}: </span>
-        {step.why}
-      </p>
-      <p className="source">
-        {t('plan.source')}:{' '}
-        <a href={step.source_url} target="_blank" rel="noopener noreferrer">
-          {step.source_name}
-        </a>
-      </p>
-    </li>
   )
 }

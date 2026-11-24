@@ -10,7 +10,7 @@
 
 1. Start every session with: `pwd && git remote -v` and confirm you are in the `getaimayday` repo. Shell may default to another project.
 2. Before changing anything: investigate and report current state, wait for J to confirm. Keep fixes surgical — change only what's broken, never touch unrelated styling.
-3. After every task/session: append to `.brain/SESSION_HANDOFF.md` — what was done, files changed, commit hashes, keys/IDs discovered, gotchas, next step.
+3. Document every step, every session, for future reference. In `.brain/SESSION_HANDOFF.md`, log in order: each step, the commands run, decisions made and why, files changed, commit hashes, keys/IDs (never secrets), gotchas, how it was tested, and the next step. Someone reading only that file must be able to understand and repeat the work.
 4. Never commit secrets. Firebase web config is public by design; App Check debug tokens and any API keys for other services are NOT committed.
 5. All AI inference goes through Firebase AI Logic. No other model, SDK or API for inference (no Ollama, WebLLM, transformers.js, OpenAI, etc.). This is a hackathon rule.
 6. Verify current API names/signatures against official docs before writing code that depends on them (Firebase AI Logic hybrid web SDK is new; names change).

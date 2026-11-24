@@ -45,3 +45,32 @@ Append one entry per session: date, what was done, files changed, commit hashes,
 - J: review ransomware plan wording EN + FR (Security+ / French review), and do the offline check by hand in Chrome.
 - J: install Claude Code CLI + Firebase agent skills; Firebase project + web app + AI Logic + App Check (MASTER §15).
 - Session 2: Firebase init + App Check + Remote Config (MUST #2), then S1 remaining part.
+
+## 2026-11-24 — Session 2: design system + anti-slop pass (Claude Code) — IN PROGRESS
+
+### Step 0 — Session start
+- `pwd && git remote -v` → `/Users/joshlawson/Desktop/getaimayday`, origin `github.com/JoJoshJo/getaimayday` ✔
+- `git pull --ff-only origin main` → already up to date at `8be62f1`.
+- Re-read MASTER.md §0.
+
+### Step 1 — Design spec (.brain/DESIGN.md), waiting for J's OK
+1. **Font packages checked on npm** (`npm view <pkg> version`), all 5.3.0:
+   `@fontsource-variable/archivo`, `@fontsource-variable/figtree`, `@fontsource/ibm-plex-mono`. Also `lucide-react` 1.79.0 (not installed; only if an icon is truly needed).
+   - Downloaded `@fontsource-variable/archivo` with `npm pack` into the scratch dir and inspected `wdth.css`: family `'Archivo Variable'`, `font-weight: 100 900`, `font-stretch: 62% 125%`. So the "slightly expanded" display needs the `wdth.css` import (not `index.css`, which is weight only).
+   - **Decision:** precache only the latin + latin-ext woff2 subsets (EN/FR need nothing else) to keep the offline cache small.
+2. **Contrast computed** with a small WCAG 2.x relative-luminance script (`(L1+0.05)/(L2+0.05)`), run with node from the scratch dir. All ratios are in DESIGN.md §2. Key results:
+   - `#ff4829` on paper `#fbf9f5` = 3.22:1. Passes for large text/UI (3:1), fails for small text (4.5:1).
+   - Paper text on the accent = 3.22:1 (fail) → buttons on the accent use ink text (5.42:1).
+   - `#ff4829` on ink `#171412` = 5.42:1. Passes at any size in dark mode.
+   - Chosen status colors: ok `#2e6b3f` / `#7cc08f`, warn `#8a5a0b` / `#d9a441` (all ≥ 5.6:1). Dark muted text `#b3aaa0` (8.01:1).
+3. **Wrote `.brain/DESIGN.md`:** principles, color tokens + accent rules + contrast table, type (Archivo wdth 112% / Figtree / Plex Mono) and scale, space/radius/motion, layout, components (top bar, status chip, toggle, progress, QRH step row, do-not box, footnotes, LOGGED stamp, buttons, focus/keyboard), copy voice, banned list + automated enforcement plan (`tests/design.test.ts`), the `/#/styleguide` page, open decisions.
+4. **Open decisions put to J:**
+   - `accent-text #c22a10` (5.50:1) for small red text in light mode only (recommended), vs. no small red text at all.
+   - Do-not box label "AVOID" / "À ÉVITER" to fix "Do not: Do not…" with plan text unchanged (recommended), vs. keep "DO NOT" and reword every plan sentence.
+
+### J's standing rule (added this session)
+- J: document every step for future reference. Updated MASTER.md §0 rule 3 to say exactly that (log each step in order: commands, decisions + why, files, commit hashes, keys/IDs (never secrets), gotchas, how tested, next step; the file alone must be enough to repeat the work).
+
+**Files so far (uncommitted):** `.brain/DESIGN.md` (new), `.brain/MASTER.md` (rule 3), `.brain/SESSION_HANDOFF.md` (this entry).
+
+**Next:** J's OK on DESIGN.md + the two decisions → Step 2 (fonts, tokens, restyle, styleguide).
