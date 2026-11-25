@@ -85,7 +85,8 @@ describe('model output validation', () => {
       contact_method: null,
       deadline: null,
       file_extension: null,
-      confidence: 'high',
+      confidence: 'medium', // computed: 2 fields found (the model claimed "high")
+      model_confidence: 'high',
     })
     expect(() => parseJson('{"incident_type":"ransomware","confidence":"high","advice":"pay now"}', TriageRaw)).toThrow(AiOutputError)
   })

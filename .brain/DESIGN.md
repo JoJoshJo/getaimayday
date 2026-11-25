@@ -159,6 +159,14 @@ Status colors appear **only** here (and later on the readiness screen).
 
 **Source badge** (added Session 3) — mono uppercase label with a 1px border, text color: `ON-DEVICE AI`, `CLOUD AI`, `OFFLINE PACK`; `CHECKLIST` (no AI answer) is muted with a dashed border. It shows the real source reported by the SDK, never a guess. Not the accent, not status colors.
 
+**Found-on-screen panel** (spec added Session 3b; **build it with the incident log**, not before). Why: spike S2 showed on-device triage misreads or invents fields and still calls itself "high" confidence (SPIKES.md Results). So triage only ever *suggests*.
+- **Header:** mono uppercase **"FOUND ON SCREEN · PLEASE CONFIRM"** / FR **"TROUVÉ À L’ÉCRAN · À CONFIRMER"** (a middle dot, not the em dash from the brief: §7 bans em dashes in UI copy). Beside it: the Source badge (real `inferenceSource`) and the **computed** confidence in mono (`CONFIDENCE: MEDIUM`). The model's own confidence is never shown in the product (lab/debug only).
+- **One editable row per field**, in this order: incident type (a select of the 6 types, prefilled; the user's choice and the classify result win over triage), amount, currency, group name, contact method, deadline, file extension. Each row is a label in mono plus a plain text input (amount: numeric input), prefilled with the found value. A field the model didn't find (null) is **empty**, with the muted placeholder "Not found" / "Non trouvé". No field is ever prefilled with "unknown" or 0.
+- **Nothing is saved until the user confirms.** Actions: Primary-style secondary button **"Confirm and add to log"** / "Confirmer et ajouter au journal" (2px ink border; NOT the accent, which stays reserved for "Something's wrong"), and **"Discard"** / "Ignorer". Discard saves nothing.
+- **Edits are tracked:** the log entry stores, per field, the value saved and whether it was `found` (unchanged), `edited`, or `added` by the user, plus the source and computed confidence. This keeps the record honest about what the AI read.
+- **Never shows advice.** The panel only displays the six fields; any model text outside them is rejected by the schema. Below the fields, a fixed note (plan copy, not AI): "Do not contact the attackers or pay. This is kept for your report." / "Ne contactez pas les attaquants et ne payez pas. Ces informations servent à votre signalement." The note uses the Do-not style (AVOID / À ÉVITER).
+- Accessibility: every input has a visible label; the header is the panel's accessible name; focus moves to the first field when the panel opens; Escape = Discard (asks nothing, nothing saved yet).
+
 **Icons** — none for now. Words first. If one is ever needed, `lucide-react` only, 1.5px stroke, ink.
 
 ---
@@ -190,3 +198,4 @@ Theme control: the app follows the OS, and `data-theme="light|dark"` on any elem
 - ✅ 2026-11-24 (J): `accent-text #c22a10` for small red text in Paper mode.
 - ✅ 2026-11-24 (J): do-not label "AVOID" / "À ÉVITER"; plan text unchanged.
 - Open: logo glyph (later). `public/logo.svg` is a placeholder in the palette.
+- ✅ 2026-11-24 (architect, Session 3b): triage results are always shown as "FOUND ON SCREEN · PLEASE CONFIRM", every field editable before saving to the incident log (spec in §6; build with the incident log).

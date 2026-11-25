@@ -12,6 +12,7 @@ import { ai } from './firebase'
 import { classifyPrompt } from './prompts/classify'
 import { TRIAGE_PROMPT } from './prompts/triage'
 import { getCloudModel } from './remoteConfig'
+import { markOnDeviceActivity, ON_DEVICE_IO } from './warmup'
 import {
   ClassifyResult,
   classifyJsonSchema,
@@ -24,17 +25,9 @@ import {
 } from './schemas'
 
 export { InferenceMode, InferenceSource } from 'firebase/ai'
+export { onDeviceAvailability } from './warmup'
 
 export type JobResult<T> = { data: T; inferenceSource: InferenceSource | undefined }
-
-const ON_DEVICE_IO = {
-  // Default is English text + image; declare French input too (Chrome 149+ supports FR).
-  expectedInputs: [
-    { type: 'text' as const, languages: ['en', 'fr'] },
-    { type: 'image' as const },
-  ],
-  expectedOutputs: [{ type: 'text' as const, languages: ['en'] }],
-}
 
 function makeModel(mode: InferenceMode, jsonSchema: object): GenerativeModel {
   return getGenerativeModel(ai, {
@@ -75,21 +68,34 @@ export async function prepareOnDevice(onProgress?: (fraction: number) => void): 
   await model('triage', InferenceMode.ONLY_ON_DEVICE).initializeDeviceModel()
 }
 
-/** Chrome Prompt API availability, if the API exists in this browser. */
-export async function onDeviceAvailability(): Promise<string> {
-  const LM = (globalThis as { LanguageModel?: { availability: (o?: object) => Promise<string> } }).LanguageModel
-  if (!LM) return 'no-prompt-api'
-  try {
-    return await LM.availability(ON_DEVICE_IO)
-  } catch (e) {
-    return `error: ${(e as Error).message}`
-  }
+/** Mark on-device activity for the warm-up scheduler (idle timer). */
+function track<T>(r: JobResult<T>): JobResult<T> {
+  if (r.inferenceSource === 'on_device') markOnDeviceActivity()
+  return r
+}
+
+// Separate instance for warm-ups: the SDK destroys an adapter's previous session
+// when it creates a new one, so sharing the classify instance could kill a real
+// call that runs at the same time.
+let warmModel: GenerativeModel | null = null
+
+/**
+ * (d) Tiny ONLY_ON_DEVICE classify call through AI Logic so Chrome loads Nano
+ * into memory before the user needs it. Called by warmup.ts only after
+ * LanguageModel.availability() === "available" (never triggers a download).
+ */
+export async function warmOnDevice(): Promise<void> {
+  warmModel ??= makeModel(InferenceMode.ONLY_ON_DEVICE, classifyJsonSchema)
+  const result = await warmModel.generateContent(classifyPrompt('warm-up'))
+  if (result.response.inferenceSource !== 'on_device') throw new Error(`warm-up ran ${String(result.response.inferenceSource)}`)
+  parseJson(result.response.text(), ClassifyResult)
+  markOnDeviceActivity()
 }
 
 export async function classifyIncident(text: string, mode: InferenceMode = InferenceMode.ONLY_ON_DEVICE): Promise<JobResult<IncidentType>> {
   const result = await model('classify', mode).generateContent(classifyPrompt(text))
   const data = parseJson(result.response.text(), ClassifyResult)
-  return { data: data.incident, inferenceSource: result.response.inferenceSource }
+  return track({ data: data.incident, inferenceSource: result.response.inferenceSource })
 }
 
 export const TRIAGE_MIME_TYPES = ['image/png', 'image/jpeg'] as const
@@ -106,7 +112,7 @@ export async function triageRansomScreen(
     { type: 'inlineData', inlineData: { data: image.base64, mimeType: image.mimeType } },
   ])
   const raw = parseJson(result.response.text(), TriageRaw)
-  return { data: normalizeTriage(raw), inferenceSource: result.response.inferenceSource }
+  return track({ data: normalizeTriage(raw), inferenceSource: result.response.inferenceSource })
 }
 
 /** Read a File/Blob as base64 (no data: prefix) for inlineData. */

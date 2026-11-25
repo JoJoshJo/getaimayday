@@ -49,22 +49,55 @@ export const triageJsonSchema = {
   additionalProperties: false,
 } as const
 
+export type Confidence = (typeof CONFIDENCE)[number]
+
+/** The six "found on screen" fields (everything except incident_type / confidence). */
+export const TRIAGE_FIELDS = ['ransom_amount', 'currency', 'group_name', 'contact_method', 'deadline', 'file_extension'] as const
+
+/**
+ * Non-answers a small model writes instead of leaving a field out (spike S2:
+ * "unknown", 0). Compared after trim + lowercase + stripping wrapping punctuation.
+ */
+const NON_ANSWERS = new Set([
+  '', 'unknown', 'unk', 'n/a', 'na', 'none', 'null', 'nil', 'undefined', 'no', '-', '--', '?', 'tbd',
+  'not visible', 'not shown', 'not found', 'not available', 'not specified', 'not provided', 'not mentioned',
+  'inconnu', 'inconnue', 'aucun', 'aucune', 'non visible', 'non disponible', 'non indiqué', 'non précisé',
+])
+
+export function isNonAnswer(v: unknown): boolean {
+  if (v === null || v === undefined) return true
+  if (typeof v === 'number') return !Number.isFinite(v) || v <= 0 // a ransom of 0 is not an answer
+  if (typeof v === 'string') return NON_ANSWERS.has(v.trim().toLowerCase().replace(/^["'([{.\s]+|["')\]}.\s]+$/g, ''))
+  return false
+}
+
+/** (b) Drop non-answers from the optional fields BEFORE validation, so they become null, never data. */
+export function dropNonAnswers(json: unknown): unknown {
+  if (!json || typeof json !== 'object' || Array.isArray(json)) return json
+  const out: Record<string, unknown> = { ...(json as Record<string, unknown>) }
+  for (const f of TRIAGE_FIELDS) if (f in out && isNonAnswer(out[f])) delete out[f]
+  return out
+}
+
 const optText = z.string().trim().min(1).max(300).optional()
 
-export const TriageRaw = z
-  .object({
-    incident_type: z.enum(INCIDENT_TYPES),
-    ransom_amount: z.number().nonnegative().finite().optional(),
-    currency: optText,
-    group_name: optText,
-    contact_method: optText,
-    deadline: optText,
-    file_extension: optText,
-    confidence: z.enum(CONFIDENCE),
-  })
-  .strict()
+export const TriageRaw = z.preprocess(
+  dropNonAnswers,
+  z
+    .object({
+      incident_type: z.enum(INCIDENT_TYPES),
+      ransom_amount: z.number().positive().finite().optional(),
+      currency: optText,
+      group_name: optText,
+      contact_method: optText,
+      deadline: optText,
+      file_extension: optText,
+      confidence: z.enum(CONFIDENCE),
+    })
+    .strict(),
+)
 
-/** What the app uses: every field present, null = not visible on the screen. */
+/** What the app uses: every field present, null = not found on the screen. */
 export type TriageResult = {
   incident_type: IncidentType
   ransom_amount: number | null
@@ -73,11 +106,26 @@ export type TriageResult = {
   contact_method: string | null
   deadline: string | null
   file_extension: string | null
-  confidence: (typeof CONFIDENCE)[number]
+  /** (a) Computed in code from what was found. This is the one the app uses. */
+  confidence: Confidence
+  /** The model's own claim. Debug only: in S2 it said "high" even when wrong. */
+  model_confidence: Confidence
+}
+
+/**
+ * (a) Confidence from evidence, not from the model:
+ *   high   = incident_type known + ≥ 3 of the six fields found
+ *   medium = incident_type known + 1–2 found
+ *   low    = nothing found, or incident_type "unknown"
+ */
+export function computeConfidence(r: Pick<TriageResult, 'incident_type' | (typeof TRIAGE_FIELDS)[number]>): Confidence {
+  if (r.incident_type === 'unknown') return 'low'
+  const found = TRIAGE_FIELDS.filter((f) => r[f] !== null).length
+  return found >= 3 ? 'high' : found >= 1 ? 'medium' : 'low'
 }
 
 export function normalizeTriage(raw: z.infer<typeof TriageRaw>): TriageResult {
-  return {
+  const fields = {
     incident_type: raw.incident_type,
     ransom_amount: raw.ransom_amount ?? null,
     currency: raw.currency ?? null,
@@ -85,8 +133,8 @@ export function normalizeTriage(raw: z.infer<typeof TriageRaw>): TriageResult {
     contact_method: raw.contact_method ?? null,
     deadline: raw.deadline ?? null,
     file_extension: raw.file_extension ?? null,
-    confidence: raw.confidence,
   }
+  return { ...fields, confidence: computeConfidence(fields), model_confidence: raw.confidence }
 }
 
 /** Parse model text as JSON and validate. Throws AiOutputError with the raw text on failure. */

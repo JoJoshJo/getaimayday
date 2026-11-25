@@ -3,9 +3,10 @@
  * Runs each AI job and shows result, real source badge and time in seconds.
  * Used for spikes S1 and S2 (.brain/SPIKES.md).
  */
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useSyncExternalStore } from 'react'
 import { appCheckStatus } from '../../ai/firebase'
 import { InferenceMode, onDeviceAvailability, prepareOnDevice, fileToBase64 } from '../../ai/nano'
+import { COLD_AFTER_SECONDS, idleSeconds, lastWarmEvent, onWarmEvent, warmUpNano, type WarmEvent } from '../../ai/warmup'
 import { getCloudModel, initRemoteConfig, type RcStatus } from '../../ai/remoteConfig'
 import { router, type Routed } from '../../ai/router'
 import { SourceBadge } from '../../ui/components'
@@ -24,7 +25,15 @@ const PRESETS = [
 
 const SAMPLES = [1, 2, 3, 4, 5].map((n) => ({ n, url: `/lab/s2-${n}.png` }))
 
-type LogRow = { at: string; job: string; mode: Mode; input: string; result: Routed<unknown> }
+type Job = 'classify' | 'triage'
+/** idle = seconds since the last on-device call ended (null = first call); cold/warm from S1/S2 timings. */
+type LogRow = { at: string; job: Job; mode: Mode; input: string; result: Routed<unknown>; idle: number | null }
+
+const coldWarm = (r: LogRow) =>
+  r.result.source !== 'on-device' ? '' : r.result.seconds > COLD_AFTER_SECONDS[r.job] ? 'cold' : 'warm'
+const fmtIdle = (s: number | null) => (s === null ? 'first' : `${s.toFixed(1)} s`)
+const fmtWarm = (e: WarmEvent | null) =>
+  e ? `${e.outcome} · ${e.seconds.toFixed(2)} s · ${e.reason} · idle ${fmtIdle(e.idleSeconds)} · ${e.at} · ${e.detail}` : 'not run yet'
 
 export default function Lab() {
   const [online, setOnline] = useState(navigator.onLine)
@@ -36,6 +45,9 @@ export default function Lab() {
   const [image, setImage] = useState<{ label: string; blob: Blob; url: string } | null>(null)
   const [busy, setBusy] = useState(false)
   const [log, setLog] = useState<LogRow[]>([])
+  // External store: no lost event if the app-load warm-up finishes between render and subscribe.
+  const warm = useSyncExternalStore(onWarmEvent, lastWarmEvent)
+  const [warming, setWarming] = useState(false)
 
   useEffect(() => {
     const on = () => setOnline(true)
@@ -50,8 +62,14 @@ export default function Lab() {
     }
   }, [])
 
-  const add = (job: string, input: string, result: Routed<unknown>) =>
-    setLog((l) => [{ at: new Date().toLocaleTimeString(), job, mode, input, result }, ...l])
+  const add = (job: Job, input: string, idle: number | null, result: Routed<unknown>) =>
+    setLog((l) => [{ at: new Date().toLocaleTimeString(), job, mode, input, result, idle }, ...l])
+
+  async function onWarm() {
+    setWarming(true)
+    await warmUpNano('lab button')
+    setWarming(false)
+  }
 
   async function onPrepare() {
     setPrep('starting…')
@@ -66,7 +84,8 @@ export default function Lab() {
 
   async function onClassify() {
     setBusy(true)
-    add('classify', text.slice(0, 80), await router.classify(text, mode))
+    const idle = idleSeconds()
+    add('classify', text.slice(0, 80), idle, await router.classify(text, mode))
     setBusy(false)
   }
 
@@ -83,19 +102,20 @@ export default function Lab() {
     if (!image) return
     setBusy(true)
     const base64 = await fileToBase64(image.blob)
-    add('triage', image.label, await router.triage({ base64, mimeType: image.blob.type }, mode))
+    const idle = idleSeconds()
+    add('triage', image.label, idle, await router.triage({ base64, mimeType: image.blob.type }, mode))
     setBusy(false)
   }
 
   const chromeVersion = navigator.userAgent.match(/Chrome\/([\d.]+)/)?.[1] ?? 'not Chrome'
 
   const markdown = () =>
-    ['| time | job | mode | input | source | seconds | data | error |', '|---|---|---|---|---|---|---|---|']
+    [`Warm-up: ${fmtWarm(warm)}`, '', '| time | job | mode | input | source | seconds | idle before | cold/warm | data | error |', '|---|---|---|---|---|---|---|---|---|---|']
       .concat(
         log
           .slice()
           .reverse()
-          .map((r) => `| ${r.at} | ${r.job} | ${r.mode} | ${r.input.replace(/\|/g, '/')} | ${r.result.source} | ${r.result.seconds} | \`${JSON.stringify(r.result.data)}\` | ${r.result.error ?? ''} |`),
+          .map((r) => `| ${r.at} | ${r.job} | ${r.mode} | ${r.input.replace(/\|/g, '/')} | ${r.result.source} | ${r.result.seconds} | ${fmtIdle(r.idle)} | ${coldWarm(r)} | \`${JSON.stringify(r.result.data)}\` | ${r.result.error ?? ''} |`),
       )
       .join('\n')
 
@@ -118,10 +138,14 @@ export default function Lab() {
           <Row k="Remote Config" v={`${rc} · cloud_model = ${rc === 'loading' ? '…' : getCloudModel()}`} />
           <Row k="Prompt API (LanguageModel)" v={avail} />
           <Row k="On-device model" v={prep} />
+          <Row k="Warm-up" v={fmtWarm(warm)} />
         </dl>
         <div className="sg__row">
           <button type="button" className="btn btn--strong" onClick={onPrepare}>
             Prepare on-device model
+          </button>
+          <button type="button" className="btn" onClick={onWarm} disabled={warming}>
+            {warming ? 'Warming…' : 'Warm up now'}
           </button>
           <label className="lab__field">
             <span className="mono">Mode</span>
@@ -182,6 +206,8 @@ export default function Lab() {
             <div className="sg__row">
               <SourceBadge source={r.result.source} />
               <span className="mono">{r.result.seconds.toFixed(2)} s</span>
+              {coldWarm(r) && <span className="mono">{coldWarm(r)}</span>}
+              <span className="mono sg__muted">idle before {fmtIdle(r.idle)}</span>
               <span className="mono sg__muted">
                 {r.at} · {r.job} · {r.mode}
               </span>
