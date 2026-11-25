@@ -410,7 +410,8 @@ M2 8 GB Mac, Chrome 158, `npm run dev`, App Check debug token, Remote Config fet
 - The classify job still uses the old `INCIDENT_TYPES` (unchanged, S1 passed). Triage and classify types are deliberately different.
 
 ### Commits
-- (hash in the next commit, "Session 3c handoff notes")
+- `06e1ef7` Session 3c code + docs.
+- (this hash note is the next commit: "Session 3c handoff notes")
 
 ### J re-test list (Mac, `npm run dev`, `/#/lab`, mode only_on_device)
 1. **S2 samples 1–5** (one run each). Expected: table in SPIKES.md "Expected fields" (#5 = `tech_support_scam`, `is_ransom_demand: false`, only the phone number). Paste "Copy results as Markdown".
