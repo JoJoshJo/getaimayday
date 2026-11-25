@@ -336,7 +336,8 @@ M2 8 GB Mac, Chrome 158, `npm run dev`, App Check debug token, Remote Config fet
 - zsh doesn't word-split `$VAR`; write paths out (from Session 2).
 
 ### Commits
-- (see git log: Session 3b code + docs commit; hash reported in the session summary)
+- `bacccd4` Session 3b code + docs (scoring, hardening, warm-up, tests).
+- (this hash note is the next commit: "Session 3b handoff notes")
 
 ### J re-test list (on the Mac, `npm run dev`, `/#/lab`, mode only_on_device)
 1. **S2 again** (Samples 1–5, then Sample 3 twice): check `null` instead of "unknown"/0 on sample 5, `confidence` (computed) vs `model_confidence`. Paste the Markdown.
