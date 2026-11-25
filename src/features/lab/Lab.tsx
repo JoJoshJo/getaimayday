@@ -10,6 +10,8 @@ import { COLD_AFTER_SECONDS, idleSeconds, lastWarmEvent, onWarmEvent, warmUpNano
 import { getCloudModel, initRemoteConfig, type RcStatus } from '../../ai/remoteConfig'
 import { router, type Routed } from '../../ai/router'
 import { SourceBadge } from '../../ui/components'
+import type { TriageResult } from '../../ai/schemas'
+import { routeTriage } from '../../plans/route'
 
 type Mode = (typeof InferenceMode)[keyof typeof InferenceMode]
 const MODES: Mode[] = [InferenceMode.ONLY_ON_DEVICE, InferenceMode.PREFER_ON_DEVICE, InferenceMode.ONLY_IN_CLOUD]
@@ -31,6 +33,11 @@ type LogRow = { at: string; job: Job; mode: Mode; input: string; result: Routed<
 
 const coldWarm = (r: LogRow) =>
   r.result.source !== 'on-device' ? '' : r.result.seconds > COLD_AFTER_SECONDS[r.job] ? 'cold' : 'warm'
+/** Session 3c: what the app would open after the user confirms (src/plans/route.ts). */
+const routeLabel = (d: TriageResult) => {
+  const r = routeTriage(d.incident_type)
+  return r.kind === 'plan' ? `app would open: ${r.incident} plan` : r.reason === 'no-plan-yet' ? `app would open: tiles (${r.wanted} plan not written yet)` : 'app would open: incident tiles (user picks)'
+}
 const fmtIdle = (s: number | null) => (s === null ? 'first' : `${s.toFixed(1)} s`)
 const fmtWarm = (e: WarmEvent | null) =>
   e ? `${e.outcome} · ${e.seconds.toFixed(2)} s · ${e.reason} · idle ${fmtIdle(e.idleSeconds)} · ${e.at} · ${e.detail}` : 'not run yet'
@@ -115,7 +122,7 @@ export default function Lab() {
         log
           .slice()
           .reverse()
-          .map((r) => `| ${r.at} | ${r.job} | ${r.mode} | ${r.input.replace(/\|/g, '/')} | ${r.result.source} | ${r.result.seconds} | ${fmtIdle(r.idle)} | ${coldWarm(r)} | \`${JSON.stringify(r.result.data)}\` | ${r.result.error ?? ''} |`),
+          .map((r) => `| ${r.at} | ${r.job} | ${r.mode} | ${r.input.replace(/\|/g, '/')} | ${r.result.source} | ${r.result.seconds} | ${fmtIdle(r.idle)} | ${coldWarm(r)} | \`${JSON.stringify(r.result.data)}\`${r.job === 'triage' && r.result.data !== null ? ` → ${routeLabel(r.result.data as TriageResult)}` : ''} | ${r.result.error ?? ''} |`),
       )
       .join('\n')
 
@@ -214,6 +221,7 @@ export default function Lab() {
             </div>
             <p className="sg__muted lab__input">{r.input}</p>
             <pre className="lab__pre">{JSON.stringify(r.result.data, null, 2)}</pre>
+            {r.job === 'triage' && r.result.data !== null && <p className="mono sg__muted">{routeLabel(r.result.data as TriageResult)}</p>}
             {r.result.error && <p className="lab__error mono">{r.result.error}</p>}
           </article>
         ))}

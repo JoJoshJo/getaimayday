@@ -5,7 +5,9 @@
  *   on-device → onDeviceParams.promptOptions.responseConstraint (passed as-is to Chrome's Prompt API)
  *   cloud     → inCloudParams.generationConfig.responseJsonSchema (+ responseMimeType application/json)
  * Fields that are not visible are simply omitted (not null): optional properties are
- * supported by both paths, null-unions are not guaranteed on-device.
+ * supported by both paths; Chrome's responseConstraint docs don't list nullable
+ * types (re-checked Session 3c), and an unsupported feature throws NotSupportedError.
+ * An explicit null from the model is still accepted (dropped as a non-answer).
  *
  * The model output is then validated with zod. Anything that doesn't match is an
  * error, never silently "fixed".
@@ -33,10 +35,18 @@ export type ClassifyResult = z.infer<typeof ClassifyResult>
 
 export const CONFIDENCE = ['low', 'medium', 'high'] as const
 
+/**
+ * Session 3c: triage has its OWN types (what a screen shows), separate from the
+ * classify incident types (which plan to open). Mapping: src/plans/route.ts.
+ */
+export const TRIAGE_TYPES = ['ransomware', 'tech_support_scam', 'phishing_page', 'other', 'not_an_incident'] as const
+export type TriageType = (typeof TRIAGE_TYPES)[number]
+
 export const triageJsonSchema = {
   type: 'object',
   properties: {
-    incident_type: { type: 'string', enum: [...INCIDENT_TYPES] },
+    incident_type: { type: 'string', enum: [...TRIAGE_TYPES] },
+    is_ransom_demand: { type: 'boolean', description: 'True only if the screen demands payment to unlock/recover files or stop a data leak' },
     ransom_amount: { type: 'number', description: 'Amount demanded, number only, if visible' },
     currency: { type: 'string', description: 'Currency or coin of the amount, e.g. USD, BTC, XMR, if visible' },
     group_name: { type: 'string', description: 'Name the attackers use for themselves, if visible' },
@@ -45,7 +55,7 @@ export const triageJsonSchema = {
     file_extension: { type: 'string', description: 'Extension added to encrypted files, e.g. .locked, if visible' },
     confidence: { type: 'string', enum: [...CONFIDENCE] },
   },
-  required: ['incident_type', 'confidence'],
+  required: ['incident_type', 'is_ransom_demand', 'confidence'],
   additionalProperties: false,
 } as const
 
@@ -85,7 +95,8 @@ export const TriageRaw = z.preprocess(
   dropNonAnswers,
   z
     .object({
-      incident_type: z.enum(INCIDENT_TYPES),
+      incident_type: z.enum(TRIAGE_TYPES),
+      is_ransom_demand: z.boolean(),
       ransom_amount: z.number().positive().finite().optional(),
       currency: optText,
       group_name: optText,
@@ -99,7 +110,8 @@ export const TriageRaw = z.preprocess(
 
 /** What the app uses: every field present, null = not found on the screen. */
 export type TriageResult = {
-  incident_type: IncidentType
+  incident_type: TriageType
+  is_ransom_demand: boolean
   ransom_amount: number | null
   currency: string | null
   group_name: string | null
@@ -116,19 +128,23 @@ export type TriageResult = {
  * (a) Confidence from evidence, not from the model:
  *   high   = incident_type known + ≥ 3 of the six fields found
  *   medium = incident_type known + 1–2 found
- *   low    = nothing found, or incident_type "unknown"
+ *   low    = nothing found, or incident_type "other" (the model couldn't name it)
  */
 export function computeConfidence(r: Pick<TriageResult, 'incident_type' | (typeof TRIAGE_FIELDS)[number]>): Confidence {
-  if (r.incident_type === 'unknown') return 'low'
+  if (r.incident_type === 'other') return 'low'
   const found = TRIAGE_FIELDS.filter((f) => r[f] !== null).length
   return found >= 3 ? 'high' : found >= 1 ? 'medium' : 'low'
 }
 
 export function normalizeTriage(raw: z.infer<typeof TriageRaw>): TriageResult {
+  // Consistency guard (Session 3c, S2 #5 invented "USD"): without a ransom
+  // demand there is no ransom amount or ransom currency.
+  const ransom = raw.is_ransom_demand
   const fields = {
     incident_type: raw.incident_type,
-    ransom_amount: raw.ransom_amount ?? null,
-    currency: raw.currency ?? null,
+    is_ransom_demand: raw.is_ransom_demand,
+    ransom_amount: ransom ? (raw.ransom_amount ?? null) : null,
+    currency: ransom ? (raw.currency ?? null) : null,
     group_name: raw.group_name ?? null,
     contact_method: raw.contact_method ?? null,
     deadline: raw.deadline ?? null,

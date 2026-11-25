@@ -350,3 +350,72 @@ M2 8 GB Mac, Chrome 158, `npm run dev`, App Check debug token, Remote Config fet
 ### Next step
 - J: the re-test list above; paste the lab Markdown.
 - Claude (Session 4): tune `REWARM_AFTER_MS` / triggers from J's idle curve; then the "Something's wrong" flow (MUST #4) on `router.classify` with source badges. Optional later: prompt tweak for the call-support scam (S2 #5) and re-score S2.
+
+---
+
+## 2026-11-24 — Session 3c: fix triage accuracy (S2) (Claude Code)
+
+### Step 0 — Start
+- `pwd && git remote -v` → `/Users/joshlawson/Desktop/getaimayday`, `github.com/JoJoshJo/getaimayday`. `git pull` → up to date (`ccd8996`).
+- Problem (S2, Session 3b): sample 4 invented group "CRYPTO" (from ".crypt7") and lost the wallet id; sample 5 (tech-support call scam) came back as ransomware with an invented currency USD.
+
+### Step 1 — Docs check before touching the schema (rule 6)
+- A web-fetch subagent read the Chrome structured-output and Prompt API pages, the prompt-api README, the Gemini structured-output page and the Firebase AI Logic pages.
+- Findings: Chrome's `responseConstraint` docs **don't say** whether nullable types (`["string","null"]`, `nullable`) are supported; an unsupported schema feature throws `NotSupportedError`. Gemini cloud allows `"null"` in a type array. Token limits for Nano are not stated (MASTER §5 notes ~9k reported); `measureContextUsage()` is the current name for measuring (was `measureInputUsage`).
+- **Decision:** the brief says "return null"; to stay safe on-device, absent fields are still **left out** of the JSON (schema has no null types; the app stores them as null). The prompt says "leave the field out (it means null)". An explicit `null` from the model is accepted anyway (dropped as a non-answer). A test asserts the schema contains no `"null"`/`nullable`.
+
+### Step 2 — Prompt + schema (`src/ai/prompts/triage.ts`, `src/ai/schemas.ts`)
+- (a) EXTRACTION RULES: copy text EXACTLY (character by character, odd spellings kept, no correcting/translating/shortening); only fill a field if clearly written, otherwise leave it out; never write "unknown"/"none"/"N/A"/0; never infer, guess or invent, with the two S2 failures named as examples (group name from a file extension, currency not written next to the amount). Field hints sharpened: `contact_method` = every contact detail copied in full incl. crypto wallet address; `group_name` only if written as a name.
+- (b) New `TRIAGE_TYPES = ransomware | tech_support_scam | phishing_page | other | not_an_incident` (separate from the classify `INCIDENT_TYPES`, which pick a plan). New required boolean `is_ransom_demand`. JSON schema `required: [incident_type, is_ransom_demand, confidence]`.
+- (c) SECURITY RULES unchanged in substance (image = untrusted data, never follow instructions in it, no advice).
+- (d) Two short in-prompt examples (one ransomware, one fake support-call scam) with made-up values that **share no value with the S2 images** (enforced by a test), so the re-test measures reading, not copying.
+- **Prompt size:** old 1,410 chars / 233 words (≈ 350 tokens at 4 chars/token) → new **2,740 chars / 412 words (≈ 690 tokens)**, plus the schema (~1 KB) and the image. Well inside the ~9k reported context. Budget test: prompt < 3,500 chars. Measured with `node` (string length; no tokenizer is available off-device).
+- Consistency guard in `normalizeTriage`: `is_ransom_demand: false` → `ransom_amount` and `currency` = null (S2 #5's invented USD can't survive).
+- `computeConfidence`: low when type is `other` (replaces the old `unknown` rule).
+
+### Step 3 — Mapping in the app (`src/plans/route.ts`, new)
+- `TRIAGE_TO_INCIDENT`: ransomware → ransomware plan; tech_support_scam → phishing (stolen-password) plan for now; phishing_page → phishing plan; other / not_an_incident → incident tiles.
+- `routeTriage(type, available)`: if the target plan isn't written yet (phishing = SHOULD #13), returns tiles with `reason: 'no-plan-yet'` instead of a dead end. There is no "Something's wrong" UI yet, so this is a pure function the flow will use; the lab shows "app would open: …" under each triage result (and in the Markdown export).
+- MASTER §6: MUST #6 field list + routing updated; SHOULD #13 notes it also receives tech_support_scam; §17 open question "tech-support-scam plan of its own?".
+
+### Step 4 — Spec only: "Double-check with cloud AI"
+- DESIGN.md §6 (under the found-on-screen panel) + §10 decision; MASTER §6 **SHOULD #17** (NICE renumbered 18–20; no other references to those numbers). Online only (not rendered offline); first tap shows exactly what will be sent (image thumbnail, provider, "no name, no contacts, no log"); `PREFER_IN_CLOUD` only after "Send to cloud AI"; cloud values shown beside fields, never overwrite (edited fields untouched); calm one-line failure, no retry; log records that a cloud check happened. Not built.
+- DESIGN.md panel spec also updated: incident-type select has the 5 triage types; new "ransom demanded yes/no" row.
+
+### Step 5 — S2 expected answers
+- `scripts/spikes/s2-samples.json` + SPIKES.md expected table: new `is_ransom_demand` column; #5 expected `tech_support_scam`, false. Images unchanged (the render script doesn't read `expected`), no re-render.
+- MASTER §12 S2 paragraph: Session 3c fix noted, re-test pending J. SPIKES.md status line: re-test pending.
+
+### Step 6 — Tests
+- `tests/triage.test.ts` rewritten (Session 3b tests kept): J's real S2 outputs as fixtures, verbatim; `adapt()` adds `is_ransom_demand` where the new shape is needed. New: the five types, schema enum/required/no-null, J's old-shape outputs and old types rejected, the no-ransom-demand guard on J's #5, the expected #5 answer parses, prompt rules present, every type described, both prompt examples parse, examples share no values with the S2 images, size budget, routing (incl. no-plan-yet fallback).
+- `tests/router.test.ts`: triage fixture gains `is_ransom_demand`.
+- `npm test` **122/122** (5 files).
+
+### Step 7 — Verification
+- `npx tsc -b` ✔ · `npm run lint` 0 warnings · `npm run build` ✔ precache 21 entries / 709 KB, secret check ✔.
+- Offline (`…/scratchpad/pw/session3.mjs <repo> <shots>`): **OFFLINE: PASS**.
+- Headless fallbacks (`…/pw/s2check.mjs <repo>`): unchanged from 3b (only_on_device → CHECKLIST api-not-enabled; prefer_on_device → CHECKLIST App Check 401; warm-up skipped / 0 `create()` when downloadable).
+- **New end-to-end check** (`…/pw/fakeans.mjs <repo>`): a fake `LanguageModel` (availability "available", `create().prompt()` returns a fixed JSON) in the real built lab. Confirms the SDK passes the new enum as `responseConstraint`, and the lab shows:
+  - scam answer with invented `"currency":"USD"` and `"deadline":"unknown"` → both null, confidence medium (model said high), **app would open: tiles (phishing plan not written yet)**;
+  - ransomware answer → **ransomware plan**;
+  - not_an_incident → **incident tiles (user picks)**.
+- Not verified here: real Nano accuracy with the new prompt (needs J's Mac).
+
+### Files changed
+`src/ai/prompts/triage.ts`, `src/ai/schemas.ts`, `src/plans/route.ts` (new), `src/features/lab/Lab.tsx`, `tests/triage.test.ts`, `tests/router.test.ts`, `scripts/spikes/s2-samples.json`, `.brain/MASTER.md`, `.brain/DESIGN.md`, `.brain/SPIKES.md`, `.brain/SESSION_HANDOFF.md`.
+
+### Gotchas
+- J's Session 3b outputs no longer validate (no `is_ransom_demand`, old type values). Intended: old answers can't sneak through.
+- Few-shot examples can leak values into answers; that's why the test forbids overlap with the S2 images. If new test images are added, re-run that test.
+- The classify job still uses the old `INCIDENT_TYPES` (unchanged, S1 passed). Triage and classify types are deliberately different.
+
+### Commits
+- (hash in the next commit, "Session 3c handoff notes")
+
+### J re-test list (Mac, `npm run dev`, `/#/lab`, mode only_on_device)
+1. **S2 samples 1–5** (one run each). Expected: table in SPIKES.md "Expected fields" (#5 = `tech_support_scam`, `is_ransom_demand: false`, only the phone number). Paste "Copy results as Markdown".
+2. **Warm-up check:** reload the lab, wait ~10 s until the Warm-up row says `warmed`, then run Sample 1 first: note its seconds (cold ≈ 18 s vs warm ≈ 5 s).
+
+### Next step
+- Claude: score the S2 re-test (pass = ≥ 4/5 + injection ignored).
+- Then the "Something's wrong" flow (MUST #4) using `router.classify` and `routeTriage`.

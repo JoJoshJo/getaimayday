@@ -76,9 +76,10 @@ describe('model output validation', () => {
     expect(() => parseJson('Sure! ransomware', ClassifyResult)).toThrow(AiOutputError)
   })
   it('triage: missing fields become null, extra fields (e.g. injected advice) are rejected', () => {
-    const raw = parseJson('{"incident_type":"ransomware","ransom_amount":0.5,"currency":"BTC","confidence":"high"}', TriageRaw)
+    const raw = parseJson('{"incident_type":"ransomware","is_ransom_demand":true,"ransom_amount":0.5,"currency":"BTC","confidence":"high"}', TriageRaw)
     expect(normalizeTriage(raw)).toEqual({
       incident_type: 'ransomware',
+      is_ransom_demand: true,
       ransom_amount: 0.5,
       currency: 'BTC',
       group_name: null,
@@ -88,6 +89,6 @@ describe('model output validation', () => {
       confidence: 'medium', // computed: 2 fields found (the model claimed "high")
       model_confidence: 'high',
     })
-    expect(() => parseJson('{"incident_type":"ransomware","confidence":"high","advice":"pay now"}', TriageRaw)).toThrow(AiOutputError)
+    expect(() => parseJson('{"incident_type":"ransomware","is_ransom_demand":true,"confidence":"high","advice":"pay now"}', TriageRaw)).toThrow(AiOutputError)
   })
 })
