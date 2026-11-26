@@ -7,12 +7,13 @@ import { useState, type ReactNode } from 'react'
 import { useI18n } from '../../i18n'
 import { getPlan } from '../../plans'
 import type { Plan, PlanStep } from '../../plans/schema'
+import type { IncidentRecord } from '../../storage/db'
 import { store } from '../../storage/localAdapter'
 import { SourceBadge } from '../../ui/components'
 import { IncidentLog } from '../log/IncidentLog'
 import { PlanView } from './PlanView'
 
-type Props = { id: string; stepExtras?: (step: PlanStep, incidentId: string, plan: Plan) => ReactNode; logExtras?: (incidentId: string) => ReactNode }
+type Props = { id: string; stepExtras?: (step: PlanStep, incidentId: string, plan: Plan) => ReactNode; logExtras?: (record: IncidentRecord, plan: Plan) => ReactNode }
 
 export function IncidentView({ id, stepExtras, logExtras }: Props) {
   const { lang, t } = useI18n()
@@ -57,7 +58,7 @@ export function IncidentView({ id, stepExtras, logExtras }: Props) {
         onToggle={toggle}
         stepExtras={stepExtras ? (s) => stepExtras(s, record.id, plan) : undefined}
       />
-      <IncidentLog record={record} plan={plan} extras={logExtras?.(record.id)} />
+      <IncidentLog record={record} plan={plan} extras={logExtras?.(record, plan)} />
     </>
   )
 }

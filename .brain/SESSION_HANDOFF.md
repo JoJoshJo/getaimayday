@@ -6,6 +6,7 @@ Append one entry per session: date, what was done, files changed, commit hashes,
 
 ## J TODO (things only J can do: console, login, secrets, hand tests). Newest first. Tick when done.
 
+- [ ] (Session 4) **Test the back-online jobs with real cloud AI** (App Check needed, as for the Pack): open an incident with a few checks and a note → Back online → Incident report → check the preview, untick/tick "Include my notes" → Send to cloud AI. Expect a document with the Cloud AI badge, [placeholders], no invented names. Try one draft in FR. Copy and Print.
 - [ ] (Session 4) **Test a real Offline Pack build** (needs App Check: run `npm run dev` with your debug token in `.env.local`, or the deployed site): Setup → fill with sample data → Offline Pack → Build → check the preview → Send to cloud AI. Expect 6 parts "saved" with the Cloud AI badge. Then go offline and search 10 questions EN + 10 FR; note how many are right (S3 spike target: 16/20). Report any "Not built" error text.
 - [ ] (Session 4) Review the new plan texts, EN + FR (BEC now; phishing, lost device, outage later this session). Plans: `src/plans/{en,fr}/*.json`.
 - [ ] (Session 3c) Re-test S2 samples 1–5 + one warm-up check (see the Session 3c entry).
@@ -518,3 +519,14 @@ Brief: build MUST 1–9, then SHOULD 10–14, NICE 15–17, deploy prep, README;
 - `IncidentView.stepExtras` now also receives the plan. `router` gained `ask`; `schemas.ts` gained `askJsonSchema` / `AskResult`; `nano.ts` model cache keyed by job.
 - Tests `tests/ask.test.ts` (10): prompt bound to step + titles, injection fence; on-device used and cleaned; no Nano → model never called; Pack limited to the plan; Nano says not in plan / fails / unsafe → Pack; no Pack / no match → call contact. Total 208/208.
 - E2E (all blocks, 35 PASS, offline): Pack answer on a step with no Nano; unrelated → Checklist + one-tap IT call; questions in the log. Stub Prompt API through the real SDK: On-device answer shown, and the prompt sent holds the current step.
+- Commit: `003477a`.
+
+### Feature 8 — Back online: cloud documents from the incident log
+- Under each incident log: **Back online** panel (`src/features/online/BackOnline.tsx`). Offline it only explains what will be possible; no buttons. Online: six jobs (incident report, recovery next steps, message to staff, notice to customers, message to the bank, notice to the insurer).
+- Tap a job → **preview** ("Sent to: Google Gemini (cloud) via Firebase AI Logic", the exact prompt with the log summary, "Include my notes" checkbox that live-updates the preview, what is not sent) → "Send to cloud AI" → `cloudText` (AI Logic `ONLY_IN_CLOUD`, plain text). Never automatic, never retried on its own.
+- `src/features/online/jobs.ts` (pure): `incidentSummary` (type, start, done steps with UTC times, open steps, confirmed screen fields, notes only if kept on; photos, business name and contacts never), `jobPrompt` (only facts from the log, [placeholders] for missing names/dates, safety rules, log fenced as data), `cleanDoc` (keeps lines; drops dashes-as-punctuation, "!", markdown), `runDocJob` (must be `in_cloud`, non-empty, passes the guard; otherwise an error is shown and nothing is saved).
+- The document is saved in the incident log as an `ai` event (`job`, `source: 'cloud'`, `text`, `model`) → shows as "Written by cloud AI: …" and as a document card (Cloud AI badge, time, model, "read it and fill in the [placeholders]", **Copy**, **Print**). Print uses `body.print-doc` + `.doc--print` (print CSS shows only that document).
+- `IncidentView.logExtras` now receives `(record, plan)`. `.preview` got its own grid spacing (it was cramped outside the Pack screen).
+- Real cloud output can't be produced headless (App Check) → J TODO at the top.
+- Tests `tests/online.test.ts` (12): summary content, notes toggle, no photos; every job prompt has rules, fence, language; cleaning; non-cloud / empty / unsafe rejected; "do not pay" allowed. Total 220/220.
+- E2E (all blocks, 40 PASS): offline panel has no buttons; online preview names Gemini and shows the note, unticking removes it, Cancel sends nothing; a saved document (put into IndexedDB, not AI output) renders with badge, Copy, Print, and its log line. Screenshots checked.

@@ -1358,6 +1358,9 @@ a.tile {
 }
 
 .preview {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
   padding: var(--space-4);
   background: var(--color-bg2);
   border-top: var(--border-strong) solid var(--color-rule-strong);
@@ -1428,4 +1431,68 @@ a.tile {
 .ask__form {
   display: grid;
   gap: var(--space-3);
+}
+
+/* ---- Back online: cloud documents ---- */
+.online {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: var(--border-strong) solid var(--color-rule-strong);
+  max-width: var(--size-content);
+}
+
+.online__check {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+}
+
+.doc {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4) 0;
+  border-top: var(--border-hair) solid var(--color-rule);
+}
+
+.doc__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+}
+
+.doc__title {
+  margin: 0;
+  font-size: var(--type-body);
+  font-weight: var(--weight-semibold);
+}
+
+.doc__text {
+  max-width: var(--size-measure);
+  white-space: pre-wrap;
+  line-height: var(--leading-body);
+}
+
+@media print {
+  body.print-doc * {
+    visibility: hidden;
+  }
+
+  body.print-doc .doc--print,
+  body.print-doc .doc--print * {
+    visibility: visible;
+  }
+
+  body.print-doc .doc--print {
+    position: absolute;
+    inset: 0 auto auto 0;
+    width: 100%;
+  }
+
+  body.print-doc .doc__actions,
+  body.print-doc .doc__note {
+    display: none;
+  }
 }

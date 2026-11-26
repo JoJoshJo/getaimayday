@@ -6,6 +6,7 @@ import { IncidentList } from './features/log/IncidentList'
 import { ContactsScreen } from './features/contacts/ContactsScreen'
 import { StepContacts } from './features/contacts/StepContacts'
 import { StepAsk } from './features/ask/StepAsk'
+import { BackOnline } from './features/online/BackOnline'
 import { SetupScreen } from './features/setup/SetupScreen'
 import { PackScreen } from './features/pack/PackScreen'
 import { useI18n } from './i18n'
@@ -63,7 +64,8 @@ export default function App() {
           <StepContacts step={step} />
           <StepAsk key={step.id} plan={plan} step={step} incidentId={incidentId} />
         </>
-      )} />
+      )}
+      logExtras={(record, plan) => <BackOnline record={record} plan={plan} />} />
   else if (route.path === '/incidents') content = <IncidentList />
   else if (route.path === '/contacts') content = <ContactsScreen />
   else if (route.path === '/setup') content = <SetupScreen />

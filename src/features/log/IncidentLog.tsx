@@ -9,6 +9,7 @@ import type { IncidentRecord, LogEvent } from '../../storage/db'
 import { store } from '../../storage/localAdapter'
 import { SourceBadge } from '../../ui/components'
 import { FoundOnScreen } from '../triage/FoundOnScreen'
+import { isDocJob } from '../online/jobs'
 import type { TriageFieldName } from '../../storage/db'
 import { fmtDateTime, fmtTime, PHOTO_TYPES } from './format'
 
@@ -100,7 +101,7 @@ export function IncidentLog({ record, plan, extras }: { record: IncidentRecord; 
       case 'ai':
         return (
           <span>
-            <SourceBadge source={e.source} /> {e.job === 'ask' ? t('log.ev.ask', { question: e.question ?? '' }) : t('log.ev.ai', { job: e.job })}
+            <SourceBadge source={e.source} /> {e.job === 'ask' ? t('log.ev.ask', { question: e.question ?? '' }) : isDocJob(e.job) ? t('log.ev.doc', { job: t(`online.job.${e.job}`) }) : t('log.ev.ai', { job: e.job })}
           </span>
         )
       case 'closed':
