@@ -89,3 +89,16 @@ export function resilient<R>(call: ModelCall<R>, o: RetryOpts & { fallbackModel?
     }
   }
 }
+
+/** What to tell the user, in plain words (the raw text only goes under "Details"). */
+export type ErrorKind = 'busy' | 'offline' | 'access' | 'rejected' | 'other'
+
+export function errorKind(e: unknown): ErrorKind {
+  const status = httpStatus(e)
+  if (status === 401 || status === 403) return 'access'
+  if (isTransient(e)) return status === undefined ? 'offline' : 'busy'
+  if (status !== undefined && status >= 400 && status < 500) return 'rejected'
+  return 'other'
+}
+
+export const errorDetail = (e: unknown): string => (e instanceof Error ? e.message : String(e))

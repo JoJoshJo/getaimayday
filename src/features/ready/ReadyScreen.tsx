@@ -5,6 +5,7 @@
 import { useState } from 'react'
 import { useI18n } from '../../i18n'
 import type { MessageKey } from '../../i18n/messages'
+import { ErrorNote } from '../../ui/components'
 import { useConnection } from '../../ui/useConnection'
 import { fmtDateTime } from '../log/format'
 import type { ReadyItem } from './readiness'
@@ -65,7 +66,7 @@ function Row({ item }: { item: ReadyItem }) {
 function DownloadNano() {
   const { t } = useI18n()
   const online = useConnection() !== 'offline'
-  const [state, setState] = useState<{ kind: 'idle' } | { kind: 'busy'; pct: number } | { kind: 'done' } | { kind: 'failed'; error: string }>({ kind: 'idle' })
+  const [state, setState] = useState<{ kind: 'idle' } | { kind: 'busy'; pct: number } | { kind: 'done' } | { kind: 'failed'; detail: string }>({ kind: 'idle' })
   if (!online) return null
   async function go() {
     setState({ kind: 'busy', pct: 0 })
@@ -76,7 +77,7 @@ function DownloadNano() {
       await warmUpNano('after-download')
       setState({ kind: 'done' })
     } catch (e) {
-      setState({ kind: 'failed', error: e instanceof Error ? e.message : String(e) })
+      setState({ kind: 'failed', detail: e instanceof Error ? e.message : String(e) })
     }
   }
   return (
@@ -88,7 +89,11 @@ function DownloadNano() {
       )}
       {state.kind === 'busy' && <span className="mono">{t('ready.downloading', { pct: String(state.pct) })}</span>}
       {state.kind === 'done' && <span className="mono">{t('ready.downloaded')}</span>}
-      {state.kind === 'failed' && <span className="muted pack__err">{state.error}</span>}
+      {state.kind === 'failed' && (
+        <span className="muted pack__err">
+          <ErrorNote message={t('ready.downloadFailed')} detail={state.detail} />
+        </span>
+      )}
     </div>
   )
 }

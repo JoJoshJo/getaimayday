@@ -9,12 +9,13 @@ import { useI18n } from '../../i18n'
 import type { Plan } from '../../plans/schema'
 import type { IncidentRecord } from '../../storage/db'
 import { store } from '../../storage/localAdapter'
-import { SourceBadge } from '../../ui/components'
+import { ErrorNote, SourceBadge } from '../../ui/components'
+import { errorDetail, errorKind } from '../../pack/retry'
 import { useConnection } from '../../ui/useConnection'
 import { fmtTime } from '../log/format'
 import { DOC_JOBS, incidentSummary, isDocJob, jobPrompt, runDocJob, type DocJob } from './jobs'
 
-type Phase = { kind: 'idle' } | { kind: 'preview'; job: DocJob } | { kind: 'writing'; job: DocJob } | { kind: 'failed'; job: DocJob; error: string }
+type Phase = { kind: 'idle' } | { kind: 'preview'; job: DocJob } | { kind: 'writing'; job: DocJob } | { kind: 'failed'; job: DocJob; error: string; detail: string }
 
 export function BackOnline({ record, plan }: { record: IncidentRecord; plan: Plan }) {
   const { t, lang } = useI18n()
@@ -34,7 +35,7 @@ export function BackOnline({ record, plan }: { record: IncidentRecord; plan: Pla
       setPhase({ kind: 'idle' })
     } catch (e) {
       console.warn('[AIMayday] cloud job failed', job, e)
-      setPhase({ kind: 'failed', job, error: e instanceof Error ? e.message : String(e) })
+      setPhase({ kind: 'failed', job, error: t(`err.${errorKind(e)}`), detail: errorDetail(e) })
     }
   }
 
@@ -90,7 +91,9 @@ export function BackOnline({ record, plan }: { record: IncidentRecord; plan: Pla
           {phase.kind === 'failed' && (
             <div role="alert">
               <p>{t('online.failed')}</p>
-              <p className="muted pack__err">{phase.error}</p>
+              <div className="muted pack__err">
+                <ErrorNote message={phase.error} detail={phase.detail} />
+              </div>
               <button type="button" className="btn" onClick={() => setPhase({ kind: 'idle' })}>
                 {t('preview.cancel')}
               </button>

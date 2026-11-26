@@ -75,6 +75,31 @@ describe('runPackJob validates the model output', () => {
   })
 })
 
+describe('runPackJob keeps what is valid (Session 6b)', () => {
+  const job = packJobs(SAMPLE_PROFILE, SAMPLE_CONTACTS).find((j) => j.key === 'en:ransomware')!
+  const step = (job as { plan: { steps: { id: string }[] } }).plan.steps[0].id
+  const good = (n: number) => ({ question: `Question ${n}?`, alt_phrasings: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'], answer: 'Call your IT contact.', step_ref: step, contact_role: 'it_vendor' })
+  it('fewer items than asked: kept, marked low, not failed', async () => {
+    const r = await runPackJob(job, fake({ qa: [good(1), good(2), good(3)] }))
+    expect(r.chunk.kind === 'plan' && r.chunk.qa.length).toBe(3)
+    expect(r.low).toBe(true)
+  })
+  it('one malformed item is dropped, the rest kept', async () => {
+    const r = await runPackJob(job, fake({ qa: [good(1), { question: '', answer: 5 }, good(2)] }))
+    expect(r.chunk.kind === 'plan' && r.chunk.qa.length).toBe(2)
+    expect(r.dropped).toBe(1)
+  })
+  it('extra alt phrasings are cut to 6, not rejected', async () => {
+    const r = await runPackJob(job, fake({ qa: [good(1)] }))
+    expect(r.chunk.kind === 'plan' && r.chunk.qa[0].alt_phrasings.length).toBe(6)
+  })
+  it('more than 60 items: first 60 kept', async () => {
+    const r = await runPackJob(job, fake({ qa: Array.from({ length: 70 }, (_, i) => good(i)) }))
+    expect(r.chunk.kind === 'plan' && r.chunk.qa.length).toBe(60)
+    expect(r.low).toBe(false)
+  })
+})
+
 describe('guard', () => {
   it.each(['Pay the ransom quickly.', 'Wipe the computer and start over.', 'Payez la rançon.', 'Reply to the scammer to ask for time.'])('unsafe: %s', (s) =>
     expect(isUnsafeAdvice(s)).toBe(true),

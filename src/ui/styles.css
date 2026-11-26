@@ -1677,3 +1677,19 @@ a.tile {
 .fixit__attack p {
   margin: 0;
 }
+
+/* ---- Plain-word error + folded technical details ---- */
+.errnote {
+  display: grid;
+  gap: var(--space-1);
+}
+.errnote p {
+  margin: 0;
+}
+.errnote__details code {
+  display: block;
+  font-family: var(--font-mono);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: var(--type-mono-sm);
+}

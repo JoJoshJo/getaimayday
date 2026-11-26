@@ -13,16 +13,16 @@ import type { Lang } from '../../i18n/messages'
 import { businessContext, packInputHash, packJobs, runPackJob, type PackJob } from '../../pack/build'
 import { buildIndex, countAnswers, matchPack, type PackMatch } from '../../pack/match'
 import type { Pack, PackLang } from '../../pack/schema'
-import { isAuthError, isTransient, resilient } from '../../pack/retry'
+import { errorDetail, errorKind, resilient } from '../../pack/retry'
 import { beginBuild, markFailed, partsToRetry, saveChunk, usePack } from '../../pack/store'
-import { SourceBadge } from '../../ui/components'
+import { ErrorNote, SourceBadge } from '../../ui/components'
 import { useConnection } from '../../ui/useConnection'
 import { fmtDateTime } from '../log/format'
 import { EMPTY_PROFILE, type Contacts, type Profile } from '../setup/model'
 import { useSetup } from '../setup/useSetup'
 import { PackAnswer } from './PackAnswer'
 
-type JobState = { state: 'waiting' | 'writing' | 'retrying' | 'done' | 'failed'; count?: number; dropped?: number; error?: string; attempt?: number; seconds?: number; fallback?: string }
+type JobState = { state: 'waiting' | 'writing' | 'retrying' | 'done' | 'failed'; count?: number; dropped?: number; low?: boolean; error?: string; detail?: string; attempt?: number; seconds?: number; fallback?: string }
 
 export function PackScreen() {
   const { t, lang } = useI18n()
@@ -100,17 +100,16 @@ function Builder({ online, pack, profile, contacts }: { online: boolean; pack: P
         onFallback: (model) => set(job.key, { state: 'writing', fallback: model }),
       })
       try {
-        const { chunk, dropped } = await runPackJob(job, generate)
+        const { chunk, dropped, low } = await runPackJob(job, generate)
         await saveChunk(job.key, chunk)
         const count = chunk.kind === 'plan' ? chunk.qa.length : chunk.terms.length
-        console.info('[AIMayday] pack chunk saved', job.key, { count, dropped, model: chunk.model })
-        set(job.key, { state: 'done', count, dropped })
+        console.info('[AIMayday] pack chunk saved', job.key, { count, dropped, low, model: chunk.model })
+        set(job.key, { state: 'done', count, dropped, low })
       } catch (e) {
         console.warn('[AIMayday] pack chunk failed', job.key, e)
-        const raw = e instanceof Error ? e.message : String(e)
-        const error = isTransient(e) ? t('pack.err.busy') : isAuthError(e) ? t('pack.err.access') : raw
-        await markFailed(job.key, raw)
-        set(job.key, { state: 'failed', error })
+        const detail = errorDetail(e)
+        await markFailed(job.key, detail)
+        set(job.key, { state: 'failed', error: t(`pack.err.${errorKind(e)}`), detail })
       }
     }
     setPhase('finished')
@@ -174,7 +173,11 @@ function JobList({ jobs, states }: { jobs: PackJob[]; states: Record<string, Job
             </span>
             {s.fallback && s.state === 'writing' && <span className="muted pack__err">{t('pack.job.fallback', { model: s.fallback })}</span>}
             {s.state === 'done' && !!s.dropped && <span className="muted pack__err">{t('pack.job.dropped', { n: String(s.dropped) })}</span>}
-            {s.error && <span className="muted pack__err">{s.error}</span>}
+            {s.error && (
+              <span className="muted pack__err">
+                <ErrorNote message={s.error} detail={s.detail} />
+              </span>
+            )}
           </li>
         )
       })}

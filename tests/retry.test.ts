@@ -183,8 +183,21 @@ describe('FR coverage (Session 6 · 4)', () => {
       expect(pr).toMatch(/same whatever the language/)
     }
   })
-  it('the JSON schema asks for at least QA_MIN items', () => {
+  it('the count lives in the prompt only, never in the JSON schema (Session 6b)', () => {
     const job = packJobs(SAMPLE_PROFILE, SAMPLE_CONTACTS).find((j) => j.key === 'fr:outage')!
-    expect((job.jsonSchema as { properties: { qa: { minItems: number } } }).properties.qa.minItems).toBe(QA_MIN)
+    expect(JSON.stringify(job.jsonSchema)).not.toMatch(/minItems|maxItems/)
+    expect(job.prompt).toContain(`never fewer than ${QA_MIN}`)
+  })
+})
+
+describe('plain-word error kinds (Session 6b)', () => {
+  it('maps errors to what the user is told', async () => {
+    const { errorKind } = await import('../src/pack/retry')
+    expect(errorKind(aiError(500))).toBe('busy')
+    expect(errorKind(aiError(429))).toBe('busy')
+    expect(errorKind(networkError())).toBe('offline')
+    expect(errorKind(aiError(401))).toBe('access')
+    expect(errorKind(aiError(400, 'The specified schema produces a constraint that has too many states for serving.'))).toBe('rejected')
+    expect(errorKind(new SyntaxError('Unexpected token'))).toBe('other')
   })
 })

@@ -81,3 +81,22 @@ export function DoNot({ children }: { children: string }) {
     </div>
   )
 }
+
+/**
+ * A failure in plain words, with the technical text folded under "Details"
+ * (for J or an IT contact). Raw SDK/URL text is never shown on its own.
+ */
+export function ErrorNote({ message, detail }: { message: string; detail?: string }) {
+  const { t } = useI18n()
+  return (
+    <div className="errnote">
+      <p>{message}</p>
+      {detail && (
+        <details className="errnote__details">
+          <summary className="mono">{t('err.details')}</summary>
+          <code>{detail}</code>
+        </details>
+      )}
+    </div>
+  )
+}

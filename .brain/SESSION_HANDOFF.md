@@ -6,6 +6,13 @@ Append one entry per session: date, what was done, files changed, commit hashes,
 
 ## J TODO (things only J can do: console, login, secrets, hand tests). Newest first. Tick when done.
 
+- [ ] (Session 6b) **Deploy the schema hotfix** (replaces the Session 6 deploy item below; do this one):
+  1. `npm run build && npx firebase-tools deploy --only hosting` (must end with "Secret check: no App Check debug token").
+  2. Open https://getaimayday.web.app and reload once so the new version loads.
+  3. Offline Pack → **Retry failed parts** (fr:outage, fr:phishing) → preview → Send. Expect both "N saved". No HTTP 400 "too many states".
+  4. If any part still fails, the row now shows plain words; open **Details** under it and paste that text in the next session.
+  5. Then one **full** build; paste the counts ("… in English, … in French", each row's "N saved" and any "left out by the safety check"). In DevTools → Console, any "fewer answers than asked" line shows a part under 24; paste those too.
+
 - [ ] (Session 6) **Deploy the Pack retry fix**, then check it on the live site:
   1. `npm run build && npx firebase-tools deploy --only hosting` (the build must end with "Secret check: no App Check debug token").
   2. Open https://getaimayday.web.app, reload once so the new version loads (the chip says "Offline ready").
@@ -765,3 +772,44 @@ Brief (architect, via J): on the live site the Pack built 133 EN / 54 FR answers
 **Not verified (needs J):** the live counts after the fix, and the fallback model on the live project. Both in J TODO.
 
 **Next step:** J deploys, retries the 2 parts, does one full build and sends the counts.
+
+---
+
+## 2026-11-26 — Session 6b: hotfix, Pack schema rejected live (Claude Code)
+
+Brief: after deploying `0ca19ad`, "Retry failed parts" for fr:outage and fr:phishing failed with HTTP 400 "The specified schema produces a constraint that has too many states for serving… long array length limits". Regression from Session 6 (`minItems: 24`, `maxItems: 40` in the Pack schema). My Session 6 assumption ("unknown fields are ignored, not rejected", from the Firebase docs page) was wrong for this keyword: the server compiles minItems into the decoding constraint and refuses it.
+
+**Step 0.** `pwd && git remote -v`, `git pull` (at `0ca19ad`).
+
+**1 · Schema limits removed, count checked in code**
+- `src/pack/schema.ts`: `minItems`/`maxItems` removed from `planChunkJsonSchema`, with a comment saying why. The prompt still says "Write 30 items (never fewer than 24) … same whatever the language".
+- Validation moved from "whole part or nothing" to item by item (`src/pack/build.ts`): `ModelPlanChunkSchema` only checks `{qa: [≥1 item]}`; each item is checked with `ModelQaSchema.safeParse` and dropped if bad (counted in `dropped`). Extra `alt_phrasings` are cut to 6 instead of failing; more than 60 items are cut to 60 (`MAX_QA_PER_PLAN`). Glossary terms the same way (`ModelTermSchema`).
+- Fewer than 24 (`QA_MIN`) valid answers: kept, never failed; `runPackJob` returns `low: true` and logs `[AIMayday] pack chunk has fewer answers than asked {kept, returned, min}`. The build also logs `{count, dropped, low, model}` per saved part.
+
+**2 · Audit of every schema sent to a model**
+| Schema | Sent as | Content | Verdict |
+| --- | --- | --- | --- |
+| `classifyJsonSchema` (`src/ai/schemas.ts`) | on-device `responseConstraint`, cloud `responseJsonSchema` (lab) | 1 string enum, 6 values | simple, kept |
+| `askJsonSchema` | on-device | boolean + string | simple, kept |
+| `triageJsonSchema` | on-device + cloud double-check | strings, 1 number, 1 boolean, 2 enums (≤ 6 values), descriptions | simple, kept (no min/max on the number) |
+| `planChunkJsonSchema` | cloud (Pack) | array of objects, `step_ref` enum = the plan's step ids (≤ 16), `contact_role` enum (7) | **minItems/maxItems removed**; enums kept (short, and they make answers point at real steps) |
+| `glossaryJsonSchema` | cloud (Pack) | array of {term, plain} | simple, kept |
+All rules (lengths, counts, unsafe advice, real step ids) are enforced with zod and the guard after the answer.
+
+**3 · No raw SDK text in the UI**
+- New `ErrorNote` (`src/ui/components.tsx`): plain sentence + a closed **Details** (`<details>`) holding the technical text, in IBM Plex Mono.
+- `errorKind(e)` in `src/pack/retry.ts`: `busy` (408/429/5xx), `offline` (network, no status), `access` (401/403), `rejected` (other 4xx, e.g. this 400), `other`.
+- Used in: Pack rows (`pack.err.<kind>`, each says "Your other answers are saved"), Back online documents (`err.<kind>`, under "Cloud AI could not write this. Nothing was saved."), on-device AI download on Get ready (`ready.downloadFailed`). EN + FR. The hidden `#/lab` page still shows raw errors on purpose (dev tool).
+
+**4 · Tests**
+- `tests/schemas-out.test.ts`: walks every outgoing schema (classify, ask, triage, and every Pack job's schema) and fails on `minItems, maxItems, minimum, maximum, exclusiveMin/Max, format, minLength, maxLength, pattern, min/maxProperties, uniqueItems`, or an enum longer than 20. Field names under `properties` are not mistaken for keywords. A self-test proves it catches the Session 6 schema. A source scan fails if any of those keywords is written as a key in `src/ai` or `src/pack`.
+- `tests/pack.test.ts`: fewer items kept and marked low; one malformed item dropped, rest kept; alt phrasings cut to 6; 70 items → 60.
+- `tests/retry.test.ts`: the Session 6 "schema asks for minItems" test replaced by "count lives in the prompt only"; `errorKind` mapping incl. the live 400 text.
+- Total 374/374. `npm run build` + secret check OK, lint 0.
+- Scratch `retry.mjs` (real headless Chrome + real AI Logic SDK, endpoint intercepted) now also answers fr:glossary with the live HTTP 400 "too many states": it is tried once (never retried), its row says "The AI service could not handle this request. Your other answers are saved.", no "googleapis" / "Error fetching" text is visible outside Details, Details are closed by default and hold the raw text, Retry rebuilds exactly the 3 failed parts, and every schema the page sent had no min/max/format keyword. Regression: `s4.mjs` all blocks + demo, `csp.mjs`, `judge.mjs`: all pass. Screenshot reviewed.
+
+**Files** `src/pack/schema.ts`, `src/pack/build.ts`, `src/pack/retry.ts`, `src/ui/components.tsx`, `src/ui/styles.css`, `src/features/pack/PackScreen.tsx`, `src/features/online/BackOnline.tsx`, `src/features/ready/ReadyScreen.tsx`, `src/i18n/{en,fr}.json`, `tests/schemas-out.test.ts` (new), `tests/pack.test.ts`, `tests/retry.test.ts`, `.brain/PACK_SCHEMA.md`, this file.
+
+**Gotcha (for every future schema):** Gemini compiles the response schema into a decoding state machine. Array length limits (and likely other numeric/length limits) can make it refuse the whole request with HTTP 400. "Ignored if unsupported" in the docs does not mean "safe". Keep schemas to type / properties / required / items / short enum / description; check everything else in code. The test above enforces this.
+
+**Not verified (needs J):** the live retry after deploy, and the new FR counts. J TODO at the top.

@@ -19,20 +19,22 @@ const txt = (max: number) => z.string().trim().min(1).max(max)
 
 export const ModelQaSchema = z.object({
   question: txt(200),
-  alt_phrasings: z.array(txt(200)).max(6),
+  // Extra phrasings are cut, not rejected.
+  alt_phrasings: z.array(txt(200)).transform((a) => a.slice(0, 6)),
   answer: txt(900),
   step_ref: z.string().min(1),
   contact_role: z.enum([...CONTACT_ROLES, 'none']),
 })
-export const ModelPlanChunkSchema = z.object({ qa: z.array(ModelQaSchema).min(1).max(60) })
+/** Items are checked one by one in build.ts, so one bad item never sinks the whole part. */
+export const ModelPlanChunkSchema = z.object({ qa: z.array(z.unknown()).min(1) })
+export const MAX_QA_PER_PLAN = 60
 
 /** Items asked for per plan chunk, and the floor/ceiling sent in the JSON schema (same in every language). */
 export const QA_PER_PLAN = 30
 export const QA_MIN = 24
 
-export const ModelGlossarySchema = z.object({
-  terms: z.array(z.object({ term: txt(60), plain: txt(400) })).min(1).max(60),
-})
+export const ModelTermSchema = z.object({ term: txt(60), plain: txt(400) })
+export const ModelGlossarySchema = z.object({ terms: z.array(z.unknown()).min(1) })
 
 /** JSON Schema sent as responseJsonSchema for a plan chunk (step ids are an enum, so answers point at real steps). */
 export function planChunkJsonSchema(stepIds: string[]) {
@@ -41,9 +43,8 @@ export function planChunkJsonSchema(stepIds: string[]) {
     properties: {
       qa: {
         type: 'array',
-        // Gemini's JSON Schema docs list minItems/maxItems; Firebase's narrower list says unknown fields are ignored, not rejected.
-        minItems: QA_MIN,
-        maxItems: 40,
+        // No minItems/maxItems (or any min/max/format/length): the live API rejected minItems 24 with
+        // HTTP 400 "too many states for serving" (Session 6b). The count lives in the prompt; zod checks after.
         items: {
           type: 'object',
           properties: {

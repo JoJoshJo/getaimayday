@@ -14,7 +14,7 @@ import { CONTACT_ROLES, hasContact, type Contacts, type Profile } from '../featu
 import { rawPlans } from '../plans'
 import type { Plan } from '../plans/schema'
 import { isUnsafeAdvice, plainText } from './guard'
-import { chunkKey, glossaryJsonSchema, ModelGlossarySchema, ModelPlanChunkSchema, PACK_LANGS, planChunkJsonSchema, type Chunk, type PackLang } from './schema'
+import { chunkKey, glossaryJsonSchema, MAX_QA_PER_PLAN, ModelGlossarySchema, ModelPlanChunkSchema, ModelQaSchema, ModelTermSchema, PACK_LANGS, planChunkJsonSchema, QA_MIN, type Chunk, type PackLang } from './schema'
 
 export type PackJob =
   | { key: string; kind: 'plan'; lang: PackLang; plan: Plan; prompt: string; jsonSchema: object }
@@ -78,7 +78,8 @@ export function packInputHash(p: Profile, c: Contacts): string {
   return (h >>> 0).toString(36)
 }
 
-export type JobOutcome = { chunk: Chunk; dropped: number }
+/** `dropped`: items left out (invalid, unknown step or unsafe). `low`: fewer plan answers than QA_MIN (kept anyway). */
+export type JobOutcome = { chunk: Chunk; dropped: number; low?: boolean }
 
 export async function runPackJob(job: PackJob, generate: Generate, now: () => number = Date.now): Promise<JobOutcome> {
   const r = await generate(job.prompt, job.jsonSchema)
@@ -87,7 +88,14 @@ export async function runPackJob(job: PackJob, generate: Generate, now: () => nu
 
   if (job.kind === 'glossary') {
     const g = ModelGlossarySchema.parse(json)
-    const terms = g.terms.map((t) => ({ term: plainText(t.term), plain: plainText(t.plain) })).filter((t) => !isUnsafeAdvice(t.plain))
+    const terms = g.terms
+      .flatMap((x) => {
+        const t = ModelTermSchema.safeParse(x)
+        return t.success ? [{ term: plainText(t.data.term), plain: plainText(t.data.plain) }] : []
+      })
+      .filter((t) => !isUnsafeAdvice(t.plain))
+      .slice(0, MAX_QA_PER_PLAN)
+    if (!terms.length) throw new Error('Pack chunk had no usable answers')
     return { chunk: { kind: 'glossary', lang: job.lang, generated_at: now(), model: r.model, terms }, dropped: g.terms.length - terms.length }
   }
 
@@ -95,7 +103,13 @@ export async function runPackJob(job: PackJob, generate: Generate, now: () => nu
   const steps = new Map(job.plan.steps.map((s) => [s.id, s]))
   const qa = []
   let dropped = 0
-  for (const [i, item] of m.qa.entries()) {
+  for (const [i, raw] of m.qa.slice(0, MAX_QA_PER_PLAN).entries()) {
+    const parsed = ModelQaSchema.safeParse(raw)
+    if (!parsed.success) {
+      dropped++
+      continue
+    }
+    const item = parsed.data
     const step = steps.get(item.step_ref)
     const answer = plainText(item.answer)
     if (!step || isUnsafeAdvice(answer)) {
@@ -115,5 +129,9 @@ export async function runPackJob(job: PackJob, generate: Generate, now: () => nu
     })
   }
   if (!qa.length) throw new Error('Pack chunk had no usable answers')
-  return { chunk: { kind: 'plan', plan_id: job.plan.id, plan_version: job.plan.version, lang: job.lang, generated_at: now(), model: r.model, qa }, dropped }
+  dropped += Math.max(0, m.qa.length - MAX_QA_PER_PLAN)
+  // The prompt asks for 30 (never fewer than QA_MIN). Fewer is kept, never failed: some answers beat none.
+  const low = qa.length < QA_MIN
+  if (low) console.warn('[AIMayday] pack chunk has fewer answers than asked', job.key, { kept: qa.length, returned: m.qa.length, min: QA_MIN })
+  return { low, chunk: { kind: 'plan', plan_id: job.plan.id, plan_version: job.plan.version, lang: job.lang, generated_at: now(), model: r.model, qa }, dropped }
 }
