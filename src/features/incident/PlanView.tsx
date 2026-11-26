@@ -15,7 +15,7 @@ type Props = {
   plan: StepGuide
   /** Big title (incident name or fix-it name). */
   title: string
-  /** Kicker above the title; defaults to "Incident plan · v…". */
+  /** Kicker above the title; defaults to "Incident plan". The version is in the footer (Session 11). */
   kicker?: string
   /** step id → time checked (ms). Owned by the incident log (IndexedDB). */
   doneAt: Record<string, number>
@@ -72,18 +72,17 @@ export function PlanView({ plan, title, kicker, doneAt, onToggle, stepExtras, in
     navigated.current = false
   }, [view])
 
-  const pct = (n: number) => String(n).padStart(2, '0')
   const rows = showAll ? plan.steps.map((_, i) => i) : [view]
 
   return (
     <section className="plan" data-tone={tone} aria-labelledby="plan-title">
       <header className="plan__head">
         {Icon && <Icon className="plan__icon" aria-hidden="true" strokeWidth={ICON_STROKE} />}
-        <p className="kicker mono">{kicker ?? t('plan.kicker', { version: plan.version })}</p>
+        <p className="kicker mono">{kicker ?? t('plan.kickerShort')}</p>
         <h2 id="plan-title" className="plan__title">
           {title}
         </h2>
-        <Progress states={states} label={t('plan.progress', { done: pct(doneCount), total: pct(total) })} />
+        <Progress states={states} label={t('plan.progress', { done: doneCount, total })} />
       </header>
 
       <div className="toolbar">
@@ -123,6 +122,7 @@ export function PlanView({ plan, title, kicker, doneAt, onToggle, stepExtras, in
 
       {!showAll && <p className="hint">{t('plan.keys')}</p>}
       {doneCount === total && <p className="all-done">{t('plan.allDone')}</p>}
+      <p className="plan__version">{t('plan.version', { version: plan.version })}</p>
     </section>
   )
 }

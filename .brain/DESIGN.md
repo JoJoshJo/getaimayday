@@ -125,7 +125,8 @@ Body never below 16px. Line length capped at ~66ch.
 ## 5. Layout
 
 - Max width 72rem, left aligned. 16px side gutter on phones, 32px from 640px. No horizontal scroll.
-- **Home**: a soft `bg2` hero card (title, clean-device warning, description, "Something's wrong"), then incident tiles in a responsive grid (min 17rem), then the IT fix-its as small tiles (icon + title).
+- **Home**: a soft `bg2` hero card (title, clean-device warning, description, "Something's wrong"), then incident tiles in a responsive grid (min 17rem), then the IT fix-its as small tiles (icon + title). The empty status line under the button takes no space (`position: absolute` while `:empty`), so there is no gap under "Something's wrong". Below 600px the button is full width.
+- **Home from 1024px (Session 11, Nielsen #6 recognition rather than recall)**: two columns, 7fr / 5fr. Left: the hero card. Right: "Or choose what happened" + the 5 incident tiles as a compact one-column list (icon beside title, description under it) + Past incidents. The open incident banner and the fix-its span both columns. Pure CSS grid on the unchanged DOM order (description, then tiles), so keyboard and screen reader order are the same; at 1440×900 the panel and all 5 tiles are visible without scrolling. Below 1024px: stacked, as before.
 - **Plan**: one panel in the incident's tint holding the header (icon, kicker, title, progress), the toolbar, and the current step as a white card. The incident log and back-online jobs follow in a `surface` card.
 - **Phones (≤640px)**: top bar on two rows (wordmark, status, language / nav); tiles show the icon beside the title.
 
@@ -137,13 +138,17 @@ Body never below 16px. Line length capped at ~66ch.
 
 **Status chip**: soft pill, `ok` on `okBg` (Offline ready / Offline) or `warn` on `warnBg` (Preparing, Get ready · 3/5). Links to Get ready.
 
-**Buttons**: `.btn` soft (`bg2` fill, border on hover); `.btn--strong` primary (`primary` fill: Next step, Confirm, Search); `.btn--quiet` underlined text. **`.btn-mayday`** only for "Something's wrong" (accent fill, ink text, 700, 56px).
+**Buttons**: `.btn` soft (`bg2` fill, border on hover); `.btn--strong` primary (`primary` fill: Next step, Confirm, Search); `.btn--quiet` underlined text (it is a text link by design). **No button underlines on hover or focus** (Session 11); hover = border, focus = the 3px ring. **Disabled** ("Previous" on step 1, "Next step" on the last): same shape, no fill, no border, muted text, `cursor: not-allowed`, native `disabled`. **`.btn-mayday`** only for "Something's wrong" (accent fill, ink text, 700, 56px).
 
 **Tiles**: tinted card, icon (36px, tone ink), title (600), description. Fix-it tiles on Home: small (icon beside title).
 
-**Plan header**: icon (48px, tone ink), kicker ("Incident plan · v1.1.0"), title, progress (rounded segments: done green, current muted, todo white).
+**Open incident card (Session 11)**: on Home, one card per open incident in **that incident's tint** (`data-tone`, same mapping as its tile and plan) with its icon; the section itself has no fill (it was one warn-coloured box, which read as the invoice fraud gold).
 
-**Step**: white card in the tinted plan panel. "Step 2 of 16", a round check (32px, green when done, 44px hit area) beside the title (1.5rem, 600), detail, "Avoid" box, step buttons (Contacts, Ask), Why / Source footnotes. The v1 giant step number is hidden (the number is in "Step n of total").
+**Plan header**: icon (48px, tone ink), kicker ("Incident plan" / "IT fix-it", no version), title, progress. The version is a small muted line under the steps ("Version 1.1.0") and in the print view.
+
+**Progress (Session 11)**: text "0 of 16 done" / "0 sur 16 faites", no zero padding; it is the accessible source (the bar is `role=progressbar` labelled with it; segments are not exposed). Segments: **filled only for completed steps** (green); the current step is an empty segment with a 2px outline in `text` colour, so it never looks done; todo = empty `bg`.
+
+**Step**: white card in the tinted plan panel. "Step 2 of 16", the title (1.5rem, 600), then the **Mark done** control on its own line: a 44px soft pill with the round check (32px) and the words "Mark done" / "Marquer comme fait"; checked = green circle with check + "Done" / "Fait" on `okBg`, with the "Logged 14:02" mark beside it. Its accessible name is the visible words then the step title (WCAG 2.5.3). Then detail, "Avoid" box, step buttons (Contacts, Ask), Why / Source footnotes. The v1 giant step number is hidden (the number is in "Step n of total").
 
 **"Avoid" box**: `avoidBg`, 4px accent left bar, "Avoid" / "À éviter" label in `accentText` 700.
 
@@ -197,3 +202,4 @@ Plain, short, calm, imperative, sentence case. No buzzwords, no "!", no emoji, n
 - ✅ 2026-11-26 (Session 9): the "Avoid" label is now sentence case ("Avoid" / "À éviter"); accent no longer marks the current step or the "Logged" stamp (now green).
 - ✅ 2026-11-26 (Session 10): incident tints moved away from the danger colour: ransomware coral → navy, bec amber → gold, phishing blue → cyan blue. Test added.
 - ✅ 2026-11-26 (Session 10): answers that name a contact (IT contact, bank, insurer, lawyer, police, staff lead) show that contact's call button under them; not saved → "Add this contact". On paper, contacts are one plain line each ("IT contact: name · phone · email") and buttons lose their boxes.
+- ✅ 2026-11-26 (Session 11, J's live review): progress "0 of 16 done" with the current step outlined, never filled; visible "Mark done" label; disabled buttons look unavailable, not outlined; no underline on button hover; no version in the plan header; Home: no gap under "Something's wrong", full-width button on phones, two columns from 1024px; open incident card in its incident's tint. The "pink ransomware" seen live was a cached Session 9 build (see SESSION_HANDOFF Session 11), not the tokens.

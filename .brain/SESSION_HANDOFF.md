@@ -14,6 +14,13 @@ npm run build && npx firebase-tools deploy --only hosting
 
 The build must end with "Secret check: no App Check debug token". Then open https://getaimayday.web.app and reload once so the new version loads.
 
+- [ ] (Session 11) **Deploy:** `cd ~/Desktop/getaimayday && npm run build && npx firebase-tools deploy --only hosting`
+  Then reload the site **twice** (or close every AIMayday tab and open it again): the first load after a deploy still shows the old version (that is why the ransomware plan looked pink in Session 10's review). 2-minute check:
+  1. Home on desktop: two columns, "What is happening?" on the left, the 5 incident tiles on the right, all visible without scrolling.
+  2. Home on the phone: no empty space under "Something's wrong", and the button is full width.
+  3. Ransomware plan in light mode: navy panel and lock icon; the red "Avoid" box stands out.
+  4. Progress reads "0 of 16 done" (FR "0 sur 16 faites"); only finished steps are filled, the current one is outlined.
+  5. Under each step title: "Mark done"; tap it → green "Done" + "Logged" time.
 - [ ] (Session 10) **Deploy Session 10** (call buttons under answers, plain-text contacts on paper, navy ransomware colour) with the command above. It also ships Session 9 (and 7, 8) if not deployed yet, so do the Session 9 checks below too. Then on the live site:
   1. Offline Pack (More → Offline Pack), Wi-Fi off, search "Should I pay the ransom amount shown on the screen?". Under the answer: **Call IT contact**, **Call Insurer** and **Call Police, non-emergency** buttons (whoever the answer names).
   2. Home → Everyday IT problems → Wi-Fi or internet not working → Ask a question ("the lights are red, what now"). If the answer says to call your IT contact, the **Call IT contact · 555-…** button is right under it. With no contacts saved, it says **Add this contact: IT contact** and opens Setup.
@@ -1052,3 +1059,60 @@ Brief (architect, via J): live site verified by J (App Check + reCAPTCHA Enterpr
 **Not verified:** the live site and a real Gemini / Nano answer naming a contact (needs J's deploy: J TODO Session 10). A real printer (print-media screenshots and a PDF only).
 
 **Next:** J deploys and runs the Session 10 + Session 9 checks; film with the updated DEMO_SCRIPT; paste SUBMISSION into Devpost in his own words.
+
+---
+
+## 2026-11-26 — Session 11: visual fixes from J's live review (Claude Code)
+
+### Phase 1 — investigation (J replied "go")
+
+**Step 0:** `pwd && git remote -v` (getaimayday, JoJoshJo), `git pull origin main` at `1d099d7`, clean tree. No code changed in this phase.
+
+**How it was investigated:** read `PlanView.tsx`, `StepRow.tsx`, `ui/components.tsx` (Progress), `OpenIncidents.tsx`, `Home.tsx`, `styles.css`, i18n. Downloaded the live bundle (`assets/index-B159nz-o.js`), the same hash as a fresh local build of `1d099d7`: it holds the navy values (`#e8ebf5`, `#34497a`, `#20263a`) and not the Session 9 coral (`#fdece6`, `#a8331a`). Scratch `pw/live11.mjs` opened the live ransomware plan in a fresh headless Chrome: light panel `rgb(232,235,245)` navy, icon `rgb(52,73,122)` navy; dark panel `rgb(32,38,58)`, icon `rgb(174,189,230)`. Scratch `pw/gap11.mjs` measured live Home.
+
+| # | Item | Cause | Planned fix | Files |
+|---|---|---|---|---|
+| 1 | Ransomware plan pink + red-brown lock in light mode | **Not the code.** The live site already serves Session 10 and is navy in both themes in a fresh browser. J's desktop Chrome was still running the cached Session 9 build: the service worker uses `registerType: 'autoUpdate'`, so the new version downloads in the background on the first visit and only shows after the next reload (the J TODO says "reload once"). The phone had reloaded; the desktop had not. | No colour change. Add a test: the plan panel and icon take the incident tint through `[data-tone]` (CSS rule check) and, for both themes, ransomware panel bg vs "Avoid" bg ΔE ≥ 9.7 (Session 10's lowest coloured tint), icon ink is not red/orange. J TODO: hard reload (or close all tabs) after each deploy. Optional, only if J asks (not visual layer): a "New version ready · Reload" line. | `tests/design.test.ts` |
+| 2 | Home "Open incident" card gold for ransomware | `.openinc` has a fixed `background: var(--color-warn-bg)` (`#fcf1dc`), which looks like the invoice fraud gold. It never used the incident's tone. | Each open incident row gets `data-tone={incident}` and its tint (bg + icon); the section itself has no fill. Same mapping as tiles and plan. Test: `OpenIncidents` sets `data-tone` from the incident and `.openinc` no longer uses warn colours (source check; vitest has no DOM) + an e2e check of the computed colour. | `OpenIncidents.tsx`, `styles.css`, `tests/design.test.ts` |
+| 3 | "00 / 16 done", current segment filled | `PlanView.tsx` pads with `padStart(2,'0')`; strings `plan.progress` "{done} / {total} done" / "{done} / {total} faites". `.progress__seg--current` is filled with muted grey, so it looks done. | "0 of 16 done" / "0 sur 16 faites" (FR already uses "faites" for étapes, feminine, and the "Fait" button; keeps one word). No padding. Current segment: no fill, 2px inset outline in text colour (≥ 3:1 on every tint). Segments stay `aria-hidden`-like (the bar is `role=progressbar` with the text as its label), so the text stays the accessible source; no `aria-current` on segments. | `PlanView.tsx`, `i18n/{en,fr}.json`, `styles.css` |
+| 4 | Empty circle not obviously tappable | `StepRow` renders only a 32px circle in a 44px label, no text. The `plan.markDone` string ("Done"/"Fait") exists but is unused. | The control becomes a pill: circle + "Mark done" / "Marquer comme fait"; checked: green circle with check + "Done" / "Fait". Min height 44px. Placed on its own line right under the title (beside the title it would squeeze long titles on phones); the "Logged 14:02" mark stays next to it. Accessible name keeps the visible text (WCAG 2.5.3): `aria-labelledby` = label + step title. | `StepRow.tsx`, `i18n/{en,fr}.json`, `styles.css` |
+| 5 | "Previous" on step 1 looks like an outline button | It is already `disabled` (native, so assistive tech gets disabled). The style `.btn:disabled` swaps the fill for a transparent bg + rule border, so on step 1 it looks like a different, outlined button instead of an unavailable one. | Disabled = same shape, no border, transparent, muted text and icon, `cursor: not-allowed`. Same for "Next step" on the last step. | `styles.css` |
+| 6 | Underline on hover on "Next step" | `.btn--strong:hover` sets `text-decoration: underline`. | Remove it; hover = border only (as other buttons). `.btn--quiet` is a text link by design and keeps its underline. Focus ring unchanged (3px). | `styles.css` |
+| 7 | "· v1.1.0" in the plan header | `plan.kicker` "Incident plan · v{version}" and `fixit.kickerVersion` used as the header kicker. | Header kicker "Incident plan" / "Plan d’incident" and "IT fix-it" (new keys without version). Version moves to a small footer line under the steps ("Plan version 1.1.0"). Print keeps the version (unchanged keys). | `PlanView.tsx`, `FixitScreens.tsx`, `i18n/{en,fr}.json`, `styles.css` |
+| 8 | Phone: big gap under "Something's wrong", button not full width | Measured live at 390px: 84px under the button = form grid gap 16 + `.home__status { min-height: 44px }` (space kept for the empty live region) + panel padding 24. Same at 1440px (92px). The button is `inline-flex`, 253px. | Empty status takes no space and cancels the gap (`.home__status:empty`), so nothing is reserved until a message shows (only after the user presses the button, so no shift on load). Below 600px the button is full width. | `styles.css` |
+| 9 | Desktop: tiles below the fold, right half of the panel empty | `.home` is a single column; the lead panel is full width with its content capped at 44rem; at 1440×900 the tiles heading starts at y=754 and the tiles below 900. | At ≥1024px `.home` becomes a 2-column grid: left = the lead panel (heading, Avoid, description, lock line, button), right = "Or choose what happened" + the 5 tiles as a compact list (icon, title, short description) + Past incidents. Open incident banner and the fix-its span both columns. Pure CSS grid on the existing DOM order (lead first, then tiles), so keyboard and screen reader order stay the same; below 1024px nothing changes. No JS, so no layout shift. | `styles.css` (maybe a wrapper class in `Home.tsx` only if grid areas need it) |
+
+**Left for J (Phase 1):** reply "go". J replied "go" with no changes.
+
+### Phase 2 — fixes (visual layer only)
+
+**Steps, in order:**
+
+1. **CSS** (`src/ui/styles.css`):
+   - item 6: `.btn--strong:hover` no longer underlines (border only); focus ring untouched.
+   - item 5: `.btn:disabled` = no fill, no border, muted text, `cursor: not-allowed` (was an outlined look). The buttons were already native `disabled`.
+   - item 3: `.progress__seg--current` = empty `bg` + 2px outline in `text` colour (outline, not box-shadow: shadows are banned by the design test).
+   - item 8: `.home__status:empty { position: absolute }`, and `.btn-mayday` full width below 600px. **Gotcha:** the first try (`margin-top: -16px` on the empty status) still left 16px: a grid item with a negative margin in a 0px track is stretched to fill it, and the row gap stays. Taking the empty live region out of the flow removes both; it stays in the DOM, so screen readers still hear the message when one comes.
+2. **Item 3 + 7** (`PlanView.tsx`, `FixitScreens.tsx`, i18n): no `padStart`; `plan.progress` "{done} of {total} done" / "{done} sur {total} faites" (FR keeps "faites", matching the "Fait" button and "étapes"); header kicker `plan.kickerShort` "Incident plan" / "Plan d’incident", `fixit.kickerShort` "IT fix-it" / "Fiche dépannage"; new footer line `.plan__version` `plan.version` "Version {version}". Print still uses `plan.kicker` / `fixit.kickerVersion` with the version.
+3. **Item 4** (`StepRow.tsx`, i18n, CSS): the title comes first; under it `.step__mark` holds the `label.check` pill: circle + `check__text` "Mark done" / "Marquer comme fait" (new `plan.markTodo`), checked "Done" / "Fait" (existing, unused `plan.markDone`) on `okBg`, plus the Logged mark. 44px min height, whole pill clickable (the invisible input covers it), focus ring on the pill (`:has(input:focus-visible)`). Input `aria-labelledby` = mark text + step title.
+4. **Item 2** (`OpenIncidents.tsx`, CSS): each open incident link gets `data-tone={r.incident}` + its `INCIDENT_ICON`; `.openinc__link` is a card with `background: var(--tone)`; `.openinc` has no fill (was `warn-bg`).
+5. **Item 9** (`Home.tsx`: one extra class `home__tiles--incidents`; CSS): at ≥1024px `.home` is a 7fr/5fr grid; lead in column 1, incident tiles in column 2 as a compact one-column list; everything else spans both. No JS, DOM order unchanged.
+6. **Item 1:** no colour change (the cause was a cached build). Tests added (below). J TODO now says to reload twice / close all tabs after a deploy.
+7. **Tests** (`tests/design.test.ts`, +8): ransomware plan panel and icon use the tint via `data-tone` (CSS rules + `IncidentView` passes `tone`), and per theme ΔE(ransomware bg, Avoid bg) ≥ 9.7 (Session 10's lowest coloured tint) and ΔE(icon ink, accent) ≥ 30; open incident card sets `data-tone` from the incident, uses the tone, no warn colour; progress strings and no `padStart`; current segment outline, not fill; no underline on button hover.
+8. **Scratch e2e** `pw/shots11.mjs` (real headless Chrome, built app): for light/dark × EN/FR × 390/768/1024/1440: no gap under the button (status height 0), full-width button at 390, stacked below 1024 / two columns at 1024 and 1440, at 1440×900 the button and the last tile end above 900px (lowest tile at 720px EN, 808px FR at 1024), DOM order description → tiles; on the plan: "0 of 16 done" / "0 sur 16 faites", no version in the header + "Version 1.1.0" footer, current segment outlined with the same background as todo, Previous disabled with no fill/border, "Mark done" 44px with the right `aria-labelledby`, navy panel + icon in both themes, no underline on hover, checked → "Done" + "1 of 16", step 2 segments done/current/todo; open incident card navy in both themes with an unfilled section; no page or console errors. **88/88 PASS.** It also saves the 80 screenshots below.
+   - `s4.mjs`: one expectation updated on purpose ("IT fix-it · v1.0.0" in the header → "IT fix-it" + "Version 1.0.0" in the footer).
+
+**Verification:**
+- vitest **454/454**, lint 0, `tsc -b` 0 errors, `npm run build` + "Secret check: no App Check debug token".
+- `s4.mjs` all blocks except demo 56/56, demo alone 5/5; `csp.mjs` 0 violations (5 PASS); `judge.mjs` 5/5 offline (precache serves fonts and app); `pwa.mjs` manifest OK + offline reload; `issues.mjs` TOTAL 0; `fallback.mjs` 11/11; `print10.mjs` 12/12.
+- Lighthouse, EN + FR, Home / plan / Pack / Get ready: accessibility, best practices, SEO 100 on every page, desktop and mobile. Performance desktop 100 everywhere; mobile Home 93 EN / 94 FR (was 92), 100 elsewhere.
+- Screenshots: `.brain/screens/session11/` (80 PNGs, 11 MB) `<page>-<theme>-<lang>-<width>.png`, pages `home`, `home-open` (with an open ransomware incident), `plan-step1`, `plan-step1-done`, `plan-step2`. Full page below 1024px, viewport at 1024 and 1440. Checked by eye: Home 1440 light EN (two columns, all tiles visible), plan step 2 light EN, Home with open incident dark FR 390, plan step 1 done dark EN 1024.
+- Anti-slop: design tests (no shadows, gradients, purple, red/orange tints, em dashes, "!") pass; new copy has none.
+
+**Noticed, not changed (out of scope):** FR `plan.progressShort` says "1 cochées" (plural with 1) on the open incident card; pre-existing.
+
+**Files:** `src/ui/styles.css`, `src/features/incident/{PlanView,StepRow}.tsx`, `src/features/fixit/FixitScreens.tsx`, `src/features/log/OpenIncidents.tsx`, `src/features/home/Home.tsx`, `src/i18n/{en,fr}.json`, `tests/design.test.ts`, `.brain/{DESIGN,SESSION_HANDOFF}.md`, `.brain/screens/session11/*`.
+
+**Not verified:** the live site (not deployed, as asked); a real phone (390px emulated in headless Chrome).
+
+**Next:** J deploys and runs the 2-minute check (J TODO, Session 11).

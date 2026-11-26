@@ -86,7 +86,7 @@ export function FixitView({ id }: { id: string }) {
         tone="fixit"
         icon={FIXIT_ICON[fixit.topic]}
         title={t(`fixit.topic.${fixit.topic}`)}
-        kicker={t('fixit.kickerVersion', { version: fixit.version })}
+        kicker={t('fixit.kickerShort')}
         doneAt={doneAt}
         onToggle={toggle}
         stepExtras={(step) => (

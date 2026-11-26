@@ -130,7 +130,7 @@ export function Home() {
         </form>
       </section>
 
-      <section className="home__tiles" aria-labelledby="tiles-title">
+      <section className="home__tiles home__tiles--incidents" aria-labelledby="tiles-title">
         <h2 id="tiles-title" ref={tilesRef} tabIndex={-1} className="mono home__tiles-title">
           {t('home.tiles')}
         </h2>

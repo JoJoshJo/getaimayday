@@ -22,6 +22,7 @@ export const StepRow = forwardRef<HTMLElement, Props>(function StepRow({ step, i
   const n = String(index + 1).padStart(2, '0')
   const checked = state === 'done'
   const titleId = `step-title-${step.id}`
+  const markId = `step-mark-${step.id}`
 
   return (
     <article ref={ref} tabIndex={-1} className={`step step--${state}`} aria-labelledby={titleId} aria-current={state === 'current' ? 'step' : undefined}>
@@ -33,13 +34,21 @@ export const StepRow = forwardRef<HTMLElement, Props>(function StepRow({ step, i
         <div className="step__meta mono">{t('plan.stepOf', { n: index + 1, total })}</div>
 
         <div className="step__action">
-          <label className="check">
-            <input type="checkbox" name={`step-${step.id}`} checked={checked} onChange={onToggle} aria-labelledby={titleId} aria-describedby={`step-detail-${step.id}`} />
-            <span className="check__box" aria-hidden="true" />
-          </label>
           <h3 id={titleId} className="step__title">
             {step.title}
           </h3>
+        </div>
+
+        {/* Session 11: a visible "Mark done" label so the round check reads as a control.
+            Its name keeps the visible words first (WCAG 2.5.3), then the step title. */}
+        <div className="step__mark">
+          <label className="check">
+            <input type="checkbox" name={`step-${step.id}`} checked={checked} onChange={onToggle} aria-labelledby={`${markId} ${titleId}`} aria-describedby={`step-detail-${step.id}`} />
+            <span className="check__box" aria-hidden="true" />
+            <span id={markId} className="check__text">
+              {checked ? t('plan.markDone') : t('plan.markTodo')}
+            </span>
+          </label>
           {checked && doneAt && <Stamp at={doneAt} />}
         </div>
 

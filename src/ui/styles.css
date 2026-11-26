@@ -323,6 +323,13 @@ svg {
 
 /* ---------- Plan ---------- */
 
+/* Session 11: the plan version lives here, not in the header. */
+.plan__version {
+  margin: var(--space-3) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--type-label);
+}
+
 .plan {
   container-type: inline-size;
   margin-top: var(--space-5);
@@ -399,8 +406,11 @@ svg {
   background: var(--color-ok);
 }
 
+/* Session 11: the current step is marked, never filled, so it can't look done. */
 .progress__seg--current {
-  background: var(--color-text-muted);
+  background: var(--color-bg);
+  outline: var(--border-strong) solid var(--color-text);
+  outline-offset: calc(-1 * var(--border-strong));
 }
 
 /* ---------- Buttons ---------- */
@@ -443,9 +453,7 @@ svg {
 }
 
 .btn--strong:hover:not(:disabled) {
-  border-color: var(--color-primary);
-  text-decoration: underline;
-  text-underline-offset: 0.2em;
+  border-color: var(--color-text-muted);
 }
 
 .btn--quiet {
@@ -461,11 +469,12 @@ svg {
   text-decoration-thickness: var(--border-strong);
 }
 
+/* Session 11: unavailable, not a different kind of button: same shape, no fill, no border, grey. */
 .btn:disabled {
   background: transparent;
-  border-color: var(--color-rule);
+  border-color: transparent;
   color: var(--color-text-muted);
-  cursor: default;
+  cursor: not-allowed;
 }
 
 /* The ONE main action. Accent fill, ink text. */
@@ -550,16 +559,38 @@ svg {
   max-width: var(--size-measure);
 }
 
-/* Round check: 32px drawn, 44px hit area. */
+/* Session 11: "Mark done" control: round check + words, 44px high pill. */
+.step__mark {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+}
+
 .check {
   position: relative;
   flex: none;
-  display: inline-grid;
-  place-items: center;
-  width: var(--size-tap);
-  height: var(--size-tap);
-  margin-left: -6px;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: var(--size-tap);
+  padding: var(--space-1) var(--space-4) var(--space-1) var(--space-2);
+  border: var(--border-strong) solid transparent;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg2);
+  font-size: var(--type-small);
+  font-weight: var(--weight-semibold);
   cursor: pointer;
+  transition: border-color var(--motion-fast) var(--motion-ease), background-color var(--motion-fast) var(--motion-ease);
+}
+
+.check:hover {
+  border-color: var(--color-text);
+}
+
+.check:has(input:checked) {
+  background: var(--color-ok-bg);
+  color: var(--color-ok);
 }
 
 .check input {
@@ -572,6 +603,7 @@ svg {
 }
 
 .check__box {
+  flex: none;
   pointer-events: none;
   width: var(--size-checkbox);
   height: var(--size-checkbox);
@@ -603,7 +635,7 @@ svg {
   opacity: 1;
 }
 
-.check input:focus-visible + .check__box {
+.check:has(input:focus-visible) {
   outline: 3px solid var(--color-focus);
   outline-offset: 3px;
 }
@@ -1053,8 +1085,17 @@ svg {
   gap: var(--space-4);
 }
 
-.home__status {
-  min-height: var(--size-tap);
+/* Session 11: the live region stays in the page (so it is announced when a message comes) but
+   takes no room, and no grid gap, until it has one. */
+.home__status:empty {
+  position: absolute;
+}
+
+@media (max-width: 599px) {
+  .home__form .btn-mayday {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .home__line,
@@ -1073,6 +1114,48 @@ svg {
 
 .home__tiles {
   padding-top: var(--space-6);
+}
+
+/* Session 11 (Nielsen #6, recognition rather than recall): from 1024px the incident tiles sit
+   beside "What is happening?", so both ways in are visible without scrolling. CSS grid on the
+   existing DOM order (description, then tiles), so keyboard and screen reader order are unchanged.
+   Below 1024px: the stacked layout, untouched. */
+@media (min-width: 1024px) {
+  .home {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    column-gap: var(--space-6);
+    align-items: start;
+  }
+  .home > * {
+    grid-column: 1 / -1;
+  }
+  .home > .home__lead {
+    grid-column: 1;
+  }
+  .home > .home__tiles--incidents {
+    grid-column: 2;
+    margin-top: var(--space-5);
+    padding-top: 0;
+  }
+  .home__tiles--incidents .tiles {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2);
+  }
+  .home__tiles--incidents .tile {
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: var(--space-3);
+    row-gap: var(--space-1);
+    padding: var(--space-3) var(--space-4);
+  }
+  .home__tiles--incidents .tile__icon {
+    width: 28px;
+    height: 28px;
+    margin: 0;
+  }
+  .home__tiles--incidents .tile__desc {
+    grid-column: 2;
+  }
 }
 
 .home__tiles-title.mono {
@@ -1215,9 +1298,6 @@ a.tile {
 /* Open incident banner (home) */
 .openinc {
   margin-top: var(--space-5);
-  padding: var(--space-4) var(--space-5);
-  border-radius: var(--radius-md);
-  background: var(--color-warn-bg);
 }
 
 .openinc__title.mono {
@@ -1229,17 +1309,33 @@ a.tile {
   list-style: none;
   margin: 0;
   padding: 0;
+  display: grid;
+  gap: var(--space-3);
 }
 
+/* Session 11: each open incident is a card in its own incident tint (was one warn-coloured box). */
 .openinc__link {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: var(--space-2) var(--space-4);
-  padding: var(--space-3) 0;
-  border-top: var(--border-hair) solid var(--color-rule);
+  padding: var(--space-4) var(--space-5);
+  border: var(--border-strong) solid transparent;
+  border-radius: var(--radius-md);
+  background: var(--tone, var(--color-bg2));
   text-decoration: none;
   min-height: var(--size-tap);
+}
+
+.openinc__link:hover {
+  border-color: var(--color-text);
+}
+
+.openinc__icon {
+  flex: none;
+  width: var(--size-icon);
+  height: var(--size-icon);
+  color: var(--tone-ink, var(--color-text));
 }
 
 .openinc__name {

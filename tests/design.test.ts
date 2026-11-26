@@ -114,3 +114,69 @@ describe('copy', () => {
   it('no arrow characters in JSX text (use lucide icons)', () =>
     expect(scan(/>[^<>{}]*[←→↗↑↓][^<>{}]*</, code.filter((f) => f.file.endsWith('.tsx')))).toEqual([]))
 })
+
+// ---- Session 11 ----
+const css = readFileSync(join(SRC, 'ui', 'styles.css'), 'utf8')
+/** The declarations of one CSS rule, by its exact selector (first match). */
+function rule(selector: string): string {
+  const i = css.indexOf(`\n${selector} {`)
+  if (i < 0) throw new Error(`no rule ${selector}`)
+  return css.slice(i, css.indexOf('}', i))
+}
+/** CIE76 ΔE between two hex colours (same formula as Session 10's measurements). */
+function deltaE(a: string, b: string): number {
+  const lab = (hex: string) => {
+    const [r, g, bl] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4))
+    const f = (t: number) => (t > 0.008856 ? Math.cbrt(t) : 7.787 * t + 16 / 116)
+    const x = f((0.4124 * r + 0.3576 * g + 0.1805 * bl) / 0.95047), y = f(0.2126 * r + 0.7152 * g + 0.0722 * bl), z = f((0.0193 * r + 0.1192 * g + 0.9505 * bl) / 1.08883)
+    return [116 * y - 16, 500 * (x - y), 200 * (y - z)]
+  }
+  const [p, q] = [lab(a), lab(b)]
+  return Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2])
+}
+
+describe('Session 11: the ransomware plan page wears the navy tint, apart from "Avoid", in both themes', () => {
+  it('the plan panel and its icon take the incident tint through data-tone', () => {
+    expect(css).toMatch(/\[data-tone='ransomware'\] \{ --tone: var\(--tint-ransomware\); --tone-ink: var\(--tint-ransomware-ink\); \}/)
+    expect(rule('.plan')).toMatch(/background: var\(--tone/)
+    expect(rule('.plan__icon')).toMatch(/color: var\(--tone-ink/)
+    const view = readFileSync(join(SRC, 'features', 'incident', 'IncidentView.tsx'), 'utf8')
+    expect(view).toMatch(/tone=\{plan\.incident\}/)
+  })
+  for (const theme of ['paper', 'ink'] as const)
+    it(`${theme}: ransomware panel vs "Avoid" background ΔE ≥ 9.7, icon ink vs accent ΔE ≥ 30`, () => {
+      const c = tokens.color[theme], r = tokens.tint[theme].ransomware
+      expect(deltaE(r.bg, c.avoidBg)).toBeGreaterThanOrEqual(9.7)
+      expect(deltaE(r.ink, c.accent)).toBeGreaterThanOrEqual(30)
+    })
+})
+
+describe('Session 11: the open incident card uses its own incident tint', () => {
+  it('each open incident row sets data-tone from its incident and shows its icon', () => {
+    const src = readFileSync(join(SRC, 'features', 'log', 'OpenIncidents.tsx'), 'utf8')
+    expect(src).toMatch(/data-tone=\{r\.incident\}/)
+    expect(src).toMatch(/INCIDENT_ICON\[r\.incident\]/)
+  })
+  it('the card is filled with the tone, never the warn colour', () => {
+    expect(rule('.openinc__link')).toMatch(/background: var\(--tone/)
+    expect(rule('.openinc__icon')).toMatch(/color: var\(--tone-ink/)
+    expect(rule('.openinc')).not.toMatch(/warn/)
+  })
+})
+
+describe('Session 11: progress reads "0 of 16 done", the current step is never filled', () => {
+  it('no zero padding, plain "of" / "sur"', () => {
+    expect(messages.en['plan.progress']).toBe('{done} of {total} done')
+    expect(messages.fr['plan.progress']).toBe('{done} sur {total} faites')
+    expect(readFileSync(join(SRC, 'features', 'incident', 'PlanView.tsx'), 'utf8')).not.toMatch(/padStart/)
+  })
+  it('current segment: outline in text colour on the empty background', () => {
+    const cur = rule('.progress__seg--current')
+    expect(cur).toMatch(/background: var\(--color-bg\)/)
+    expect(cur).toMatch(/outline: .* var\(--color-text\)/)
+  })
+  it('buttons never underline on hover (text links do)', () => {
+    expect(rule('.btn--strong:hover:not(:disabled)')).not.toMatch(/underline/)
+    expect(rule('.btn:hover:not(:disabled)')).not.toMatch(/underline/)
+  })
+})
