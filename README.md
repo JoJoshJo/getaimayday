@@ -20,11 +20,12 @@ Most office PCs cannot run on-device AI (Chrome needs about 16 GB of RAM or a GP
 ## What it does
 
 - **Something's wrong**: describe it in your own words, get the right plan (on-device AI, else keyword match, else pick a tile).
-- **Plans** for ransomware and invoice or payment fraud (more coming), English and French. Every step has an official source (CISA, NIST SP 800-61r3, FBI IC3, FTC; outside the US, cybermalveillance.gouv.fr and the Canadian Centre for Cyber Security). The plans never advise paying a ransom, wiping machines or contacting the attacker.
+- **Plans** for ransomware, invoice or payment fraud (BEC), phishing or a stolen password, a lost or stolen device, and an internet, power or email outage, in English and French. Every step has an official source (CISA, NIST SP 800-61r3, FBI IC3, FTC; outside the US, cybermalveillance.gouv.fr and the Canadian Centre for Cyber Security). The plans never advise paying a ransom, wiping machines or contacting the attacker.
 - **Incident log** on the device: timestamps, notes, photos, past incidents.
 - **Found on screen · please confirm**: on-device AI reads the ransom screen; you correct and confirm every field before it is saved.
 - **Emergency contacts** one tap from every plan step.
 - **Ask a question** on any step: on-device AI bound to that step, else the Offline Pack, else "call your IT contact".
+- **Everyday IT fix-its** (Wi-Fi, email not sending, frozen computer, printer, locked account, power outage), with sources from Microsoft, Apple, Google, CISA, FTC and Ready.gov. Ask a question works there too. When a problem looks like an attack, the fix-it opens the matching plan.
 - **Get ready** checklist and **printable plans**.
 
 Everything stays on the device (IndexedDB). Nothing goes to the cloud unless you tap a button and see a preview of exactly what will be sent.
@@ -44,6 +45,8 @@ cp .env.example .env.local
 ```bash
 npm run dev
 ```
+
+For filming or a quick look, the hidden page `#/demo-setup` loads a made-up business (Sunrise Dental) in one click and can delete all local data. It is never on by default, and a "Demo data" line shows on every screen while it is loaded.
 
 Other scripts: `npm test` (Vitest), `npm run lint` (oxlint), `npm run build` (type check, build, then a check that no App Check debug token is in `dist/`), `npm run preview`.
 
@@ -69,7 +72,7 @@ Chrome's built-in Gemini Nano. No flags are needed in current Chrome on a capabl
 
 ## Deploy (Firebase Hosting)
 
-`firebase.json` serves `dist/` as a single-page app on site `getaimayday`, with `sw.js` never cached and hashed assets cached for a year.
+`firebase.json` serves `dist/` as a single-page app on site `getaimayday`, with `sw.js` never cached, hashed assets cached for a year, and a strict Content-Security-Policy plus security headers (each allowed origin is explained in `.brain/SESSION_HANDOFF.md`, Session 5). `npm run preview` serves the same headers.
 
 ```bash
 npm run build
@@ -83,6 +86,7 @@ npx firebase-tools deploy --only hosting
 
 - `src/ai/`: Firebase AI Logic (router, on-device jobs, cloud jobs, prompts, schemas, warm-up)
 - `src/plans/`: built-in plans (JSON, EN + FR) and routing
+- `src/fixits/`: everyday IT fix-its (JSON, EN + FR)
 - `src/pack/`: Offline Pack schema, builder, guard, search, storage
 - `src/features/`: screens (home, incident, log, triage, setup, contacts, pack, ask, online, ready, print)
 - `src/storage/`: IndexedDB (Dexie)

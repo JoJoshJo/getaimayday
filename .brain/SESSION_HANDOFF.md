@@ -6,6 +6,10 @@ Append one entry per session: date, what was done, files changed, commit hashes,
 
 ## J TODO (things only J can do: console, login, secrets, hand tests). Newest first. Tick when done.
 
+- [ ] (Session 5) **Film the demo** with `.brain/DEMO_SCRIPT.md` (2:45, two machines: one with on-device AI ready, one without). Needs the deploy item below done first, so the Pack build and the back-online jobs work. After filming: `#/demo-setup` → Delete all local data.
+- [ ] (Session 5) **Review the IT fix-it texts**, EN + FR: `src/fixits/{en,fr}/*.json` (6 topics). Check the Windows/Mac wording matches what your staff see, and the French reads naturally.
+- [ ] (Session 5) **Hand-check the judge path** on a normal laptop without on-device AI, offline, after building a Pack: home → plan → Ask a question (Offline Pack badge) → log → Print. And open `#/fixit/printer`, Ask: expect "No answer on this device for this step" with the call button.
+
 - [ ] (Session 4) **Test the cloud double-check** on a ransom-screen photo (online, App Check working): Read the screen → Double-check with cloud AI → check the preview → Send. Expect "Use this" only under fields that differ and that you did not edit; after Confirm the log says "checked with cloud AI".
 - [ ] (Session 4) **Deploy to Firebase Hosting** (needs your Firebase login):
   1. In `.env.local`, make sure `VITE_RECAPTCHA_ENTERPRISE_KEY` is set (public site key; the key's domains must include `getaimayday.web.app` and `getaimayday.firebaseapp.com`).
@@ -689,3 +693,22 @@ Brief (architect, via J): CSP + security headers; demo setup route with reset; N
 - `.brain/DEMO_SCRIPT.md`: 2:45, 10 scenes with time codes, what is on screen, what J says, what each scene proves. Covers: the problem (6-person dental office, no IT, ransomware), "use a clean device", Wi-Fi OFF + On-device AI badge (classify + Ask), photo triage + confirm, Offline Pack answer on a laptop without on-device AI, back online → incident report + staff message after the exact preview (Cloud AI badge), EN/FR switch, print, last line "the cloud prepares, the device acts".
 - Includes the setup before filming (two machines, `#/demo-setup`, real Pack build, fake ransom note `public/lab/s2-4.png`), a badge checklist for editing, and what to do if something fails (never fake an AI answer).
 - Spoken pace checked by script: 1.0 to 2.3 words per second per scene. Every button name in the script was checked against `src/i18n/en.json`.
+- Commit: `59ef109`.
+
+### Item 6 — Session 5 summary (final handoff)
+**Done this session** (all pushed to `main`):
+| # | What | Commit |
+| --- | --- | --- |
+| 0 | MASTER §6: cloud sync and custom plan builder marked post-hackathon | `7511e2a` |
+| 1 | CSP + security headers in `firebase.json`, same headers in `npm run preview`, zod jitless, constructable stylesheets, `tests/headers.test.ts` | `52b1f27` |
+| 2 | Hidden `#/demo-setup`: Sunrise Dental (6 staff, 555-01xx contacts), demo banner, delete all local data | `9f29d18` |
+| 3 | IT fix-it library: 6 topics EN + FR, `#/fixit`, Ask a question on fix-its, links to incident plans | `880906f` |
+| 4 | Judge path without on-device AI checked (1280 and 390 wide, EN + FR); fixed the fix-it "no answer" line | `d67f3a0` |
+| 5 | `.brain/DEMO_SCRIPT.md`, 2:45 shot list | `59ef109` |
+| 6 | This summary, J TODO updated, README (5 plans, fix-its, demo page, CSP), MASTER item 18 marked done | (this commit) |
+
+**State:** 315 unit tests, lint 0, `npm run build` + secret check OK. Offline e2e in headless Chrome (scratch `s4.mjs`, 55 checks + demo block), CSP check (`csp.mjs`, 0 violations), judge path (`judge.mjs`, all pass). Scratch scripts are not committed (they live in the session scratchpad); their checks are described in each item above.
+
+**Not verified by me (needs J):** anything that needs App Check on a real domain (Pack build, back-online jobs, cloud double-check on the live site, CSP on the live site), on-device AI on a real Nano machine (only a stubbed Prompt API through the real SDK was tested), the video itself. All are in J TODO.
+
+**Next step:** J does the deploy item, then films with DEMO_SCRIPT.md. Optional polish if time allows: print the fix-its on the Print page (today it prints the 5 incident plans and contacts only).

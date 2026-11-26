@@ -174,7 +174,7 @@ getaimayday/
 17. **"Double-check with cloud AI"** button on the found-on-screen panel (spec in DESIGN.md §6, Session 3c): optional, only visible when online, shows exactly what will be sent before anything leaves the device, and calls triage with `PREFER_IN_CLOUD` only after the user taps it. Never automatic.
 
 ### NICE
-18. Basic IT fix-it library (Wi-Fi, email not sending, frozen PC, printer, locked account, power outage).
+18. Basic IT fix-it library (Wi-Fi, email not sending, frozen PC, printer, locked account, power outage). **Done** Session 5 (`880906f`): `src/fixits/`, `#/fixit`.
 19. ~~Opt-in cloud sync (Auth + Firestore offline persistence) behind `StorageAdapter`.~~ **Post-hackathon** (cut by the architect, Session 5, 2026-11-25). `StorageAdapter` stays as the seam for it.
 20. ~~Custom plan builder (cloud drafts plan from profile → owner edits → saved offline).~~ **Post-hackathon** (cut by the architect, Session 5, 2026-11-25).
 
