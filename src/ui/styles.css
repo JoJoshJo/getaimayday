@@ -153,6 +153,7 @@ a:hover {
   letter-spacing: var(--tracking-mono);
   text-transform: uppercase;
   white-space: nowrap;
+  text-decoration: none;
 }
 
 .chip--ok {
@@ -1494,5 +1495,135 @@ a.tile {
   body.print-doc .doc__actions,
   body.print-doc .doc__note {
     display: none;
+  }
+}
+
+/* ---- Get ready (#/ready) ---- */
+.ready__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  max-width: var(--size-content);
+  border-top: var(--border-strong) solid var(--color-rule-strong);
+}
+
+.ready__row {
+  display: grid;
+  grid-template-columns: 7rem 1fr;
+  gap: var(--space-4);
+  padding: var(--space-4) 0;
+  border-bottom: var(--border-hair) solid var(--color-rule);
+}
+
+.ready__state {
+  font-size: var(--type-mono-sm);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+}
+
+.ready__row--ok .ready__state {
+  color: var(--color-ok);
+}
+
+.ready__row--warn .ready__state,
+.ready__row--todo .ready__state {
+  color: var(--color-warn);
+}
+
+.ready__body {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+  max-width: var(--size-measure);
+}
+
+.ready__name {
+  margin: 0;
+  font-size: var(--type-body);
+  font-weight: var(--weight-semibold);
+}
+
+@media (max-width: 40rem) {
+  .ready__row {
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
+  }
+}
+
+/* ---- Printable plans (#/print) ---- */
+.printplans__plan,
+.printplans__contacts {
+  max-width: var(--size-content);
+  padding-top: var(--space-5);
+  margin-top: var(--space-5);
+  border-top: var(--border-strong) solid var(--color-rule-strong);
+}
+
+.printplans__h {
+  margin: 0 0 var(--space-3);
+  font-family: var(--font-display);
+  font-stretch: var(--font-display-stretch);
+  font-weight: var(--weight-black);
+  font-size: var(--type-title);
+  text-transform: uppercase;
+}
+
+.printplans__steps {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.printplans__step {
+  display: grid;
+  grid-template-columns: 1.25rem 1fr;
+  gap: var(--space-3);
+  padding: var(--space-3) 0;
+  border-bottom: var(--border-hair) solid var(--color-rule);
+  break-inside: avoid;
+}
+
+.printplans__box {
+  width: 1rem;
+  height: 1rem;
+  margin-top: 0.25rem;
+  border: var(--border-strong) solid var(--color-text);
+}
+
+.printplans__title {
+  margin: 0 0 var(--space-1);
+  font-size: var(--type-body);
+  font-weight: var(--weight-semibold);
+}
+
+.printplans__step p {
+  margin: 0 0 var(--space-1);
+}
+
+.printplans__donot {
+  padding-left: var(--space-3);
+  border-left: var(--border-accent) solid var(--color-accent);
+}
+
+.printplans__src {
+  font-size: var(--type-mono-sm);
+  color: var(--color-text-muted);
+  overflow-wrap: anywhere;
+}
+
+@media print {
+  .topbar,
+  .footer,
+  .noprint,
+  .contacts__actions {
+    display: none;
+  }
+
+  .printplans__plan {
+    break-before: page;
+  }
+
+  body {
+    background: var(--color-bg);
   }
 }

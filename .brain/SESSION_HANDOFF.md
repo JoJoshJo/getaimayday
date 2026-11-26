@@ -530,3 +530,13 @@ Brief: build MUST 1–9, then SHOULD 10–14, NICE 15–17, deploy prep, README;
 - Real cloud output can't be produced headless (App Check) → J TODO at the top.
 - Tests `tests/online.test.ts` (12): summary content, notes toggle, no photos; every job prompt has rules, fence, language; cleaning; non-cloud / empty / unsafe rejected; "do not pay" allowed. Total 220/220.
 - E2E (all blocks, 40 PASS): offline panel has no buttons; online preview names Gemini and shows the note, unticking removes it, Cancel sends nothing; a saved document (put into IndexedDB, not AI output) renders with badge, Copy, Print, and its log line. Screenshots checked.
+- Commit: `deeb95d`.
+
+### Feature 9 — Get ready screen + status chip (MUST #11)
+- `#/ready` (`src/features/ready/ReadyScreen.tsx`, nav "Get ready"): ruled checklist with a mono state per row (Done / To do / Check / Bonus) and a link to fix each one:
+  1. App saved for offline use (service worker controls the page), 2. Business details, 3. Emergency contacts (IT needed; IT + bank fraud + insurer = done, IT only = Check), 4. Offline Pack built + date (Check when the setup changed since), 5. Plans printed + date, 6. On-device AI: **Bonus**, never required (available / loaded and warm / downloadable with a "Download on-device AI" button that calls `prepareOnDevice` from the click, with % progress, then warms up / not available: "the Offline Pack and the checklist work without it").
+- Logic is pure in `readiness.ts` (tested); `useReadiness.ts` reads kv (profile, contacts, pack, readiness), Prompt API availability and warm-up events.
+- **Top-bar chip** is now a link to `#/ready`: offline → "Offline"; online and cached but not all done → "Get ready · 3/5" (warn tone); all done → "Offline ready" (ok tone).
+- `#/print` (`src/features/print/PrintPlans.tsx`): contacts card + every plan, every step (checkbox square, detail, avoid, source with full URL), current language. "Print" records `kv.readiness.printed_at`. Print CSS hides top bar, footer, buttons and contact action buttons; one plan per page. This covers most of SHOULD #13 (printable plans).
+- Message keys built from state are cast to `MessageKey`; `tests/ready.test.ts` checks every key the screen can build exists in EN and FR, plus the readiness rules. Total 231/231.
+- E2E (all blocks, 46 PASS): checklist offline, on-device shown as Bonus, print page with all plans and contacts, printing recorded, print media hides the top bar and buttons, chip shows "Get ready · n/5" and links to `#/ready`. Screenshots desktop light and mobile dark checked.

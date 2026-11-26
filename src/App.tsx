@@ -9,6 +9,9 @@ import { StepAsk } from './features/ask/StepAsk'
 import { BackOnline } from './features/online/BackOnline'
 import { SetupScreen } from './features/setup/SetupScreen'
 import { PackScreen } from './features/pack/PackScreen'
+import { ReadyScreen } from './features/ready/ReadyScreen'
+import { useReadiness } from './features/ready/useReadiness'
+import { PrintPlans } from './features/print/PrintPlans'
 import { useI18n } from './i18n'
 import { LangToggle, StatusChip, Wordmark } from './ui/components'
 import { useConnection } from './ui/useConnection'
@@ -19,6 +22,7 @@ const Lab = lazy(() => import('./features/lab/Lab'))
 
 function TopBar() {
   const connection = useConnection()
+  const ready = useReadiness()
   const { t } = useI18n()
   return (
     <header className="topbar">
@@ -26,13 +30,14 @@ function TopBar() {
         <Wordmark />
       </a>
       <nav className="topbar__nav mono" aria-label={t('nav.label')}>
+        <a href="#/ready">{t('nav.ready')}</a>
         <a href="#/contacts">{t('nav.contacts')}</a>
         <a href="#/incidents">{t('nav.incidents')}</a>
         <a href="#/pack">{t('nav.pack')}</a>
         <a href="#/setup">{t('nav.setup')}</a>
       </nav>
       <div className="topbar__end">
-        <StatusChip state={connection} />
+        <StatusChip state={connection} ready={ready} />
         <LangToggle />
       </div>
     </header>
@@ -70,6 +75,8 @@ export default function App() {
   else if (route.path === '/contacts') content = <ContactsScreen />
   else if (route.path === '/setup') content = <SetupScreen />
   else if (route.path === '/pack') content = <PackScreen />
+  else if (route.path === '/ready') content = <ReadyScreen />
+  else if (route.path === '/print') content = <PrintPlans />
 
   return (
     <div className="page">

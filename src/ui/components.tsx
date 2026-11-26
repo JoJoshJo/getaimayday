@@ -3,15 +3,22 @@ import { LANGUAGES } from '../i18n/messages'
 import type { Source } from '../ai/router'
 import type { ConnectionState } from './useConnection'
 
-/** Mono status chip. Status colors (ok/warn) are used only here. */
-export function StatusChip({ state }: { state: ConnectionState }) {
+/**
+ * Mono status chip. Status colors (ok/warn) are used only here. Shows the
+ * connection and, when online and cached, how ready the device is (Get ready).
+ * Links to the Get ready screen.
+ */
+export function StatusChip({ state, ready }: { state: ConnectionState; ready?: { done: number; total: number } | null }) {
   const { t } = useI18n()
-  const tone = state === 'preparing' ? 'warn' : 'ok'
+  const complete = !ready || ready.done === ready.total
+  const label =
+    state === 'offlineReady' && !complete ? t('status.getReady', { done: String(ready!.done), total: String(ready!.total) }) : t(`status.${state}`)
+  const tone = state === 'preparing' || !complete ? 'warn' : 'ok'
   return (
-    <span className={`chip chip--${tone}`} role="status" aria-label={`${t('status.label')}: ${t(`status.${state}`)}`}>
+    <a href="#/ready" className={`chip chip--${tone}`} role="status" aria-label={`${t('status.label')}: ${label}`}>
       <span className="chip__dot" aria-hidden="true" />
-      {t(`status.${state}`)}
-    </span>
+      {label}
+    </a>
   )
 }
 
