@@ -1565,6 +1565,8 @@ a.tile {
 
 /* ---- Printable plans (#/print) ---- */
 .printplans__plan,
+.printplans__fixit,
+.printplans__part,
 .printplans__contacts {
   max-width: var(--size-content);
   padding-top: var(--space-5);
@@ -1632,8 +1634,14 @@ a.tile {
     display: none;
   }
 
-  .printplans__plan {
+  .printplans__plan,
+  .printplans__part {
     break-before: page;
+  }
+
+  /* Fix-its are short: several per page, each kept whole. */
+  .printplans__fixit {
+    break-inside: avoid;
   }
 
   body {

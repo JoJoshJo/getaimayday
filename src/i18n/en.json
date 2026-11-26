@@ -285,7 +285,7 @@
   "ready.downloading": "Downloading · {pct}%",
   "ready.downloaded": "Downloaded and ready",
   "print.title": "Print your plans",
-  "print.intro": "Every plan, every step, and your contacts on paper. Keep it near the front desk and update it when your contacts change.",
+  "print.intro": "Every plan, every step, the everyday IT fix-its, and your contacts on paper. Keep it near the front desk and update it when your contacts change.",
   "print.button": "Print",
   "triage.cloud.check": "Double-check with cloud AI",
   "triage.cloud.what": "What is sent: this image and fixed instructions to read the screen. No name, no contacts, no log.",
@@ -340,5 +340,6 @@
   "pack.err.offline": "Could not reach the AI service. Your other answers are saved. Check the connection and try this part again.",
   "pack.err.rejected": "The AI service could not handle this request. Your other answers are saved.",
   "pack.err.other": "This part could not be built. Your other answers are saved.",
-  "ready.downloadFailed": "The on-device AI could not be downloaded on this device. The Offline Pack and the checklist work without it."
+  "ready.downloadFailed": "The on-device AI could not be downloaded on this device. The Offline Pack and the checklist work without it.",
+  "print.fixitIntro": "Simple checks for common problems that are not an attack. If one looks like an attack, use the matching incident plan above."
 }

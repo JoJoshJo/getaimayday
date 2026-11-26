@@ -853,3 +853,10 @@ Brief (architect, via J): live site verified by J (App Check + reCAPTCHA Enterpr
 - **PWA (CDP `Page.getInstallabilityErrors` + `getAppManifest`):** no installability errors, no manifest errors; standalone, icons 64/192/512 + 512 maskable, theme/background colours; reload offline opens the app.
 - Reports (HTML + JSON) are in the scratchpad `lh/` folder, not committed.
 - Checks: 381/381, build + secret check, lint 0, `s4.mjs` all blocks + demo, `csp.mjs`, `judge.mjs` pass.
+- Commit: `90c21ea`.
+
+### Item 4 — IT fix-its on the printed plan
+- `src/features/print/PrintPlans.tsx`: order is now contacts → the 5 incident plans → a part title "Everyday IT problems" with one line ("Simple checks for common problems that are not an attack. If one looks like an attack, use the matching incident plan above.") → the 6 fix-its. One shared `PrintedGuide` renders plans and fix-its the same way (tick box, title, detail, Avoid line, source name + full URL), so the paper style is identical.
+- Print CSS: each plan and the fix-it part start a new page; fix-its are short, so several share a page, each kept whole (`break-inside: avoid`).
+- `print.intro` now mentions the fix-its; new `print.fixitIntro`; EN + FR.
+- Checked: `s4.mjs` new check (6 fix-its, ≥ 24 steps, Microsoft source on the first), print-media screenshots and a Letter PDF (scratchpad `shots4/print.pdf`), reviewed by eye. 381/381, build, lint 0, all e2e, CSP, judge pass.

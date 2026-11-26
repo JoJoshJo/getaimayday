@@ -285,7 +285,7 @@
   "ready.downloading": "Téléchargement · {pct} %",
   "ready.downloaded": "Téléchargée et prête",
   "print.title": "Imprimer vos plans",
-  "print.intro": "Tous les plans, toutes les étapes et vos contacts sur papier. Gardez-le près de l’accueil et mettez-le à jour quand vos contacts changent.",
+  "print.intro": "Chaque plan, chaque étape, les fiches dépannage et vos contacts sur papier. Gardez-le près de l’accueil et mettez-le à jour quand vos contacts changent.",
   "print.button": "Imprimer",
   "triage.cloud.check": "Vérifier avec l’IA cloud",
   "triage.cloud.what": "Ce qui est envoyé : cette image et des instructions fixes pour lire l’écran. Aucun nom, aucun contact, aucun journal.",
@@ -340,5 +340,6 @@
   "pack.err.offline": "Impossible de joindre le service d’IA. Vos autres réponses sont enregistrées. Vérifiez la connexion et réessayez cette partie.",
   "pack.err.rejected": "Le service d’IA n’a pas pu traiter cette demande. Vos autres réponses sont enregistrées.",
   "pack.err.other": "Cette partie n’a pas pu être créée. Vos autres réponses sont enregistrées.",
-  "ready.downloadFailed": "L’IA sur l’appareil n’a pas pu être téléchargée sur cet appareil. Le Pack hors ligne et la liste d’étapes marchent sans elle."
+  "ready.downloadFailed": "L’IA sur l’appareil n’a pas pu être téléchargée sur cet appareil. Le Pack hors ligne et la liste d’étapes marchent sans elle.",
+  "print.fixitIntro": "Des vérifications simples pour les problèmes courants qui ne sont pas une attaque. Si l’un d’eux ressemble à une attaque, suivez le plan d’incident correspondant plus haut."
 }
