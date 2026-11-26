@@ -1,0 +1,116 @@
+{
+  "id": "phishing",
+  "incident": "phishing",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "id": "disconnect-if-opened",
+      "title": "Fichier ouvert ou accès à distance donné ? Débranchez cet ordinateur",
+      "detail": "Débranchez son câble réseau et coupez le Wi-Fi. Laissez-le allumé. Si vous avez seulement cliqué sur un lien sans rien saisir, passez aux étapes suivantes.",
+      "why": "Couper le réseau arrête un attaquant qui pourrait être connecté par cet ordinateur. Le laisser allumé garde des traces pour votre contact informatique.",
+      "source_name": "NIST SP 800-61r3",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+      "do_not": "N’utilisez plus cet ordinateur pour les e-mails, la banque ou les mots de passe."
+    },
+    {
+      "id": "change-password",
+      "title": "Changez le mot de passe depuis un appareil sain",
+      "detail": "Si vous avez saisi un mot de passe sur la fausse page, changez-le maintenant depuis votre téléphone ou un autre ordinateur sans alerte. Choisissez un mot de passe long et nouveau.",
+      "why": "L’attaquant a peut-être déjà l’ancien mot de passe. Le changer d’abord lui ferme la porte.",
+      "source_name": "FTC: How to recognize and avoid phishing scams",
+      "source_url": "https://consumer.ftc.gov/articles/how-recognize-and-avoid-phishing-scams",
+      "do_not": "Ne le changez pas depuis l’ordinateur où vous avez cliqué."
+    },
+    {
+      "id": "turn-on-mfa",
+      "title": "Activez la vérification en deux étapes",
+      "detail": "Dans les réglages du compte, activez la vérification en deux étapes (un code par application ou par SMS). Commencez par l’e-mail, puis la banque.",
+      "why": "Même avec votre mot de passe, un attaquant ne peut pas se connecter sans la deuxième étape.",
+      "source_name": "CISA: More than a password (MFA)",
+      "source_url": "https://www.cisa.gov/MFA"
+    },
+    {
+      "id": "same-password-elsewhere",
+      "title": "Changez ce mot de passe partout où vous l’avez utilisé",
+      "detail": "Listez chaque compte où vous avez utilisé ce mot de passe, identique ou presque. Changez-les un par un, en commençant par l’e-mail, la banque et la paie.",
+      "why": "Les attaquants essaient un mot de passe volé sur beaucoup de sites. Un mot de passe réutilisé peut ouvrir plusieurs comptes.",
+      "source_name": "CISA: Use strong passwords",
+      "source_url": "https://www.cisa.gov/secure-our-world/use-strong-passwords"
+    },
+    {
+      "id": "sign-out-everywhere",
+      "title": "Déconnectez les autres sessions et vérifiez les moyens de récupération",
+      "detail": "Sur la page sécurité du compte, déconnectez tous les autres appareils. Vérifiez que l’e-mail et le numéro de récupération sont bien les vôtres.",
+      "why": "Un attaquant déjà connecté peut rester connecté après le changement de mot de passe, et changer les moyens de récupération pour reprendre le compte.",
+      "source_name": "NIST SP 800-61r3",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+    },
+    {
+      "id": "check-email-rules",
+      "title": "Demandez à votre contact informatique de vérifier la boîte mail",
+      "detail": "Demandez-lui de chercher des règles de transfert, des connexions inconnues et des messages que vous n’avez pas envoyés.",
+      "why": "Les attaquants ajoutent souvent des règles cachées qui transfèrent ou suppriment des messages, pour que vous ne voyiez pas les alertes.",
+      "source_name": "FTC: Cybersecurity for Small Business",
+      "source_url": "https://www.ftc.gov/business-guidance/small-businesses/cybersecurity"
+    },
+    {
+      "id": "call-it-contact",
+      "title": "Appelez votre contact informatique",
+      "detail": "Dites-lui ce que vous avez cliqué, ce que vous avez saisi et quand. Demandez-lui d’analyser l’ordinateur et de vérifier les autres comptes.",
+      "why": "Il peut vérifier si un logiciel malveillant a été installé et si d’autres ordinateurs sont touchés.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    },
+    {
+      "id": "ignore-fake-support",
+      "title": "Si une fenêtre ou un appel prétend être le support technique, arrêtez",
+      "detail": "Fermez la fenêtre ou raccrochez. Les vraies entreprises ne vous appellent pas sans raison et ne bloquent pas votre écran pour vous faire appeler.",
+      "why": "Les faux supports techniques veulent un accès à distance, des mots de passe ou un paiement.",
+      "source_name": "FTC: Tech support scams",
+      "source_url": "https://consumer.ftc.gov/articles/how-spot-avoid-and-report-tech-support-scams",
+      "do_not": "N’appelez pas le numéro affiché et ne laissez personne d’inconnu se connecter à votre ordinateur."
+    },
+    {
+      "id": "call-bank-now",
+      "title": "Si vous avez donné des coordonnées bancaires ou payé, appelez votre banque",
+      "detail": "Appelez la ligne fraude au dos de votre carte ou sur votre fiche contacts. Demandez de bloquer la carte et de surveiller le compte.",
+      "why": "Les banques peuvent bloquer une carte et parfois annuler un paiement si elles sont prévenues vite.",
+      "source_name": "FTC: What to do if you were scammed",
+      "source_url": "https://consumer.ftc.gov/articles/what-do-if-you-were-scammed",
+      "do_not": "N’attendez pas de voir de l’argent disparaître."
+    },
+    {
+      "id": "tell-staff",
+      "title": "Prévenez votre personnel",
+      "detail": "Dites à l’équipe à quoi ressemblait le message et qu’il ne faut pas cliquer. Demandez à toute personne qui a cliqué de vous le dire tout de suite.",
+      "why": "Les e-mails d’hameçonnage sont souvent envoyés à plusieurs personnes. D’autres ont peut-être reçu le même message.",
+      "source_name": "CISA: Recognize and report phishing",
+      "source_url": "https://www.cisa.gov/secure-our-world/recognize-and-report-phishing"
+    },
+    {
+      "id": "keep-evidence",
+      "title": "Gardez le message et notez ce qui s’est passé",
+      "detail": "Gardez l’e-mail ou le SMS. Prenez une photo de la fausse page si elle est encore ouverte. Notez l’heure, ce que vous avez cliqué et ce que vous avez saisi.",
+      "why": "Votre contact informatique, votre banque et la police auront besoin de ces détails.",
+      "source_name": "NIST SP 800-61r3",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+      "do_not": "Ne transférez pas l’e-mail au personnel pour le prévenir : décrivez-le plutôt."
+    },
+    {
+      "id": "report-phishing",
+      "title": "Signalez-le",
+      "detail": "Aux États-Unis, signalez-le sur reportfraud.ftc.gov. Si de l’argent a été perdu, signalez-le aussi au FBI sur ic3.gov.",
+      "why": "Les signalements aident à arrêter les mêmes attaquants et peuvent être demandés par votre banque ou votre assureur.",
+      "source_name": "FTC ReportFraud",
+      "source_url": "https://reportfraud.ftc.gov/"
+    },
+    {
+      "id": "report-outside-us",
+      "title": "Hors des États-Unis ? Signalez-le dans votre pays",
+      "detail": "En France, faites-vous aider sur cybermalveillance.gouv.fr. Au Canada, signalez-le au Centre canadien pour la cybersécurité sur cyber.gc.ca et à votre police locale.",
+      "why": "Les services nationaux peuvent vous aider à signaler le délit et à vous rétablir.",
+      "source_name": "Cybermalveillance.gouv.fr : hameçonnage",
+      "source_url": "https://www.cybermalveillance.gouv.fr/tous-nos-contenus/fiches-reflexes/hameconnage-phishing"
+    }
+  ]
+}

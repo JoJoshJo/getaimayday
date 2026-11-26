@@ -1,0 +1,116 @@
+{
+  "id": "phishing",
+  "incident": "phishing",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "id": "disconnect-if-opened",
+      "title": "If you opened a file or allowed remote access, unplug that computer",
+      "detail": "Unplug its network cable and turn off Wi-Fi. Leave it switched on. If you only clicked a link and typed nothing, keep going with the next steps.",
+      "why": "Cutting the network stops an attacker who may be connected through that computer. Leaving it on keeps evidence for your IT contact.",
+      "source_name": "NIST SP 800-61r3",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+      "do_not": "Do not keep using that computer for email, banking or passwords."
+    },
+    {
+      "id": "change-password",
+      "title": "Change the password from a clean device",
+      "detail": "If you typed a password on the fake page, change it now from your phone or another computer that shows no warning. Use a new, long password you have not used before.",
+      "why": "The attacker may already have the old password. Changing it first locks them out.",
+      "source_name": "FTC: How to recognize and avoid phishing scams",
+      "source_url": "https://consumer.ftc.gov/articles/how-recognize-and-avoid-phishing-scams",
+      "do_not": "Do not change it from the computer where you clicked."
+    },
+    {
+      "id": "turn-on-mfa",
+      "title": "Turn on two-step verification",
+      "detail": "In the account settings, turn on two-step verification (a code from an app or a text message). Do it for email first, then banking.",
+      "why": "Even with your password, an attacker cannot sign in without the second step.",
+      "source_name": "CISA: More than a password (MFA)",
+      "source_url": "https://www.cisa.gov/MFA"
+    },
+    {
+      "id": "same-password-elsewhere",
+      "title": "Change the same password everywhere you used it",
+      "detail": "List every account where you used that password, the same or almost the same. Change each one, starting with email, bank and payroll.",
+      "why": "Attackers try a stolen password on many sites. One reused password can open several accounts.",
+      "source_name": "CISA: Use strong passwords",
+      "source_url": "https://www.cisa.gov/secure-our-world/use-strong-passwords"
+    },
+    {
+      "id": "sign-out-everywhere",
+      "title": "Sign out other sessions and check recovery details",
+      "detail": "In the account security page, sign out of all other devices. Check that the recovery email and phone number are yours.",
+      "why": "An attacker who is already signed in can stay in after a password change, and can change recovery details to take the account back.",
+      "source_name": "NIST SP 800-61r3",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+    },
+    {
+      "id": "check-email-rules",
+      "title": "Ask your IT contact to check the mailbox",
+      "detail": "Ask them to look for forwarding rules, unknown sign-ins and messages you did not send.",
+      "why": "Attackers often add hidden rules that forward or delete mail, so you do not see warnings.",
+      "source_name": "FTC: Cybersecurity for Small Business",
+      "source_url": "https://www.ftc.gov/business-guidance/small-businesses/cybersecurity"
+    },
+    {
+      "id": "call-it-contact",
+      "title": "Call your IT contact",
+      "detail": "Tell them what you clicked, what you typed and when. Ask them to scan the computer and check other accounts.",
+      "why": "They can check whether malware was installed and whether other computers are affected.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    },
+    {
+      "id": "ignore-fake-support",
+      "title": "If a pop-up or caller says they are tech support, stop",
+      "detail": "Close the pop-up or hang up. Real companies do not call you out of the blue or lock your screen to ask you to call.",
+      "why": "Fake support scams try to get remote access, passwords or payment.",
+      "source_name": "FTC: Tech support scams",
+      "source_url": "https://consumer.ftc.gov/articles/how-spot-avoid-and-report-tech-support-scams",
+      "do_not": "Do not call the number on the pop-up and do not let anyone you do not know connect to your computer."
+    },
+    {
+      "id": "call-bank-now",
+      "title": "If you gave card or bank details, or paid, call your bank",
+      "detail": "Call the fraud line on the back of your card or on your contacts card. Ask them to block the card and watch the account.",
+      "why": "Banks can block cards and sometimes reverse payments if they know quickly.",
+      "source_name": "FTC: What to do if you were scammed",
+      "source_url": "https://consumer.ftc.gov/articles/what-do-if-you-were-scammed",
+      "do_not": "Do not wait to see if money goes missing."
+    },
+    {
+      "id": "tell-staff",
+      "title": "Warn your staff about the message",
+      "detail": "Tell staff what the message looked like and that they should not click it. Ask anyone who clicked to tell you now.",
+      "why": "Phishing emails are often sent to several people at once. Others may have the same message.",
+      "source_name": "CISA: Recognize and report phishing",
+      "source_url": "https://www.cisa.gov/secure-our-world/recognize-and-report-phishing"
+    },
+    {
+      "id": "keep-evidence",
+      "title": "Keep the message and write down what happened",
+      "detail": "Keep the email or text. Take a photo of the fake page if it is still open. Write down the time, what you clicked and what you typed.",
+      "why": "Your IT contact, bank and the police will need these details.",
+      "source_name": "NIST SP 800-61r3",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+      "do_not": "Do not forward the email to staff as a warning: describe it instead."
+    },
+    {
+      "id": "report-phishing",
+      "title": "Report it",
+      "detail": "In the US, report it at reportfraud.ftc.gov. If money was lost, also report it to the FBI at ic3.gov.",
+      "why": "Reports help stop the same attackers and may be needed by your bank or insurer.",
+      "source_name": "FTC ReportFraud",
+      "source_url": "https://reportfraud.ftc.gov/"
+    },
+    {
+      "id": "report-outside-us",
+      "title": "Outside the US? Report it in your country",
+      "detail": "In Canada, report it to the Canadian Centre for Cyber Security at cyber.gc.ca and to your local police. In France, get help at cybermalveillance.gouv.fr.",
+      "why": "National services can help you report the crime and recover.",
+      "source_name": "Canadian Centre for Cyber Security",
+      "source_url": "https://www.cyber.gc.ca/en/incident-management"
+    }
+  ]
+}
