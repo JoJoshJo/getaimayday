@@ -17,14 +17,21 @@ export function contrast(a: string, b: string): number {
 export const CONTRAST_PAIRS = [
   { fg: 'text', bg: 'bg', min: 4.5 },
   { fg: 'text', bg: 'bg2', min: 4.5 },
+  { fg: 'text', bg: 'surface', min: 4.5 },
+  { fg: 'text', bg: 'avoidBg', min: 4.5 },
   { fg: 'textMuted', bg: 'bg', min: 4.5 },
   { fg: 'textMuted', bg: 'bg2', min: 4.5 },
+  { fg: 'textMuted', bg: 'surface', min: 4.5 },
   { fg: 'accentText', bg: 'bg', min: 4.5 },
-  { fg: 'accentText', bg: 'bg2', min: 4.5 },
-  { fg: 'accent', bg: 'bg', min: 3 }, // large text (step number) + UI marks only
+  { fg: 'accentText', bg: 'avoidBg', min: 4.5 },
+  { fg: 'accent', bg: 'bg', min: 3 }, // UI marks only (the Avoid bar, the button fill)
   { fg: 'onAccent', bg: 'accent', min: 4.5 },
+  { fg: 'onPrimary', bg: 'primary', min: 4.5 },
   { fg: 'ok', bg: 'bg', min: 4.5 },
+  { fg: 'ok', bg: 'okBg', min: 4.5 },
   { fg: 'warn', bg: 'bg', min: 4.5 },
+  { fg: 'warn', bg: 'warnBg', min: 4.5 },
+  { fg: 'info', bg: 'infoBg', min: 4.5 },
   { fg: 'ruleStrong', bg: 'bg', min: 3 },
   { fg: 'focus', bg: 'bg', min: 3 },
 ] as const

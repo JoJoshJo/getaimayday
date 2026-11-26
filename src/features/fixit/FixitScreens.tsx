@@ -12,6 +12,7 @@ import { StepAsk } from '../ask/StepAsk'
 import { StepContacts } from '../contacts/StepContacts'
 import { startIncident } from '../incident/start'
 import { PlanView } from '../incident/PlanView'
+import { FIXIT_ICON, ICON_STROKE } from '../../ui/icons'
 
 export function FixitList() {
   const { t } = useI18n()
@@ -27,14 +28,17 @@ export function FixitList() {
   )
 }
 
-/** Ruled rows, like the incident tiles. Also used on Home. */
-export function FixitTiles() {
+/** Tinted cards with an icon, like the incident tiles. `small` on Home: icon + title only. */
+export function FixitTiles({ small = false }: { small?: boolean }) {
   const { t } = useI18n()
   return (
-    <ul className="tiles">
-      {FIXIT_TOPICS.map((id) => (
+    <ul className={small ? 'tiles tiles--small' : 'tiles'}>
+      {FIXIT_TOPICS.map((id) => {
+        const Icon = FIXIT_ICON[id]
+        return (
         <li key={id}>
-          <a className="tile" href={`#/fixit/${id}`}>
+          <a className="tile" data-tone="fixit" href={`#/fixit/${id}`}>
+            <Icon className="tile__icon" aria-hidden="true" strokeWidth={ICON_STROKE} />
             <span className="tile__title">{t(`fixit.topic.${id}`)}</span>
             <span className="tile__desc">{t(`fixit.desc.${id}`)}</span>
             <span className="tile__go mono" aria-hidden="true">
@@ -42,7 +46,8 @@ export function FixitTiles() {
             </span>
           </a>
         </li>
-      ))}
+        )
+      })}
     </ul>
   )
 }
@@ -78,6 +83,8 @@ export function FixitView({ id }: { id: string }) {
       <PlanView
         key={`${fixit.id}-${lang}`}
         plan={fixit}
+        tone="fixit"
+        icon={FIXIT_ICON[fixit.topic]}
         title={t(`fixit.topic.${fixit.topic}`)}
         kicker={t('fixit.kickerVersion', { version: fixit.version })}
         doneAt={doneAt}

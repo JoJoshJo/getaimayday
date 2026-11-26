@@ -1,3 +1,4 @@
+import { ExternalLink } from 'lucide-react'
 import { forwardRef, type ReactNode } from 'react'
 import { useI18n } from '../../i18n'
 import type { PlanStep } from '../../plans/schema'
@@ -59,7 +60,7 @@ export const StepRow = forwardRef<HTMLElement, Props>(function StepRow({ step, i
             <dt className="mono">{t('plan.source')}</dt>
             <dd>
               <a className="mono notes__src" href={step.source_url} target="_blank" rel="noopener noreferrer">
-                {step.source_name} <span aria-hidden="true">↗</span>
+                {step.source_name} <ExternalLink className="inline-icon" aria-hidden="true" size={15} strokeWidth={1.75} />
               </a>
             </dd>
           </div>

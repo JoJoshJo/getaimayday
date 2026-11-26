@@ -1,4 +1,5 @@
-import { lazy, Suspense } from 'react'
+import { ChevronDown } from 'lucide-react'
+import { lazy, Suspense, useEffect, useRef } from 'react'
 import { useRoute } from './app/router'
 import { Home } from './features/home/Home'
 import { IncidentView } from './features/incident/IncidentView'
@@ -23,21 +24,72 @@ const Styleguide = lazy(() => import('./features/styleguide/Styleguide'))
 // Hidden dev page; its chunk pulls in Firebase. The main shell never loads Firebase.
 const Lab = lazy(() => import('./features/lab/Lab'))
 
+/** Home · Get ready · Incidents in view; Contacts, Offline Pack and Setup under "More". */
 function TopBar() {
   const connection = useConnection()
   const ready = useReadiness()
   const { t } = useI18n()
+  const route = useRoute()
+  const more = useRef<HTMLDetailsElement>(null)
+  // Close the menu when the page changes, on Escape, or on a click outside it.
+  useEffect(() => {
+    if (more.current) more.current.open = false
+  }, [route.path])
+  useEffect(() => {
+    const close = (e: Event) => {
+      const d = more.current
+      if (!d?.open) return
+      if (e instanceof KeyboardEvent ? e.key === 'Escape' : !d.contains(e.target as Node)) {
+        d.open = false
+        if (e instanceof KeyboardEvent) d.querySelector('summary')?.focus()
+      }
+    }
+    document.addEventListener('keydown', close)
+    document.addEventListener('click', close)
+    return () => {
+      document.removeEventListener('keydown', close)
+      document.removeEventListener('click', close)
+    }
+  }, [])
+  const cur = (p: string) => (route.path === p ? 'page' : undefined)
+  const inMore = ['/contacts', '/pack', '/setup'].includes(route.path)
   return (
     <header className="topbar">
       <a className="topbar__home" href="#/">
         <Wordmark />
       </a>
-      <nav className="topbar__nav mono" aria-label={t('nav.label')}>
-        <a href="#/ready">{t('nav.ready')}</a>
-        <a href="#/contacts">{t('nav.contacts')}</a>
-        <a href="#/incidents">{t('nav.incidents')}</a>
-        <a href="#/pack">{t('nav.pack')}</a>
-        <a href="#/setup">{t('nav.setup')}</a>
+      <nav className="topbar__nav" aria-label={t('nav.label')}>
+        <a href="#/" aria-current={cur('/')}>
+          {t('nav.home')}
+        </a>
+        <a href="#/ready" aria-current={cur('/ready')}>
+          {t('nav.ready')}
+        </a>
+        <a href="#/incidents" aria-current={cur('/incidents')}>
+          {t('nav.incidents')}
+        </a>
+        <details className="navmore" ref={more}>
+          <summary aria-current={inMore ? 'page' : undefined}>
+            {t('nav.more')} <ChevronDown aria-hidden="true" size={16} strokeWidth={1.75} />
+          </summary>
+          <ul className="navmore__menu">
+            <li>
+              <a href="#/contacts" aria-current={cur('/contacts')}>
+                {t('nav.contacts')}
+              </a>
+            </li>
+            <li>
+              <a href="#/pack" aria-current={cur('/pack')}>
+                {t('nav.pack')}
+              </a>
+            </li>
+            <li>
+              <a href="#/setup" aria-current={cur('/setup')}>
+                {t('nav.setup')}
+              </a>
+            </li>
+          </ul>
+        </details>
       </nav>
       <div className="topbar__end">
         <StatusChip state={connection} ready={ready} />

@@ -8,6 +8,7 @@
  * The tiles are always on screen and always work: the checklist never waits on AI.
  * The description never leaves the device (on-device model or plain matching).
  */
+import { Lock } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { router, type Source } from '../../ai/router'
 import { onDeviceAvailability } from '../../ai/warmup'
@@ -105,7 +106,9 @@ export function Home() {
               maxLength={2000}
             />
           </label>
-          <p className="field__hint">{t('home.private')}</p>
+          <p className="field__hint">
+            <Lock aria-hidden="true" strokeWidth={1.75} /> {t('home.private')}
+          </p>
           <div>
             <button type="submit" className="btn-mayday" disabled={status.kind === 'reading'}>
               {t('action.somethingWrong')}
@@ -141,7 +144,7 @@ export function Home() {
         <h2 id="fixits-title" className="mono home__tiles-title">
           {t('fixit.homeTitle')}
         </h2>
-        <FixitTiles />
+        <FixitTiles small />
       </section>
     </div>
   )

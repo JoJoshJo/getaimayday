@@ -14,7 +14,14 @@ npm run build && npx firebase-tools deploy --only hosting
 
 The build must end with "Secret check: no App Check debug token". Then open https://getaimayday.web.app and reload once so the new version loads.
 
-- [ ] (Session 9) **Pick a redesign direction: A, B or C.** Open `/#/styleguide` (locally: `npm run dev`, then http://localhost:5173/#/styleguide), use the switcher at the top (direction, light/dark, EN/FR), or look at `.brain/screens/redesign/` (README there has the comparison table). Reply with the letter (and anything to change). Nothing is applied to the app until you pick, so no deploy needed for this step.
+- [ ] (Session 9) **Deploy Session 9** (the "Warm and human" redesign) with the command above. It also ships Sessions 7 and 8 if those deploys are not done yet. Then on the live site:
+  1. Reload once. The text must be in the new round font (Google Sans Flex), not a fallback.
+  2. Wi-Fi off, reload: same font, icons and arrows still show, no errors in DevTools → Console.
+  3. Top bar: Home · Get ready · Incidents · More. Open More: Contacts, Offline Pack, Setup. Escape closes it.
+  4. Home: each incident tile has its own soft colour and icon. Open Ransomware: the whole plan panel is that colour, the current step is a white card, ticking a step shows the green "Logged" mark.
+  5. Switch your Mac to dark mode and back: both look right. Try FR.
+  6. Optional: Lighthouse on the live Home (mobile); local accessibility is 100 on every page.
+- [x] (Session 9) Pick a redesign direction: J picked **C · Warm and human** on 2026-11-26. Applied app-wide in Session 9 step 2.
 - [ ] (Session 8) **Deploy Session 8** (fix-it questions use `PREFER_ON_DEVICE`) with the command above. It also ships Session 7 if that deploy is not done yet. Then on the live site:
   1. On your Mac (Nano ready): Home → Everyday IT problems → Printer → Ask a question "how long do I wait before I plug it back in?". Expect the **On-device AI** badge and, under the box, "On this computer, questions about everyday IT problems may be answered by cloud AI. Don't type personal details."
   2. On a laptop without on-device AI (or Chrome with no Nano), Wi-Fi on: same question. Expect the **Cloud AI** badge. This is the SDK's own fallback; there is no preview on purpose (fix-its hold no incident or business data).
@@ -966,3 +973,33 @@ Brief (architect, via J): live site verified by J (App Check + reCAPTCHA Enterpr
 **Not done (by design):** step 2, applying a direction app-wide. Waiting for J's pick (J TODO Session 9). The old fonts (Archivo, Figtree, IBM Plex Mono) stay until step 2 replaces them.
 
 **Next:** J picks A, B or C → Session 9 step 2: apply it across the app, rewrite DESIGN.md, Lighthouse a11y 100, deploy.
+
+---
+
+## 2026-11-26 — Session 9 step 2: apply "Warm and human" across the app (Claude Code)
+
+**Goal:** J picked direction C. Apply it to every screen, rewrite DESIGN.md, then build, tests, lint, offline, CSP, Lighthouse (accessibility 100) and anti-slop. Visual layer only: no logic, AI routing, storage, plan content or test behaviour changed.
+
+**Steps, in order:**
+
+1. **Tokens** (`src/ui/tokens.ts`): replaced the v1 palette with C (Paper + Ink), added `tint` (bg + icon ink per incident and fix-its, light + dark), fonts Google Sans Flex (ROND 100) and Google Sans Code, radius 12/16px, sizes for icons. Removed the `redesign` preview export. `applyTokens.ts` now also writes `--tint-<id>` / `--tint-<id>-ink`. `contrast.ts`: pairs added for surface, bg2, avoidBg, ok/warn/info on their soft backgrounds.
+2. **Fonts:** `main.tsx` imports `google-sans-flex/rond.css` and `google-sans-code/wght.css`. Archivo, Figtree and IBM Plex Mono imports removed and the packages uninstalled.
+3. **Icons** (`src/ui/icons.ts`, new): lucide icons per incident, per fix-it and per answer source. Used in tiles, the plan header, source badges, the wordmark, empty states and the Home privacy hint. Always `aria-hidden`, next to words.
+4. **Styles** (`src/ui/styles.css`): rewritten for C with the same class names, so no component logic changed. Sentence case (the `.mono` class is now a normal label style), soft buttons, a primary dark button, tinted plan panel with the current step as a white card, round checks, "Avoid" box with an accent bar, green "Logged" pill, tinted tiles, soft cards for log, contacts, Get ready, Pack. Print styles kept.
+5. **Markup only:** top bar nav is Home · Get ready · Incidents · More (`<details>` menu with Contacts, Offline Pack, Setup; closes on page change, Escape, outside click; `nav.more` EN "More" / FR "Plus"). `PlanView` takes optional `tone` + `icon`. Fix-it tiles on Home are small. Empty states for the incident list and contacts.
+6. **Gotcha, offline:** the ← → ↗ characters are not in the latin font subset. As text they made Chrome fetch the math/symbols subsets, which are not precached, so offline gave `ERR_INTERNET_DISCONNECTED` page errors (caught by `judge.mjs`). Replaced with lucide `ArrowLeft`, `ArrowRight`, `ExternalLink`. New tests ban arrow characters in copy and JSX text.
+7. **Fixes after screenshots:** mobile top bar on two rows; "Back online" buttons were invisible inside the log (bg2 on bg2), now on bg; Home hero uses bg2 so it doesn't look like the warning box.
+8. **Styleguide:** v2 page (tokens with contrast, tints with icons, source badges, steps in a tinted plan). Preview files `Redesign.tsx`, `redesignCss.ts`, `redesign.css` deleted.
+9. **DESIGN.md** rewritten as v2 (principles, colours + tints + contrast table, type, shape, layout, components, icons, banned list, decisions). Screenshots of the applied design: `.brain/screens/applied/` (10 PNGs; step 1 previews stay in `.brain/screens/redesign/`).
+
+**Verification (all local, built app):**
+- vitest 436/436 (design tests: every token and tint pair ≥ 4.5:1, no purple, radius ≤ 16px, no arrows in copy), lint 0, `npm run build` + "Secret check: no App Check debug token".
+- `s4.mjs` all blocks 56/56, demo block 0 FAIL, `csp.mjs` 0 violations, `judge.mjs` 5/5 (offline, no page errors), DevTools issues 0, PWA manifest OK + offline reload OK, `fallback.mjs` 11 PASS (Session 8 hybrid behaviour unchanged).
+- Lighthouse desktop, EN + FR, Home / plan / Pack / Get ready: accessibility 100, best practices 100, SEO 100, performance 99–100. Mobile: accessibility 100 everywhere, performance 92 on Home (font + icons), 100 on the rest.
+- Precache: only latin + latin-ext font files, 989 KB.
+
+**Files:** `package.json`/lock, `src/main.tsx`, `src/App.tsx`, `src/ui/{tokens.ts,applyTokens.ts,contrast.ts,components.tsx,styles.css,icons.ts}`, `src/features/{home/Home.tsx,home/IncidentTiles.tsx,fixit/FixitScreens.tsx,incident/PlanView.tsx,incident/IncidentView.tsx,incident/StepRow.tsx,contacts/ContactsCard.tsx,log/IncidentList.tsx,log/OpenIncidents.tsx,styleguide/Styleguide.tsx}`, deleted `styleguide/{Redesign.tsx,redesignCss.ts,redesign.css}`, `src/i18n/{en,fr}.json`, `tests/design.test.ts`, `.brain/DESIGN.md`, `.brain/screens/applied/*`, this file.
+
+**Not verified:** the live site (needs J's deploy: J TODO Session 9), and real Nano / real Gemini answers with the new badges (unchanged logic, same checks as Session 8).
+
+**Next:** J deploys and runs the Session 9 checks. If filming the demo, re-record any scene that shows the old look.

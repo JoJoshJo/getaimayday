@@ -1,11 +1,14 @@
+import { ArrowLeft, ArrowRight } from 'lucide-react'
 import { useState, type ReactNode } from 'react'
 import { useI18n } from '../../i18n'
 import { getPlan } from '../../plans'
-import { DoNot, LangToggle, Progress, Stamp, StatusChip, Wordmark } from '../../ui/components'
+import { Wrench } from 'lucide-react'
+import { INCIDENTS } from '../../plans/incidents'
+import { DoNot, LangToggle, Progress, SourceBadge, Stamp, StatusChip, Wordmark } from '../../ui/components'
+import { ICON_STROKE, INCIDENT_ICON } from '../../ui/icons'
 import { CONTRAST_PAIRS, contrast } from '../../ui/contrast'
 import { tokens, type ColorToken } from '../../ui/tokens'
 import { StepRow } from '../incident/StepRow'
-import { RedesignSwitcher } from './Redesign'
 
 const SAMPLE_TIME = new Date(2026, 10, 24, 14, 2) // fixed sample for the stamp
 
@@ -14,9 +17,8 @@ export default function Styleguide() {
   const [stampKey, setStampKey] = useState(0)
   return (
     <div className="sg">
-      <RedesignSwitcher />
       <header className="sg__head page">
-        <p className="kicker mono">AIMayday · design system v1</p>
+        <p className="kicker mono">AIMayday · design system v2 · Warm and human</p>
         <h1 className="plan__title">Styleguide</h1>
         <p className="sg__lede">
           Every token and component in Paper (light) and Ink (dark). Source: <code>src/ui/tokens.ts</code>, spec:{' '}
@@ -87,13 +89,13 @@ function Panel({ theme, name, stampKey }: { theme: 'light' | 'dark'; name: strin
 
       <Block title="Type">
         <div className="sg__type">
-          <span className="step__num sg__num">07</span>
           <span className="plan__title">Ransomware</span>
           <span className="wordmark">AIMayday</span>
           <span className="step__title">Disconnect the infected computer</span>
           <span>Body. Unplug its network cable and turn off its Wi-Fi. Leave the computer switched on.</span>
           <span className="sg__small">Small. The attackers may be watching the infected computer.</span>
-          <span className="mono">Mono label · Source · 14:02</span>
+          <span className="mono">Label · Source</span>
+          <span className="code">Code · 14:02 · .crypt7</span>
         </div>
       </Block>
 
@@ -136,10 +138,10 @@ function Panel({ theme, name, stampKey }: { theme: 'light' | 'dark'; name: strin
         </div>
         <div className="sg__row">
           <button type="button" className="btn">
-            ← {t('plan.prev')}
+            <ArrowLeft className="inline-icon" aria-hidden="true" size={18} strokeWidth={1.75} /> {t('plan.prev')}
           </button>
           <button type="button" className="btn btn--strong">
-            {t('plan.next')} →
+            {t('plan.next')} <ArrowRight className="inline-icon" aria-hidden="true" size={18} strokeWidth={1.75} />
           </button>
           <button type="button" className="btn btn--quiet">
             {t('plan.viewAll')}
@@ -161,8 +163,35 @@ function Panel({ theme, name, stampKey }: { theme: 'light' | 'dark'; name: strin
         </div>
       </Block>
 
+      <Block title="Incident tints and icons">
+        <div className="sg__tones">
+          {INCIDENTS.map((i) => {
+            const Icon = INCIDENT_ICON[i]
+            return (
+              <div key={i} className="sg__tone" data-tone={i}>
+                <Icon aria-hidden="true" strokeWidth={ICON_STROKE} />
+                <span>{t(`incident.${i}`)}</span>
+              </div>
+            )
+          })}
+          <div className="sg__tone" data-tone="fixit">
+            <Wrench aria-hidden="true" strokeWidth={ICON_STROKE} />
+            <span>{t('fixit.kicker')}</span>
+          </div>
+        </div>
+      </Block>
+
+      <Block title="Source badges">
+        <div className="sg__row">
+          <SourceBadge source="on-device" />
+          <SourceBadge source="cloud" />
+          <SourceBadge source="pack" />
+          <SourceBadge source="checklist" />
+        </div>
+      </Block>
+
       <Block title="Steps: done · current · todo">
-        <div className="plan">
+        <div className="plan" data-tone="ransomware">
           <div className="steps">
             <StepRow step={s2} index={0} total={15} state="done" doneAt={logged} onToggle={() => {}} key={`d${stampKey}`} />
             <StepRow step={s1} index={1} total={15} state="current" onToggle={() => {}} />

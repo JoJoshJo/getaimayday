@@ -1,4 +1,5 @@
 /** Emergency contacts card (MUST #8): offline, one tap to call, email or copy. */
+import { ExternalLink } from 'lucide-react'
 import { useState } from 'react'
 import { useI18n } from '../../i18n'
 import { CONTACT_ROLES, FIXED_LINKS, hasContact, telHref, type Contacts } from '../setup/model'
@@ -20,7 +21,7 @@ export function ContactsCard({ contacts, compact = false }: { contacts: Contacts
   return (
     <div className="contacts">
       {filled.length === 0 && (
-        <p className="muted">
+        <p className="empty">
           {t('contacts.empty')} <a href="#/setup">{t('contacts.addNow')}</a>
         </p>
       )}
@@ -58,7 +59,7 @@ export function ContactsCard({ contacts, compact = false }: { contacts: Contacts
             <span className="contacts__name">{t(`contacts.fixedDesc.${l.key}`)}</span>
             <span className="contacts__actions">
               <a className="btn" href={l.url} target="_blank" rel="noopener noreferrer">
-                {new URL(l.url).host} <span aria-hidden="true">↗</span>
+                {new URL(l.url).host} <ExternalLink className="inline-icon" aria-hidden="true" size={15} strokeWidth={1.75} />
               </a>
             </span>
           </li>

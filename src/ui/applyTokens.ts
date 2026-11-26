@@ -23,8 +23,12 @@ export function tokensCss(): string {
     vars('size', t.size),
     vars('motion', t.motion),
   ].join('\n')
-  const paper = vars('color', t.color.paper)
-  const ink = vars('color', t.color.ink)
+  const tints = (set: typeof t.tint.paper) =>
+    Object.entries(set)
+      .map(([k, v]) => `--tint-${k}: ${v.bg}; --tint-${k}-ink: ${v.ink};`)
+      .join(' ')
+  const paper = vars('color', t.color.paper) + ' ' + tints(t.tint.paper)
+  const ink = vars('color', t.color.ink) + ' ' + tints(t.tint.ink)
 
   // Theme: follows the OS; data-theme="light|dark" on any element forces it for that subtree.
   return `

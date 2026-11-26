@@ -1,4 +1,6 @@
+import { LifeBuoy } from 'lucide-react'
 import { useI18n } from '../i18n'
+import { ICON_STROKE, SOURCE_ICON } from './icons'
 import { LANGUAGES } from '../i18n/messages'
 import type { Source } from '../ai/router'
 import type { ConnectionState } from './useConnection'
@@ -36,7 +38,12 @@ export function LangToggle() {
 }
 
 export function Wordmark() {
-  return <span className="wordmark">AIMayday</span>
+  return (
+    <span className="wordmark">
+      <LifeBuoy aria-hidden="true" size={24} strokeWidth={ICON_STROKE} />
+      AIMayday
+    </span>
+  )
 }
 
 /** Segmented progress: one segment per step. */
@@ -69,7 +76,13 @@ const SOURCE_LABEL: Record<Source, string> = { 'on-device': 'On-device AI', clou
 
 /** Every AI answer shows its REAL source (MASTER.md §3). */
 export function SourceBadge({ source }: { source: Source }) {
-  return <span className={`badge badge--${source}`}>{SOURCE_LABEL[source]}</span>
+  const Icon = SOURCE_ICON[source]
+  return (
+    <span className={`badge badge--${source}`}>
+      <Icon aria-hidden="true" strokeWidth={ICON_STROKE} />
+      {SOURCE_LABEL[source]}
+    </span>
+  )
 }
 
 export function DoNot({ children }: { children: string }) {

@@ -1,7 +1,11 @@
+import { ArrowLeft, ArrowRight } from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useI18n } from '../../i18n'
 import type { PlanStep } from '../../plans/schema'
 import { Progress } from '../../ui/components'
+import { ICON_STROKE } from '../../ui/icons'
+import type { Tone } from '../../ui/tokens'
 import { StepRow, type StepState } from './StepRow'
 
 /** Anything with versioned steps: an incident plan or an IT fix-it. */
@@ -20,9 +24,12 @@ type Props = {
   stepExtras?: (step: PlanStep) => ReactNode
   /** Start on this step (e.g. the first unchecked one when resuming). */
   initialStep?: number
+  /** Calm colour of this incident (or "fixit") and its icon (DESIGN.md §2 tints). */
+  tone?: Tone
+  icon?: LucideIcon
 }
 
-export function PlanView({ plan, title, kicker, doneAt, onToggle, stepExtras, initialStep = 0 }: Props) {
+export function PlanView({ plan, title, kicker, doneAt, onToggle, stepExtras, initialStep = 0, tone, icon: Icon }: Props) {
   const { t } = useI18n()
   const [view, setView] = useState(initialStep)
   const [showAll, setShowAll] = useState(false)
@@ -69,8 +76,9 @@ export function PlanView({ plan, title, kicker, doneAt, onToggle, stepExtras, in
   const rows = showAll ? plan.steps.map((_, i) => i) : [view]
 
   return (
-    <section className="plan" aria-labelledby="plan-title">
+    <section className="plan" data-tone={tone} aria-labelledby="plan-title">
       <header className="plan__head">
+        {Icon && <Icon className="plan__icon" aria-hidden="true" strokeWidth={ICON_STROKE} />}
         <p className="kicker mono">{kicker ?? t('plan.kicker', { version: plan.version })}</p>
         <h2 id="plan-title" className="plan__title">
           {title}
@@ -82,10 +90,10 @@ export function PlanView({ plan, title, kicker, doneAt, onToggle, stepExtras, in
         {!showAll && (
           <>
             <button type="button" className="btn" onClick={() => go(view - 1)} disabled={view === 0}>
-              <span aria-hidden="true">←</span> {t('plan.prev')}
+              <ArrowLeft className="inline-icon" aria-hidden="true" size={18} strokeWidth={1.75} /> {t('plan.prev')}
             </button>
             <button type="button" className="btn btn--strong" onClick={() => go(view + 1)} disabled={view === total - 1}>
-              {t('plan.next')} <span aria-hidden="true">→</span>
+              {t('plan.next')} <ArrowRight className="inline-icon" aria-hidden="true" size={18} strokeWidth={1.75} />
             </button>
           </>
         )}

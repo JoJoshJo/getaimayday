@@ -1,204 +1,182 @@
-# AIMAYDAY — DESIGN SPEC (v1, 2026-11-24)
+# AIMAYDAY · DESIGN SPEC (v2, 2026-11-26)
 
-> Direction: **Editorial emergency manual.** A printed field manual crossed with a pilot's Quick Reference Handbook (QRH).
+> Direction: **Warm and human** (chosen by J, Session 9, from three previews; see `.brain/screens/redesign/`).
+> The user is a stressed small-business office manager, not an IT person. v1 ("editorial emergency manual": all caps, mono labels, ruled lines) was "too IT".
 > Source of truth for visual decisions. All values live in `src/ui/tokens.ts`; nothing else hard-codes a color, font or size.
 
 ---
 
 ## 1. Principles
 
-1. **Readable under stress.** Large body text, one action per step, high contrast, nothing moving unless the user caused it.
-2. **Printed, not "app".** Paper and ink, thin rules, real typography. If the screen were printed, it should look the same.
-3. **One signal.** A single red-orange accent means "act here" or "danger". If everything is loud, nothing is.
-4. **Honest and calm.** Plain words, no hype, no decoration that doesn't carry information.
-5. **Works offline, looks the same offline.** Fonts are self-hosted and precached; no external requests.
+1. **Readable under stress.** 18px body, sentence case, one main action per screen, high contrast, nothing moving unless the user caused it.
+2. **Friendly, not techy.** Soft corners, a calm colour per incident, a line icon next to words, warm neutrals.
+3. **One signal.** The red-orange accent means "act now" or "danger": only "Something's wrong" and urgent "Avoid" boxes.
+4. **Honest and calm.** Plain words, no hype, no decoration that doesn't carry information. The source badge always tells the truth.
+5. **Works offline, looks the same offline.** Fonts are self-hosted and precached; icons are SVG, never font glyphs; no external requests.
 
 ---
 
 ## 2. Color
 
-Two themes: **Paper** (light, default) and **Ink** (dark, follows `prefers-color-scheme`). Same single accent in both.
+Two themes: **Paper** (light, default) and **Ink** (dark, follows `prefers-color-scheme`; `data-theme="light|dark"` forces it on any subtree).
 
-### Tokens
-
-| Token | Paper (light) | Ink (dark) | Use |
+| Token | Paper | Ink | Use |
 |---|---|---|---|
-| `bg` | `#fbf9f5` paper | `#171412` ink | page |
-| `bg-2` | `#f3eee6` paper-2 | `#221e1b` ink-2 | quiet bands (do-not box, toggle off state) |
-| `rule` | `#ddd5c8` | `#3d3631` | hairlines, dividers |
-| `rule-strong` | `#171412` | `#fbf9f5` | checkbox border, heavy section rules |
-| `text` | `#171412` | `#fbf9f5` | body, headings |
-| `text-muted` | `#5b544d` | `#b3aaa0` | footnotes, meta |
-| `accent` | `#ff4829` | `#ff4829` | Mayday signal (see rules below) |
-| `accent-text` | `#c22a10` | `#ff4829` | accent used as **small text** (stamp, "DO NOT" label) |
-| `on-accent` | `#171412` | `#171412` | text on an accent fill |
-| `ok` | `#2e6b3f` deep green | `#7cc08f` | status chip only |
-| `warn` | `#8a5a0b` ochre | `#d9a441` | status chip only |
-| `focus` | `#171412` | `#fbf9f5` | focus ring (ink/paper, not accent, so the accent stays rare) |
+| `bg` | `#ffffff` | `#191614` | page, step cards |
+| `bg2` | `#f2eee8` | `#2c2723` | home hero, soft buttons, panels (found on screen, preview, answers) |
+| `surface` | `#faf8f5` | `#221e1b` | cards on the page (log, Get ready rows, contacts, Pack) |
+| `rule` | `#e6e0d7` | `#3e3732` | hairlines |
+| `ruleStrong` | `#2a2420` | `#f6f1eb` | check circle ring |
+| `text` | `#2a2420` | `#f6f1eb` | body, headings |
+| `textMuted` | `#625952` | `#bcb2a7` | meta, hints |
+| `accent` | `#ff4829` | `#ff4829` | "Something's wrong" fill, "Avoid" left bar |
+| `accentText` | `#b52a10` | `#ff7a60` | the "Avoid" label |
+| `onAccent` | `#2a2420` | `#2a2420` | text on the accent |
+| `avoidBg` | `#fdebe5` | `#3a211b` | "Avoid" box |
+| `primary` / `onPrimary` | `#2a2420` / `#ffffff` | `#f6f1eb` / `#191614` | the main button of every other screen (Next step, Confirm, Search) and selected toggles |
+| `ok` / `okBg` | `#2b6b40` / `#e4f0e7` | `#86c798` / `#1e2e23` | done check, "Logged" mark, progress, status chip |
+| `warn` / `warnBg` | `#80520a` / `#fcf1dc` | `#e6b765` / `#352a16` | open incident banner, "To do" pills, retry note, demo line |
+| `info` / `infoBg` | `#2f5d8a` / `#e8eff6` | `#9cc0e6` / `#1d2733` | source badges |
+| `focus` | `#2a2420` | `#f6f1eb` | 3px focus ring |
+
+### Incident tints (`tokens.tint`, CSS `--tint-<id>` and `--tint-<id>-ink`)
+
+Each incident has its own calm colour, used for its tile, the whole plan panel, and its icon. Set with `data-tone="<incident>"` (or `fixit`).
+
+| Tone | Paper bg / icon | Ink bg / icon | Worst text ratio (paper / ink) |
+|---|---|---|---|
+| ransomware | `#fdece6` / `#a8331a` | `#3a221b` / `#ff9a82` | 5.81 / 7.07 |
+| bec | `#fcf1dc` / `#80520a` | `#352a16` / `#e6b765` | 5.99 / 6.74 |
+| phishing | `#e7f0fa` / `#2a5a92` | `#1b2a3c` / `#9cc3ef` | 5.94 / 6.97 |
+| lost-device | `#e7f2e8` / `#2b6b40` | `#1d2e21` / `#8fd0a0` | 5.57 / 6.87 |
+| outage | `#efede8` / `#5a534c` | `#2b2825` / `#cfc6bb` | 5.85 / 7.02 |
+| fixit | `#eaf2f1` / `#2c6660` | `#1a2e2c` / `#8fcfc6` | 5.81 / 6.84 |
+
+"Worst" = the lowest of text, muted text and icon ink on that tint. All ≥ 4.5:1, tested.
 
 ### Accent rules (strict)
-The accent `#ff4829` appears in exactly three places:
-1. The main **"Something's wrong"** action (accent fill, ink text).
-2. The **current step marker** (the left bar next to the current step + its big number).
-3. **Urgent "Do not"** items (4px left border + the box's mono label).
+`#ff4829` appears only on: (1) the **"Something's wrong"** button, (2) the left bar of **"Avoid"** boxes (and the clean-device warning on Home, which is the same component), with `accentText` for the "Avoid" label. The current step is a white card, not the accent. Done = green, not the accent.
 
-Plus the **LOGGED stamp**, which is the "current step marker" family (it marks an action taken). Never as a background wash, gradient, hover tint or decoration.
+### Contrast (WCAG 2.2 AA), computed in `tests/design.test.ts`
 
-### Contrast (WCAG 2.2 AA) — computed, not eyeballed
-
-| Pair | Ratio | Needed | Result |
+| Pair | Paper | Ink | Min |
 |---|---|---|---|
-| Paper: text `#171412` on bg `#fbf9f5` | 17.44 | 4.5 | ✅ |
-| Paper: text on bg-2 `#f3eee6` | 15.88 | 4.5 | ✅ |
-| Paper: text-muted `#5b544d` on bg | 7.08 | 4.5 | ✅ |
-| Paper: text-muted on bg-2 | 6.45 | 4.5 | ✅ |
-| Paper: accent `#ff4829` on bg — **large text / UI marks** | 3.22 | 3.0 | ✅ |
-| Paper: accent `#ff4829` on bg — **small text** | 3.22 | 4.5 | ❌ → use `accent-text` |
-| Paper: accent-text `#c22a10` on bg | 5.50 | 4.5 | ✅ |
-| Paper: accent-text on bg-2 | 5.01 | 4.5 | ✅ |
-| Paper: on-accent `#171412` on accent (button) | 5.42 | 4.5 | ✅ |
-| Paper: paper `#fbf9f5` on accent | 3.22 | 4.5 | ❌ → never use light text on the accent |
-| Paper: ok `#2e6b3f` on bg | 6.07 | 4.5 | ✅ |
-| Paper: warn `#8a5a0b` on bg | 5.63 | 4.5 | ✅ |
-| Paper: checkbox border (rule-strong) on bg | 17.44 | 3.0 | ✅ |
-| Ink: text `#fbf9f5` on bg `#171412` | 17.44 | 4.5 | ✅ |
-| Ink: text on bg-2 `#221e1b` | 15.73 | 4.5 | ✅ |
-| Ink: text-muted `#b3aaa0` on bg | 8.01 | 4.5 | ✅ |
-| Ink: text-muted on bg-2 | 7.23 | 4.5 | ✅ |
-| Ink: accent `#ff4829` on bg (any size) | 5.42 | 4.5 | ✅ |
-| Ink: accent on bg-2 | 4.89 | 4.5 | ✅ |
-| Ink: on-accent on accent (button) | 5.42 | 4.5 | ✅ |
-| Ink: ok `#7cc08f` on bg | 8.55 | 4.5 | ✅ |
-| Ink: warn `#d9a441` on bg | 8.15 | 4.5 | ✅ |
-| Ink: checkbox border on bg | 17.44 | 3.0 | ✅ |
-
-Hairline `rule` colors are decorative separators (not required for understanding), so they are exempt from 1.4.11; every interactive control has a full-contrast border.
-
-**Decision for J:** the spec says one accent. In Paper mode `#ff4829` can't carry small text, so I added `accent-text #c22a10`: the same hue, darker, used only where the accent appears as small text. In Ink mode both are `#ff4829`. Alternative: never set the accent as small text, only as borders and marks, and keep the labels in ink. I recommend `accent-text`, because the stamp reads as a stamp only if it's red.
+| text on bg | 15.31 | 16.04 | 4.5 |
+| text on bg2 | 13.25 | 13.15 | 4.5 |
+| text on surface | 14.44 | 14.73 | 4.5 |
+| text on avoidBg | 13.26 | 13.23 | 4.5 |
+| textMuted on bg | 6.84 | 8.63 | 4.5 |
+| textMuted on bg2 | 5.92 | 7.08 | 4.5 |
+| textMuted on surface | 6.45 | 7.93 | 4.5 |
+| accentText on bg | 6.36 | 7.04 | 4.5 |
+| accentText on avoidBg | 5.51 | 5.81 | 4.5 |
+| accent on bg (marks only) | 3.38 | 5.33 | 3 |
+| onAccent on accent | 4.53 | 4.53 | 4.5 |
+| onPrimary on primary | 15.31 | 16.04 | 4.5 |
+| ok on bg / okBg | 6.40 / 5.46 | 9.12 / 7.23 | 4.5 |
+| warn on bg / warnBg | 6.71 / 5.99 | 9.71 / 7.58 | 4.5 |
+| info on infoBg | 5.93 | 7.98 | 4.5 |
+| ruleStrong, focus on bg | 15.31 | 16.04 | 3 |
 
 ---
 
 ## 3. Typography
 
-All self-hosted via Fontsource (verified on npm 2026-11-24), bundled by Vite, precached by the service worker.
+Self-hosted via Fontsource (verified on npm 2026-11-26, 5.3.2, OFL), bundled by Vite, precached by the service worker.
 
-| Role | Family (package) | Settings |
+| Role | Family (package, file) | Settings |
 |---|---|---|
-| **Display** | Archivo Variable (`@fontsource-variable/archivo`, `wdth.css`: weight 100–900, width 62–125%) | weight 800–900, `font-stretch: 112%`, UPPERCASE, tracking −0.01em to −0.02em |
-| **Body** | Figtree Variable (`@fontsource-variable/figtree`, weight 300–900; we use 300–600) | 400 body, 600 step titles |
-| **Mono** | IBM Plex Mono (`@fontsource/ibm-plex-mono`, 400 only) | UPPERCASE, tracking +0.12em, small sizes |
+| **Everything** | Google Sans Flex Variable (`@fontsource-variable/google-sans-flex/rond.css`: weight 1–1000 + roundness `ROND`; latin 71 KB) | `font-variation-settings: 'ROND' 100` (fully round), 400 body, 500 labels, 600 headings and step titles, 700 wordmark and "Something's wrong" |
+| **Code** | Google Sans Code Variable (`@fontsource-variable/google-sans-code/wght.css`, latin 35 KB) | only times in the log, file extensions, technical error details (`.code`, `.log__time`) |
 
-Fallback stacks are generic only (`sans-serif`, `monospace`) — no Inter/Roboto/system-ui as a primary.
-Precache: only the **latin + latin-ext** woff2 subsets (EN + FR need nothing else). Other subsets stay out of the cache to keep the offline pack small.
+- **Sentence case everywhere.** No uppercase labels, no letter-spacing, except the tiny EN/FR language tags.
+- Fallback stacks are generic only (`sans-serif`, `monospace`).
+- **Precache: latin + latin-ext only.** Every other subset is in `globIgnores` (`src/sw/pwa.config.ts`). Fonts are never inlined as `data:` (CSP `font-src 'self'`; `vite.config.ts` `assetsInlineLimit`).
+- **Arrows and the external-link mark are lucide icons, not characters.** ← → ↗ live in the font's math/symbols subsets, which are not precached: as text they triggered a font download that failed offline (Session 9).
 
 ### Scale (rem, base 16px)
-| Token | Size | Font | Use |
-|---|---|---|---|
-| `step-num` | clamp(3.5rem, 9vw, 6rem) | Display 900 | huge step number in the left margin |
-| `display-xl` | clamp(2.25rem, 5vw, 3.5rem) | Display 900 | plan title ("RANSOMWARE") |
-| `display-md` | 1.375rem | Display 800 | wordmark, section heads |
-| `title` | 1.5rem / 1.25 | Body 600 | step title (the action) |
-| `body` | 1.125rem / 1.55 | Body 400 | step detail |
-| `small` | 1rem / 1.5 | Body 400 | footnote text |
-| `mono` | 0.8125rem / 1.4 | Mono 400, tracking .12em, uppercase | labels, timestamps, sources, chips, log |
-| `mono-sm` | 0.75rem | Mono 400 | progress fraction, meta |
+| Token | Size | Use |
+|---|---|---|
+| `displayXl` | clamp(2.25rem, 5.5vw, 3rem) / 1.1 | page titles ("What is happening?", "Ransomware") |
+| `h2` / `title` | 1.375rem / 1.3 | section headings |
+| step title | 1.5rem / 1.3 | the action of the current step |
+| `body` | 1.125rem / 1.55 | step detail, answers |
+| `small` | 1rem | buttons, hints, footnotes |
+| `label` | 0.9375rem | small labels, badges, chips |
+| `code` | 0.9375rem | times, file extensions |
 
-Body never goes below 16px. Line length for detail text capped at ~68ch.
+Body never below 16px. Line length capped at ~66ch.
 
 ---
 
 ## 4. Space, shape, motion
 
 - **Space** (4px base): 4, 8, 12, 16, 24, 32, 48, 64, 96.
-- **Radius**: 0 everywhere by default; `radius-sm` 2px for buttons/toggle; **max 4px**. No pills.
-- **Borders**: hairline 1px `rule`; strong 2px `rule-strong` (checkbox, primary rules); accent bar 4px.
-- **Shadows**: none. Elevation is shown with rules and `bg-2`, never shadows.
-- **Tap targets**: min 44×44px (checkbox hit area 44px, box drawn 28px).
-- **Motion**: `fast` 120ms (hover/press color only), `stamp` 250ms. Easing `cubic-bezier(.2,.8,.2,1)`; stamp uses a slight overshoot.
-- **Reduced motion**: `prefers-reduced-motion: reduce` → all durations 0; the stamp just appears.
+- **Radius**: `sm` 12px (buttons, inputs, boxes, chips), `md` 16px (cards, panels, tiles, the plan). **Max 16px** (tested). Circles (`50%`) only for the step check and status dots.
+- **Borders**: hairline 1px `rule`; inputs 1.5px `textMuted`; check ring 2px; "Avoid" bar 4px accent.
+- **Shadows**: none. Depth comes from tints and `surface` vs `bg`.
+- **Tap targets**: min 44px; buttons 48px; "Something's wrong" 56px.
+- **Motion**: 120ms colour changes; the "Logged" mark fades and scales in (200ms). `prefers-reduced-motion` → 0ms.
 
 ---
 
 ## 5. Layout
 
-- **Asymmetric, left-aligned editorial grid.** Desktop: a fixed left margin column (~9rem) holds step numbers and mono meta; content column max ~44rem; generous right white space. Nothing is centered.
-- **Mobile (<640px)**: margin column collapses; the step number sits above the title, still left-aligned, still large. 16px side gutter, no horizontal scroll.
-- **Rules, not cards**: sections and steps are separated by hairlines. No boxed card grid.
-- **Top bar**: wordmark left (Display, uppercase), then status chip (mono), EN/FR toggle right. A strong 2px rule underneath.
+- Max width 72rem, left aligned. 16px side gutter on phones, 32px from 640px. No horizontal scroll.
+- **Home**: a soft `bg2` hero card (title, clean-device warning, description, "Something's wrong"), then incident tiles in a responsive grid (min 17rem), then the IT fix-its as small tiles (icon + title).
+- **Plan**: one panel in the incident's tint holding the header (icon, kicker, title, progress), the toolbar, and the current step as a white card. The incident log and back-online jobs follow in a `surface` card.
+- **Phones (≤640px)**: top bar on two rows (wordmark, status, language / nav); tiles show the icon beside the title.
 
 ---
 
 ## 6. Components
 
-**Wordmark** — "AIMAYDAY" in Display 900, stretch 112%. No logo glyph yet (logo later, MASTER §4).
+**Top bar**: wordmark (life-buoy icon + "AIMayday"), nav **Home · Get ready · Incidents · More** (Contacts, Offline Pack, Setup in a `<details>` menu that closes on page change, Escape and outside click), status chip, EN/FR toggle. The current page has a soft `bg2` background (`aria-current="page"`).
 
-**Status chip** (mono, uppercase, 1px border, square, small square indicator in `ok`/`warn`):
-- `OFFLINE READY` (ok) — service worker controls the page, app is cached.
-- `ONLINE · PREPARING OFFLINE` (warn) — first load, cache not ready yet.
-- `OFFLINE` (ok) — no network, running from cache (it's fine; that's the point).
-Status colors appear **only** here (and later on the readiness screen).
+**Status chip**: soft pill, `ok` on `okBg` (Offline ready / Offline) or `warn` on `warnBg` (Preparing, Get ready · 3/5). Links to Get ready.
 
-**EN/FR toggle** — two square segments, mono uppercase, 2px ink border; selected = ink fill / paper text; 44px tall.
+**Buttons**: `.btn` soft (`bg2` fill, border on hover); `.btn--strong` primary (`primary` fill: Next step, Confirm, Search); `.btn--quiet` underlined text. **`.btn-mayday`** only for "Something's wrong" (accent fill, ink text, 700, 56px).
 
-**Plan header** — mono kicker ("INCIDENT PLAN · V1.0.0"), Display plan title, then the progress line.
+**Tiles**: tinted card, icon (36px, tone ink), title (600), description. Fix-it tiles on Home: small (icon beside title).
 
-**Progress** — mono "04 / 15 DONE" plus a 4px segmented bar (one segment per step; done = ink, current = accent, todo = rule). Segments make "how far" readable at a glance.
+**Plan header**: icon (48px, tone ink), kicker ("Incident plan · v1.1.0"), title, progress (rounded segments: done green, current muted, todo white).
 
-**Step (QRH style)** — one row per step separated by hairlines:
-- Left margin: huge step number (Display). Current step: number in accent + 4px accent bar on the left edge. Done steps: number in `text-muted`.
-- Action line: square checkbox (28px drawn, 2px ink border, ink fill + paper check when done; 44px hit area) + title in Body 600.
-- Detail in Body 400.
-- **Do not** box: `bg-2` band, 4px accent left border, a mono label in `accent-text` on its own line above the sentence. **Fix for "Do not: Do not…":** every `do_not` sentence already starts with "Do not…", so the label becomes **"AVOID"** (FR **"À ÉVITER"**). Plan text is unchanged.
-- **Why** and **Source** as mono footnotes under a hairline: `WHY —` is plain text in muted body; `SOURCE ↗ CISA #STOPRANSOMWARE GUIDE` is a mono link.
+**Step**: white card in the tinted plan panel. "Step 2 of 16", a round check (32px, green when done, 44px hit area) beside the title (1.5rem, 600), detail, "Avoid" box, step buttons (Contacts, Ask), Why / Source footnotes. The v1 giant step number is hidden (the number is in "Step n of total").
 
-**LOGGED stamp (signature moment, the only showy animation)** — when a step is checked, a rubber-stamp mark appears beside the title: mono uppercase "LOGGED 14:02", 2px `accent-text` border, accent-text color, rotated −4°, slightly uneven (double border inset). Animation (CSS only, 250ms): scale 1.6 → 0.96 → 1, opacity 0 → 1, rotation −10° → −4°, like a stamp pressing in. Reduced motion: no animation, stamp just shows. Time = local HH:MM when checked (kept in memory for now; the incident log will persist it).
+**"Avoid" box**: `avoidBg`, 4px accent left bar, "Avoid" / "À éviter" label in `accentText` 700.
 
-**Buttons** — Primary (only "Something's wrong"): accent fill, ink text, Display 800 uppercase, square, 56px tall. Secondary (prev/next/show all): transparent, 2px ink border, mono uppercase. No hover color washes: hover = underline/inverted ink.
+**"Logged" mark**: green soft pill "Logged 14:02" next to a checked step.
 
-**Focus** — 3px solid `focus` outline, 3px offset, on every interactive element. Keyboard: Tab through controls; in one-step view, `←`/`→` move between steps (focus follows to the new step), and `Space` toggles a focused checkbox (native).
+**Source badge**: soft `info` pill with an icon: On-device AI (laptop), Cloud AI (cloud), Offline Pack (book), Checklist (list, muted grey). Real `inferenceSource` only.
 
-**Source badge** (added Session 3) — mono uppercase label with a 1px border, text color: `ON-DEVICE AI`, `CLOUD AI`, `OFFLINE PACK`; `CHECKLIST` (no AI answer) is muted with a dashed border. It shows the real source reported by the SDK, never a guess. Not the accent, not status colors.
+**Found on screen · please confirm**: `bg2` panel, white inputs, one labelled row per field, the "Avoid" note, Confirm (primary) and Discard. Behaviour unchanged from v1 (spec in the v1 decisions below).
 
-**Found-on-screen panel** (spec added Session 3b; **build it with the incident log**, not before). Why: spike S2 showed on-device triage misreads or invents fields and still calls itself "high" confidence (SPIKES.md Results). So triage only ever *suggests*.
-- **Header:** mono uppercase **"FOUND ON SCREEN · PLEASE CONFIRM"** / FR **"TROUVÉ À L’ÉCRAN · À CONFIRMER"** (a middle dot, not the em dash from the brief: §7 bans em dashes in UI copy). Beside it: the Source badge (real `inferenceSource`) and the **computed** confidence in mono (`CONFIDENCE: MEDIUM`). The model's own confidence is never shown in the product (lab/debug only).
-- **One editable row per field**, in this order: incident type (a select of the 5 triage types, prefilled; since Session 3c: ransomware, tech support scam, phishing page, other, not an incident; the user's choice and the classify result win over triage), ransom demanded (yes / no, two square segments like the EN/FR toggle), amount, currency, group name, contact method, deadline, file extension. Each row is a label in mono plus a plain text input (amount: numeric input), prefilled with the found value. A field the model didn't find (null) is **empty**, with the muted placeholder "Not found" / "Non trouvé". No field is ever prefilled with "unknown" or 0.
-- **Nothing is saved until the user confirms.** Actions: Primary-style secondary button **"Confirm and add to log"** / "Confirmer et ajouter au journal" (2px ink border; NOT the accent, which stays reserved for "Something's wrong"), and **"Discard"** / "Ignorer". Discard saves nothing.
-- **Edits are tracked:** the log entry stores, per field, the value saved and whether it was `found` (unchanged), `edited`, or `added` by the user, plus the source and computed confidence. This keeps the record honest about what the AI read.
-- **Never shows advice.** The panel only displays the six fields; any model text outside them is rejected by the schema. Below the fields, a fixed note (plan copy, not AI): "Do not contact the attackers or pay. This is kept for your report." / "Ne contactez pas les attaquants et ne payez pas. Ces informations servent à votre signalement." The note uses the Do-not style (AVOID / À ÉVITER).
-- Accessibility: every input has a visible label; the header is the panel's accessible name; focus moves to the first field when the panel opens; Escape = Discard (asks nothing, nothing saved yet).
-- **"Double-check with cloud AI"** / "Vérifier avec l’IA cloud" (spec added Session 3c, MASTER §6 SHOULD #17; **spec only, build with the panel**). Optional secondary button (2px ink border, not the accent) under the fields.
-  - **Visible only when online** (`navigator.onLine` and the online/offline events). Offline it is not rendered at all, so nothing suggests the cloud is needed.
-  - **Tap 1 shows exactly what will be sent**, before anything leaves the device: a preview block with a thumbnail of the exact image, "Sent to: Google Gemini (cloud) via Firebase AI Logic", "What is sent: this image + fixed instructions to read the screen. No name, no contacts, no log." / FR equivalent. Buttons: "Send to cloud AI" / "Cancel".
-  - **Only after "Send to cloud AI"** does the app call triage with `InferenceMode.PREFER_IN_CLOUD`. Never automatic, never in the background, never retried on its own.
-  - The cloud answer does **not** overwrite the fields. Each field where the cloud differs shows the cloud value under it in mono with a CLOUD AI badge and a "Use this" link; the user decides. Fields the user already edited are never touched.
-  - Failure (offline in between, App Check, timeout) → one calm line: "Cloud check didn't work. The fields above are unchanged." No retry loop.
-  - The log records that a cloud check was made (time + source), not the image.
+**Empty states**: a soft `bg2` line with an icon and plain words (no incidents yet, no contacts yet).
 
-**Icons** — none for now. Words first. If one is ever needed, `lucide-react` only, 1.5px stroke, ink.
+**Icons** (`src/ui/icons.ts`): lucide-react, stroke 1.75, always `aria-hidden` next to words. Incidents: ransomware Lock, invoice fraud Receipt, phishing MailWarning, lost device Smartphone, outage WifiOff. Fix-its: Wifi, Mail, Monitor, Printer, KeyRound, Zap. No icon containers, no sparkles.
+
+**Print**: plain ink on paper; round check boxes; the accent only on the "Avoid" bar.
 
 ---
 
 ## 7. Copy voice
 
-Plain, short, calm, imperative. No buzzwords ("seamless", "unlock", "supercharge", "revolutionize", "empower", "effortless"), no exclamation marks, no emoji. Em dashes: avoid in UI copy (use a period or a colon). I'll strip the em dashes from the current UI strings (e.g. the offline status).
+Plain, short, calm, imperative, sentence case. No buzzwords, no "!", no emoji, no em dashes in UI copy.
 
 ---
 
 ## 8. Banned (AI-slop tells) and how it's enforced
 
-**Session 9 update (for the friendly redesign, see §11):** now **allowed**: Google Sans Flex (and Google Sans Code for technical bits), radius up to **16px**, soft section tints (per-incident calm colours). **Still banned:** purple/indigo, gradients, glassmorphism, glows, heavy shadows, emoji icons, 3D blobs, stock images, buzzwords, em dashes, "!". The test now checks radius ≤ 16px and runs the purple check and WCAG AA contrast on every redesign palette and tint.
+**Allowed since v2:** Google Sans Flex and Google Sans Code; radius up to 16px; soft section tints.
+**Still banned:** purple/violet/indigo (hue 230–320° on any token or tint); gradients; glassmorphism / `backdrop-filter` / blur; glows and shadows (`box-shadow`, `text-shadow`, `drop-shadow`); emoji as icons; 3D blobs, stock images; buzzwords; em dashes; "!"; Inter/Roboto/Poppins/Space Grotesk/system-ui as a font.
 
-Banned: purple/violet/indigo; gradients of any kind; glassmorphism / `backdrop-filter` / blur; glows (`box-shadow`/`text-shadow` with color/blur); emoji as icons; 3D blobs, illustrations, stock imagery; centered hero + 3 feature cards; icon-in-a-circle rows; sparkle "AI" icons; buzzword copy; em-dash-heavy copy; Inter/Roboto/Poppins/Space Grotesk/system-ui as primary font.
-
-**Enforcement:** a Vitest test (`tests/design.test.ts`) scans `src/` and fails if it finds: a hex/rgb/hsl color outside `src/ui/tokens.ts`; `gradient(`; `backdrop-filter` or `blur(`; `box-shadow`/`text-shadow`; banned font names; purple/violet/indigo hues (any token with hue 250–300°); emoji in UI strings; banned buzzwords or `—` in `src/i18n/*.json`; `border-radius` > 4px in tokens. Plus a manual self-check pasted into the handoff each session.
+**Enforcement:** `tests/design.test.ts` scans `src/` (no color outside tokens.ts, no gradients/blur/shadows/banned fonts), checks every token and tint for purple, radius ≤ 16px, WCAG AA for every pair above and every tint, and the copy rules on all i18n, plan and fix-it strings.
 
 ---
 
 ## 9. Styleguide page
 
-`/#/styleguide` (hash route, no router library; works offline). Shows side by side **Paper | Ink** (each panel forces its theme with `data-theme`): every color token with hex and contrast ratio, the type scale, spacing/radius scale, status chips, toggle, buttons (incl. "Something's wrong"), progress, a step in each state (todo / current / done with stamp), the Do-not box, footnotes, and a "replay stamp" button.
-
-Theme control: the app follows the OS, and `data-theme="light|dark"` on any element forces that theme for its subtree (used by the styleguide and handy for screenshots).
+`/#/styleguide`: Paper and Ink side by side: every color token with its value and contrast, type, space and radius, top bar parts, buttons, progress, "Avoid" box and "Logged" mark, incident tints with icons, source badges, and a step in each state inside a tinted plan.
 
 ---
 
@@ -211,14 +189,5 @@ Theme control: the app follows the OS, and `data-theme="light|dark"` on any elem
 - ✅ 2026-11-24 (architect, Session 3c): optional "Double-check with cloud AI" button on the found-on-screen panel (online only, preview first, PREFER_IN_CLOUD only after a tap). Spec in §6; SHOULD.
 - ✅ 2026-11-25 (Session 4, built): found-on-screen panel as specced, plus: "Type it in myself" while the AI reads (the user never waits); without on-device AI the same panel opens empty with a Checklist badge; the log shows each confirmed field with its status ("edited", "added by you", "removed by you"); after confirm, if the type maps to another plan, a "Start that plan" button (src/plans/route.ts).
 - ✅ 2026-11-25 (Session 4, SHOULD #14): "Double-check with cloud AI" built as specced in §6 (online only, image preview first, PREFER_IN_CLOUD after the tap, suggestions with "Use this" only on fields the user did not edit, one calm failure line, log notes "checked with cloud AI"). An answer that did not really come from the cloud is treated as a failure.
-
----
-
-## 11. Session 9 · friendly redesign (PREVIEWS, waiting for J's pick)
-
-J's feedback: "not user friendly at all, it looks too IT". The user is a stressed office manager. Three directions are previewed on `/#/styleguide` (switcher at the top); comparison and screenshots in `.brain/screens/redesign/README.md`. Nothing is applied app-wide until J picks; then this file gets rewritten for the chosen direction (Session 9 step 2).
-
-- **Fonts:** Google Sans Flex Variable (`@fontsource-variable/google-sans-flex`, OFL, file `rond.css`: weight 1–1000 + roundness axis `ROND`, latin 71 KB) for display and body; Google Sans Code Variable (`@fontsource-variable/google-sans-code`, OFL, `wght.css`) only for times and file extensions. Verified on npm 2026-11-26 (5.3.2). Only latin + latin-ext are precached (`src/sw/pwa.config.ts` globIgnores lists the other subsets); fonts are never inlined as `data:` (blocked by CSP font-src; `vite.config.ts` assetsInlineLimit).
-- **Tokens:** `redesign` in `src/ui/tokens.ts` (three directions × light/dark, radius, ROND value, per-incident tints). Preview CSS: `src/features/styleguide/redesign.css`, scoped to `.rd[data-dir]`.
-- **Icons:** lucide-react line icons, stroke 1.75, one per incident (ransomware Lock, invoice fraud Receipt, phishing MailWarning, lost device Smartphone, outage WifiOff) and per fix-it (Wifi, Mail, Monitor, Printer, KeyRound, Zap). No icon containers, no sparkles.
-- **Accent:** `#ff4829` only for "Something's wrong" and urgent "Avoid". The current step is now marked with ink (A: left bar, B/C: card), not the accent.
+- ✅ 2026-11-26 (J, Session 9): **direction C "Warm and human"** chosen from three previews (A calm helper, B Google-ish, C warm and human). Applied app-wide in Session 9 step 2; v1 spec replaced by this file. Previews and screenshots: `.brain/screens/redesign/`.
+- ✅ 2026-11-26 (Session 9): the "Avoid" label is now sentence case ("Avoid" / "À éviter"); accent no longer marks the current step or the "Logged" stamp (now green).

@@ -1,3 +1,4 @@
+import { ArrowRight } from 'lucide-react'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useI18n } from '../../i18n'
 import { db } from '../../storage/db'
@@ -21,7 +22,7 @@ export function OpenIncidents() {
               <span className="mono openinc__meta">
                 {t('log.startedAt', { when: fmtDateTime(lang, r.started_at) })} · {t('plan.progressShort', { done: Object.keys(r.steps).length })}
               </span>
-              <span className="mono openinc__go">{t('log.continue')} →</span>
+              <span className="mono openinc__go">{t('log.continue')} <ArrowRight className="inline-icon" aria-hidden="true" size={18} strokeWidth={1.75} /></span>
             </a>
           </li>
         ))}

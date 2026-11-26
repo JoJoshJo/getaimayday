@@ -11,6 +11,7 @@ import type { IncidentRecord } from '../../storage/db'
 import { store } from '../../storage/localAdapter'
 import { SourceBadge } from '../../ui/components'
 import { IncidentLog } from '../log/IncidentLog'
+import { INCIDENT_ICON } from '../../ui/icons'
 import { PlanView } from './PlanView'
 
 type Props = { id: string; stepExtras?: (step: PlanStep, incidentId: string, plan: Plan) => ReactNode; logExtras?: (record: IncidentRecord, plan: Plan) => ReactNode }
@@ -53,6 +54,8 @@ export function IncidentView({ id, stepExtras, logExtras }: Props) {
       <PlanView
         key={`${record.id}:${lang}`}
         title={t(`incident.${plan.incident}`)}
+        tone={plan.incident}
+        icon={INCIDENT_ICON[plan.incident]}
         plan={plan}
         doneAt={steps}
         initialStep={firstOpen}
