@@ -10,9 +10,11 @@ import { ensureInitialized, fetchAndActivate, getRemoteConfig, getString, isSupp
 import { app } from './firebase'
 
 /** In-app defaults. Must match the parameters created in the Firebase console. */
-export const RC_DEFAULTS = {
+export const RC_DEFAULTS: { cloud_model: string; cloud_model_fallback: string } = {
   cloud_model: 'gemini-3.5-flash-lite',
-} as const
+  /** Empty = no fallback. If set, a Pack part that still fails after retries is tried once with this model. */
+  cloud_model_fallback: '',
+}
 
 export type RcStatus = 'fetched' | 'cached-or-default' | 'unsupported' | 'error'
 
@@ -46,4 +48,10 @@ export function initRemoteConfig(): Promise<RcStatus> {
 export function getCloudModel(): string {
   if (!rc) return RC_DEFAULTS.cloud_model
   return getString(rc, 'cloud_model').trim() || RC_DEFAULTS.cloud_model
+}
+
+/** Fallback model for the Pack ("" = none). Never throws. */
+export function getCloudModelFallback(): string {
+  if (!rc) return RC_DEFAULTS.cloud_model_fallback
+  return getString(rc, 'cloud_model_fallback').trim()
 }

@@ -8,14 +8,21 @@
  */
 import { getGenerativeModel, InferenceMode } from 'firebase/ai'
 import { ai } from './firebase'
-import { getCloudModel, initRemoteConfig } from './remoteConfig'
+import { getCloudModel, getCloudModelFallback, initRemoteConfig } from './remoteConfig'
+
+/** Remote Config `cloud_model_fallback` ("" = none), after Remote Config is loaded. */
+export async function packFallbackModel(): Promise<string> {
+  await initRemoteConfig()
+  return getCloudModelFallback()
+}
 
 export type CloudResult = { text: string; inferenceSource: string | undefined; model: string }
 
 /** One structured-JSON call. Returns the raw text + the SDK's real inferenceSource. */
-export async function cloudJson(prompt: string, jsonSchema: object, temperature = 0.3): Promise<CloudResult> {
+/** `modelOverride`: used for the Pack's fallback model (Remote Config `cloud_model_fallback`). */
+export async function cloudJson(prompt: string, jsonSchema: object, temperature = 0.3, modelOverride?: string): Promise<CloudResult> {
   await initRemoteConfig()
-  const model = getCloudModel()
+  const model = modelOverride?.trim() || getCloudModel()
   const m = getGenerativeModel(ai, {
     mode: InferenceMode.ONLY_IN_CLOUD,
     inCloudParams: {

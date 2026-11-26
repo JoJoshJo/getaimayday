@@ -1328,6 +1328,17 @@ a.tile {
   border-top: var(--border-hair) solid var(--color-rule);
   justify-items: start;
 }
+/* Failed parts: a warn rule on the left, no card (DESIGN.md: rules, not cards). */
+.pack__retry {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: start;
+  padding-left: var(--space-3);
+  border-left: var(--border-strong) solid var(--color-warn);
+}
+.pack__retry p {
+  margin: 0;
+}
 
 .pack__jobs {
   list-style: none;

@@ -8,7 +8,7 @@ Code: `src/pack/schema.ts` (zod, the source of truth), `src/pack/build.ts`, `src
 ## Build flow
 1. User taps **Build the Offline Pack** (online only; offline the button is not shown).
 2. **Preview** (nothing sent yet): "Sent to: Google Gemini (cloud) via Firebase AI Logic", the exact business context block, the number of requests, what is NOT sent, and a "Show the exact text" section with every prompt. Buttons: Send to cloud AI / Cancel.
-3. One request per **chunk**, sequential: each built-in plan × EN, FR, plus a glossary per language (today 2 plans → 6 requests; grows with plans). Each chunk is validated and saved as soon as it lands, so a stopped or partly failed build keeps what it made (old chunks stay until replaced). "Stop after this part" is available.
+3. One request per **chunk**, sequential: each built-in plan × EN, FR, plus a glossary per language (today 2 plans → 6 requests; grows with plans). Each chunk is validated and saved as soon as it lands, so a stopped or partly failed build keeps what it made (old chunks stay until replaced). "Stop after this part" is available. (Session 6) Busy errors (HTTP 408/429/5xx, network) are retried up to 3 times (about 2 s, 5 s, 12 s, ± 25 % jitter); then, if Remote Config `cloud_model_fallback` is set, one try with that model. Parts that still fail are listed with "Retry failed parts", which sends only those (after the same preview) and keeps the Pack version.
 
 ## What is sent (per chunk)
 - Business context (`businessContext()`): type of business, country, number of staff, email provider, important systems, backups yes/no/not sure + where, **roles** of filled contacts.
@@ -32,6 +32,7 @@ Pack {
   schema: 1, version: n (+1 per build), created_at, updated_at (ms),
   input_hash   // hash of business context + plan versions → "your setup changed, build again"
   chunks: { "<lang>:<plan_id>" | "<lang>:glossary": Chunk }
+  failed?      // (Session 6) { "<chunk key>": "error text" } parts that failed in the last build; cleared by a new full build or when the part saves. Drives "Retry failed parts".
 }
 PlanChunk { kind:"plan", plan_id, plan_version, lang, generated_at, model, qa: PackQa[] }
 PackQa    { id, question, alt_phrasings[], answer, step_ref, contact_role|null, source_name, source_url }

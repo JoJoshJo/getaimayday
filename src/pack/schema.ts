@@ -26,6 +26,10 @@ export const ModelQaSchema = z.object({
 })
 export const ModelPlanChunkSchema = z.object({ qa: z.array(ModelQaSchema).min(1).max(60) })
 
+/** Items asked for per plan chunk, and the floor/ceiling sent in the JSON schema (same in every language). */
+export const QA_PER_PLAN = 30
+export const QA_MIN = 24
+
 export const ModelGlossarySchema = z.object({
   terms: z.array(z.object({ term: txt(60), plain: txt(400) })).min(1).max(60),
 })
@@ -37,6 +41,9 @@ export function planChunkJsonSchema(stepIds: string[]) {
     properties: {
       qa: {
         type: 'array',
+        // Gemini's JSON Schema docs list minItems/maxItems; Firebase's narrower list says unknown fields are ignored, not rejected.
+        minItems: QA_MIN,
+        maxItems: 40,
         items: {
           type: 'object',
           properties: {
@@ -98,6 +105,8 @@ export const PackSchema = z.object({
   input_hash: z.string(),
   /** Key = chunkKey(...). */
   chunks: z.record(z.string(), ChunkSchema),
+  /** Parts that failed in the last build: key → short error. Optional, so older Packs still load. */
+  failed: z.record(z.string(), z.string()).optional(),
 })
 export type Pack = z.infer<typeof PackSchema>
 

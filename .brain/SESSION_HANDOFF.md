@@ -6,6 +6,13 @@ Append one entry per session: date, what was done, files changed, commit hashes,
 
 ## J TODO (things only J can do: console, login, secrets, hand tests). Newest first. Tick when done.
 
+- [ ] (Session 6) **Deploy the Pack retry fix**, then check it on the live site:
+  1. `npm run build && npx firebase-tools deploy --only hosting` (the build must end with "Secret check: no App Check debug token").
+  2. Open https://getaimayday.web.app, reload once so the new version loads (the chip says "Offline ready").
+  3. Offline Pack: if it still lists "2 parts of your Pack did not build" (fr:outage, fr:phishing from your last build), press **Retry failed parts** → the preview says "2 separate requests" → Send. Expect both saved and the list gone. If you see "Busy, trying again in … s (1 of 3)", that is the retry working.
+  4. Then do one **full** build (Build the Offline Pack) and write down the counts it shows ("… answers in English, … in French") and each row's "N saved", plus any "N left out by the safety check". Paste them in the next session. Target: FR close to EN (each plan should now give 24 to 30).
+- [ ] (Session 6, optional, your call) **Fallback model**: in Firebase console → Remote Config, add parameter `cloud_model_fallback` (String), value for example `gemini-3.1-flash-lite` (any model on the AI Logic list), Publish. Leave it unset (or empty) for no fallback. It is used only for a Pack part that still fails after 3 retries, one try. Not used for incident-day jobs.
+
 - [ ] (Session 5) **Film the demo** with `.brain/DEMO_SCRIPT.md` (2:45, two machines: one with on-device AI ready, one without). Needs the deploy item below done first, so the Pack build and the back-online jobs work. After filming: `#/demo-setup` → Delete all local data.
 - [ ] (Session 5) **Review the IT fix-it texts**, EN + FR: `src/fixits/{en,fr}/*.json` (6 topics). Check the Windows/Mac wording matches what your staff see, and the French reads naturally.
 - [ ] (Session 5) **Hand-check the judge path** on a normal laptop without on-device AI, offline, after building a Pack: home → plan → Ask a question (Offline Pack badge) → log → Print. And open `#/fixit/printer`, Ask: expect "No answer on this device for this step" with the call button.
@@ -712,3 +719,49 @@ Brief (architect, via J): CSP + security headers; demo setup route with reset; N
 **Not verified by me (needs J):** anything that needs App Check on a real domain (Pack build, back-online jobs, cloud double-check on the live site, CSP on the live site), on-device AI on a real Nano machine (only a stubbed Prompt API through the real SDK was tested), the video itself. All are in J TODO.
 
 **Next step:** J does the deploy item, then films with DEMO_SCRIPT.md. Optional polish if time allows: print the fix-its on the Print page (today it prints the 5 incident plans and contacts only).
+
+---
+
+## 2026-11-25 — Session 6: Pack build resilience (Claude Code)
+
+Brief (architect, via J): on the live site the Pack built 133 EN / 54 FR answers; fr:outage and fr:phishing failed with HTTP 500 "This model is currently experiencing high demand" (AI/fetch-error). Add automatic retry for transient errors, keep good parts and offer "Retry failed parts", optional Remote Config fallback model, explain FR < EN, tests, deploy steps for J.
+
+**Step 0.** `pwd && git remote -v` (repo + origin JoJoshJo/getaimayday), `git pull` (at `525cf43`). Read MASTER, the Session 5 handoff, `src/pack/*`, `src/ai/cloud.ts`, `src/ai/remoteConfig.ts`, `PackScreen.tsx`.
+
+**1 · Retry with backoff** (`src/pack/retry.ts`, pure, injected sleep/random)
+- Error shape checked in `node_modules/@firebase/ai/dist/esm/index.esm.js` (3.1.0): a non-OK HTTP answer throws `AIError` code `fetch-error` with `customErrorData.status`; a network failure becomes code `error` with fetch's text ("Failed to fetch") and no status; a timeout is an `AbortError`.
+- Retried: 408, 429, 500, 502, 503, 504, network, timeout. Never retried: 400, 401, 403, 404 and every other 4xx, or anything after a response arrived (bad JSON, schema, "no usable answers"); those would fail the same way again.
+- Up to 3 retries per part, delays 2 s, 5 s, 12 s, each ± 25 % jitter (so many clients do not retry in step). Worst case per part ≈ 24 s of waiting. "Stop after this part" also stops retries.
+- The row shows "Busy, trying again in 5 s (2 of 3)" / FR "Service occupé, nouvel essai dans 5 s (2 sur 3)".
+
+**2 · Keep good parts, "Retry failed parts"**
+- Good parts were already saved one by one. New: `Pack.failed` (optional `{key: error}`, so older Packs load), `markFailed()`, `saveChunk()` clears the key, a full `beginBuild()` clears the list. `partsToRetry(pack, hash, keys)` = failed keys + parts never saved (stopped build), only when the Pack matches the current setup (else a full build is needed). Survives reloads.
+- UI: a block with a warn rule on the left: "2 parts of your Pack did not build. Everything else is saved and works offline." + the part names + **Retry failed parts** (EN/FR, singular form for 1). It opens the same preview, limited to those parts ("That is 2 separate requests"), then sends only them. The Pack version does not change on a retry.
+- Failed rows say "The AI service was busy. Everything else is saved. Try this part again in a few minutes." (transient) or "The app could not get access to cloud AI. Reload the page and try again." (401/403); other errors show the raw text as before.
+
+**3 · Fallback model** (Remote Config `cloud_model_fallback`, default `""` = off)
+- `RC_DEFAULTS.cloud_model_fallback = ''`, `getCloudModelFallback()`, `packFallbackModel()` in `cloud.ts`; `cloudJson(prompt, schema, temperature, modelOverride?)`.
+- `resilient()` = main model with retries; if it still fails and a fallback is set, one try with the fallback (no retries on it). No fallback after 401/403 (access, not the model). The row says "Trying once more with <model>". The saved part records the model that wrote it (`chunk.model`), so the Pack stays honest about its source.
+- Only the Pack build uses it; incident-day and back-online jobs do not. J decides whether to set it (J TODO).
+
+**4 · Why FR (54) was lower than EN (133)**
+- Numbers: EN 133 over 5 plans ≈ 27 per plan; FR 54 over the 3 plans that saved = 18 per plan. So FR was about a third lower even without the 2 failed parts. Not by design: same prompt, same "about 30".
+- Cause 1, a real bug: the safety guard (`src/pack/guard.ts`) drops any sentence with "réinstaller / payer la rançon / formater…" unless it sees a negation. Its negation list only knew the straight apostrophe (`n'`), and `\b` does not treat "é" as a letter, so "évitez" never matched. French models usually write the curly ’: "N’essayez pas de réinstaller l’ordinateur" was dropped as unsafe. Same for English "Don’t wipe…". Fixed: curly apostrophes, `évite[rz]`, `aucun(e)`, Unicode-aware boundaries. Unsafe sentences are still caught (tests in both languages).
+- Cause 2, likely: "about 30" is soft and the model writes fewer items in French (longer answers). Prompt now says "Write 30 items (never fewer than 24) … The number of items is the same whatever the language", and the JSON schema sends `minItems: 24`, `maxItems: 40`. Docs check (web-fetch subagent): Gemini's structured-output page lists minItems/maxItems for arrays; Firebase AI Logic's narrower list names only maxItems and says unknown fields are ignored, not rejected. So `minItems` helps if honoured and is harmless if not; the prompt carries the rule either way.
+- Each saved part now logs `{count, dropped, model}` in the console, and the row shows "N left out by the safety check" when any were dropped, so the next live build shows which cause it was. J TODO asks for those numbers.
+
+**5 · Tests and checks**
+- `tests/retry.test.ts` (37): status classification (each code, live "high demand" text, network, timeout, JSON errors), backoff bounds and jitter, withRetry (succeeds after 2, gives up after 3 retries with 2/5/12 s, never retries 400/401/403, Stop), fallback (off, once, not retried, not after 401), failed parts across reload/rebuild/new build/setup change/old Packs, FR guard, prompt count, schema minItems. Total 352/352.
+- `npm run build` + secret check OK, `npm run lint` 0.
+- Scratch `retry.mjs` (real headless Chrome, real AI Logic SDK, Gemini endpoint intercepted: fr:outage and fr:phishing answer the live HTTP 500 text): "Busy, trying again in 2 s (1 of 3)" shows; each failing part is called exactly 4 times; the two parts are listed after the build and after a reload; Retry shows the preview for 2 requests and calls only those 2; Pack complete, still version 1; FR answers written with "N’essayez pas de réinstaller" kept; 0 page errors. Screenshots reviewed (pack-retrying, pack-failed-parts, pack-retried).
+- Regression: `s4.mjs` all blocks + demo run, `csp.mjs` (0 violations), `judge.mjs`: all pass.
+
+**Files** `src/pack/retry.ts` (new), `src/pack/store.ts`, `src/pack/schema.ts`, `src/pack/guard.ts`, `src/ai/cloud.ts`, `src/ai/remoteConfig.ts`, `src/ai/prompts/pack.ts`, `src/features/pack/PackScreen.tsx`, `src/i18n/{en,fr}.json`, `src/ui/styles.css`, `tests/retry.test.ts` (new), `.brain/PACK_SCHEMA.md`, `.brain/MASTER.md`, this file.
+
+**Gotchas**
+- The live 500 was not a quota error: Gemini said "high demand". Retrying works for that; a 429 (quota) also gets retried, but if the daily free quota is gone, retries will fail and the part stays in the list for later.
+- A guard that only knows ASCII misses French. Any new regex on French text needs the `u` flag and `\p{L}` boundaries, not `\b`.
+
+**Not verified (needs J):** the live counts after the fix, and the fallback model on the live project. Both in J TODO.
+
+**Next step:** J deploys, retries the 2 parts, does one full build and sends the counts.
