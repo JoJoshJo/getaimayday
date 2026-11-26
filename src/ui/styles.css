@@ -1840,12 +1840,66 @@ a.tile {
   overflow-wrap: anywhere;
 }
 
+/* Call buttons under an answer sit on the bg2 answer panel: give them the page colour
+   so they read as buttons (same fix as "Back online" in the log). */
+@media screen {
+  .packans .btn:not(.btn--strong, .btn--quiet) {
+    background: var(--color-bg);
+  }
+}
+
+/* Shown on paper only (Session 10). */
+.printonly {
+  display: none;
+}
+
 @media print {
   .topbar,
   .footer,
   .noprint,
   .contacts__actions {
     display: none;
+  }
+
+  /* Contacts on paper: one plain line each ("IT contact: name · phone · email"). */
+  .printonly {
+    display: block;
+  }
+  .contacts__role,
+  .contacts__name {
+    display: none;
+  }
+  .contacts__row {
+    display: block;
+    padding: var(--space-1) 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+  }
+  .contacts__notes {
+    display: block;
+    font-size: var(--type-label);
+  }
+
+  /* Buttons on paper: no boxes. Links that hold a number stay as plain text;
+     buttons and app links (Copy, Email, Ask, Add this contact) are dropped. */
+  button.btn,
+  .btn--quiet,
+  a.btn[href^="#"],
+  a.btn[href^="mailto:"] {
+    display: none;
+  }
+  a.btn:not(:disabled) {
+    display: inline;
+    min-height: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    color: var(--color-text);
+    font-weight: var(--weight-regular);
+    text-decoration: none;
+    transition: none;
   }
 
   .printplans__plan,

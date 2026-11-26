@@ -60,17 +60,17 @@ export type ColorToken = keyof typeof paper
 
 /** One calm colour per incident (and one for IT fix-its): tile + plan background, icon ink. */
 const tintPaper = {
-  ransomware: { bg: '#fdece6', ink: '#a8331a' },
-  bec: { bg: '#fcf1dc', ink: '#80520a' },
-  phishing: { bg: '#e7f0fa', ink: '#2a5a92' },
+  ransomware: { bg: '#e8ebf5', ink: '#34497a' },
+  bec: { bg: '#f8f3d6', ink: '#6b5a08' },
+  phishing: { bg: '#e1f1f7', ink: '#1c6079' },
   'lost-device': { bg: '#e7f2e8', ink: '#2b6b40' },
   outage: { bg: '#efede8', ink: '#5a534c' },
   fixit: { bg: '#eaf2f1', ink: '#2c6660' },
 }
 const tintInk: typeof tintPaper = {
-  ransomware: { bg: '#3a221b', ink: '#ff9a82' },
-  bec: { bg: '#352a16', ink: '#e6b765' },
-  phishing: { bg: '#1b2a3c', ink: '#9cc3ef' },
+  ransomware: { bg: '#20263a', ink: '#aebde6' },
+  bec: { bg: '#302c14', ink: '#dccb73' },
+  phishing: { bg: '#162d36', ink: '#8ed0e6' },
   'lost-device': { bg: '#1d2e21', ink: '#8fd0a0' },
   outage: { bg: '#2b2825', ink: '#cfc6bb' },
   fixit: { bg: '#1a2e2c', ink: '#8fcfc6' },

@@ -49,6 +49,10 @@ export function ContactsCard({ contacts, compact = false }: { contacts: Contacts
                   </button>
                 )}
               </span>
+              {/* Paper (Session 10): one plain line, no buttons. "IT contact: Riverdale IT Services, Sam · 555-0142 · help@…" */}
+              <span className="contacts__print printonly">
+                <strong>{t(`contacts.role.${role}`)}:</strong> {[c.name, c.phone, c.email].filter((v) => v.trim()).join(' · ')}
+              </span>
               {!compact && c.notes && <span className="contacts__notes muted">{c.notes}</span>}
             </li>
           )
@@ -57,6 +61,9 @@ export function ContactsCard({ contacts, compact = false }: { contacts: Contacts
           <li key={l.key} className="contacts__row">
             <span className="mono contacts__role">{t(`contacts.fixed.${l.key}`)}</span>
             <span className="contacts__name">{t(`contacts.fixedDesc.${l.key}`)}</span>
+            <span className="contacts__print printonly">
+              <strong>{t(`contacts.fixed.${l.key}`)}:</strong> {t(`contacts.fixedDesc.${l.key}`)} · {new URL(l.url).host}
+            </span>
             <span className="contacts__actions">
               <a className="btn" href={l.url} target="_blank" rel="noopener noreferrer">
                 {new URL(l.url).host} <ExternalLink className="inline-icon" aria-hidden="true" size={15} strokeWidth={1.75} />

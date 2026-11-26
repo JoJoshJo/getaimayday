@@ -210,6 +210,8 @@
   "pack.nothing": "No answer in your Pack for that.",
   "pack.call": "Call {who} · {phone}",
   "pack.openContacts": "Open your contacts",
+  "answer.addContact": "Add this contact: {who}",
+  "answer.email": "Email {who}",
   "preview.title": "Before anything is sent",
   "preview.sentTo": "Sent to:",
   "preview.gemini": "Google Gemini (cloud) via Firebase AI Logic.",

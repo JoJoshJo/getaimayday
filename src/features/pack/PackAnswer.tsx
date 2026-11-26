@@ -6,23 +6,13 @@
 import { useI18n } from '../../i18n'
 import type { PackMatch } from '../../pack/match'
 import { SourceBadge } from '../../ui/components'
-import { hasContact, telHref, type ContactRole, type Contacts } from '../setup/model'
-
-function CallButton({ role, contacts }: { role: ContactRole; contacts: Contacts }) {
-  const { t } = useI18n()
-  const c = contacts[role]
-  if (!c || !hasContact(c) || !c.phone.trim()) return null
-  return (
-    <a className="btn" href={telHref(c.phone)}>
-      {t('pack.call', { who: t(`contacts.role.${role}`), phone: c.phone })}
-    </a>
-  )
-}
+import { AnswerContacts } from '../contacts/AnswerContacts'
+import { mentionedContacts } from '../contacts/mentions'
+import type { Contacts } from '../setup/model'
 
 /** `contacts` comes from the parent (already loaded), so call buttons show at once. */
 export function PackAnswer({ match, contacts }: { match: PackMatch; contacts: Contacts }) {
   const { t } = useI18n()
-  const it = contacts.it_vendor
 
   if (match.confident) {
     const a = match.top[0]
@@ -38,11 +28,7 @@ export function PackAnswer({ match, contacts }: { match: PackMatch; contacts: Co
             {a.source_name}
           </a>
         </p>
-        {a.contact_role && (
-          <div className="log__actions">
-            <CallButton role={a.contact_role} contacts={contacts} />
-          </div>
-        )}
+        <AnswerContacts roles={mentionedContacts(a.answer, a.contact_role)} contacts={contacts} />
       </div>
     )
   }
@@ -64,15 +50,7 @@ export function PackAnswer({ match, contacts }: { match: PackMatch; contacts: Co
           ))}
         </ul>
       )}
-      <div className="log__actions">
-        {it && hasContact(it) && it.phone.trim() ? (
-          <CallButton role="it_vendor" contacts={contacts} />
-        ) : (
-          <a className="btn" href="#/contacts">
-            {t('pack.openContacts')}
-          </a>
-        )}
-      </div>
+      <AnswerContacts roles={['it_vendor']} contacts={contacts} />
     </div>
   )
 }

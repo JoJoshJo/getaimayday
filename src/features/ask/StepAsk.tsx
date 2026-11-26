@@ -16,7 +16,9 @@ import type { PlanStep } from '../../plans/schema'
 import { store } from '../../storage/localAdapter'
 import { SourceBadge } from '../../ui/components'
 import { PackAnswer } from '../pack/PackAnswer'
-import { hasContact, STEP_CONTACT, telHref } from '../setup/model'
+import { AnswerContacts } from '../contacts/AnswerContacts'
+import { mentionedContacts } from '../contacts/mentions'
+import { STEP_CONTACT } from '../setup/model'
 import { useSetup } from '../setup/useSetup'
 import { answerQuestion, type AskAnswer } from './answer'
 
@@ -60,7 +62,6 @@ export function StepAsk({ plan, step, incidentId }: { plan: AskGuide; step: Plan
 
   // Who to call when there is no answer: this step's contact, else the IT contact.
   const role = STEP_CONTACT[step.id] ?? 'it_vendor'
-  const c = contacts?.[role]
 
   return (
     <div className="ask">
@@ -97,6 +98,8 @@ export function StepAsk({ plan, step, incidentId }: { plan: AskGuide; step: Plan
             </p>
             <p className="packans__text">{res.text}</p>
             <p className="muted">{t('ask.checkWith')}</p>
+            {/* The answer's own contacts first; "check with your IT contact" always adds IT. */}
+            <AnswerContacts roles={mentionedContacts(`${res.text} ${t('ask.checkWith')}`)} contacts={contacts} />
           </div>
         )}
         {res?.kind === 'pack' && <PackAnswer match={res.match} contacts={contacts ?? {}} />}
@@ -105,17 +108,7 @@ export function StepAsk({ plan, step, incidentId }: { plan: AskGuide; step: Plan
             <p className="packans__head">
               <SourceBadge source="checklist" /> {res.reason === 'no-pack' ? t('ask.noPack') : res.reason === 'no-ai' ? t('ask.noAi') : t('pack.nothing')}
             </p>
-            <div className="log__actions">
-              {c && hasContact(c) && c.phone.trim() ? (
-                <a className="btn" href={telHref(c.phone)}>
-                  {t('pack.call', { who: t(`contacts.role.${role}`), phone: c.phone })}
-                </a>
-              ) : (
-                <a className="btn" href="#/contacts">
-                  {t('pack.openContacts')}
-                </a>
-              )}
-            </div>
+            <AnswerContacts roles={mentionedContacts(t(res.reason === 'no-ai' ? 'ask.noAi' : 'ask.noPack'), role)} contacts={contacts} />
           </div>
         )}
       </div>

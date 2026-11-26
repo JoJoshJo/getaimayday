@@ -69,6 +69,14 @@ describe('tokens', () => {
     })
     expect(bad).toEqual([])
   })
+  // Session 10: red and orange mean danger ("Something's wrong", "Avoid"), so no tint may use them.
+  it('no red or orange incident tint (hue 330–45° with colour)', () => {
+    const bad = tintHexes.filter(([, v]) => {
+      const { h, s } = hue(v)
+      return s > 0.2 && (h >= 330 || h <= 45)
+    })
+    expect(bad).toEqual([])
+  })
   // Session 9: soft corners allowed, up to 16px (was 4px in design v1).
   it('radius never above 16px', () => {
     for (const v of Object.values(tokens.radius)) expect(parseFloat(v)).toBeLessThanOrEqual(16)

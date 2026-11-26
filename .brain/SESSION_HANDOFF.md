@@ -14,6 +14,12 @@ npm run build && npx firebase-tools deploy --only hosting
 
 The build must end with "Secret check: no App Check debug token". Then open https://getaimayday.web.app and reload once so the new version loads.
 
+- [ ] (Session 10) **Deploy Session 10** (call buttons under answers, plain-text contacts on paper, navy ransomware colour) with the command above. It also ships Session 9 (and 7, 8) if not deployed yet, so do the Session 9 checks below too. Then on the live site:
+  1. Offline Pack (More → Offline Pack), Wi-Fi off, search "Should I pay the ransom amount shown on the screen?". Under the answer: **Call IT contact**, **Call Insurer** and **Call Police, non-emergency** buttons (whoever the answer names).
+  2. Home → Everyday IT problems → Wi-Fi or internet not working → Ask a question ("the lights are red, what now"). If the answer says to call your IT contact, the **Call IT contact · 555-…** button is right under it. With no contacts saved, it says **Add this contact: IT contact** and opens Setup.
+  3. Get ready → Print plans → Print (preview is enough): contacts are plain lines, "IT contact: Riverdale IT Services, Sam · 555-0142 · help@riverdale-it.example", no Call / Email / Copy boxes.
+  4. Home: the Ransomware tile is navy, not red; the red "Avoid" box and "Something's wrong" stand out. Check dark mode too.
+  5. If you film: `.brain/DEMO_SCRIPT.md` is updated for the new look (More menu, button names, the optional 3-button ransom question in scene 6).
 - [ ] (Session 9) **Deploy Session 9** (the "Warm and human" redesign) with the command above. It also ships Sessions 7 and 8 if those deploys are not done yet. Then on the live site:
   1. Reload once. The text must be in the new round font (Google Sans Flex), not a fallback.
   2. Wi-Fi off, reload: same font, icons and arrows still show, no errors in DevTools → Console.
@@ -1003,3 +1009,46 @@ Brief (architect, via J): live site verified by J (App Check + reCAPTCHA Enterpr
 **Not verified:** the live site (needs J's deploy: J TODO Session 9), and real Nano / real Gemini answers with the new badges (unchanged logic, same checks as Session 8).
 
 **Next:** J deploys and runs the Session 9 checks. If filming the demo, re-record any scene that shows the old look.
+
+---
+
+## 2026-11-26 — Session 10: small UX fixes + demo/submission refresh (Claude Code)
+
+**Goal (architect brief):** (1) one-tap call buttons under any answer that tells the user to contact someone, (2) contacts and buttons as plain text on paper, (3) incident colours clearly apart from the danger accent `#ff4829`, (4) DEMO_SCRIPT + SUBMISSION for the new look, (5) full verification. Surgical changes only.
+
+**Steps, in order:**
+
+1. `pwd && git remote -v` (getaimayday, JoJoshJo), `git pull origin main` at `06749bf`. Read MASTER §0, DESIGN.md v2, the Session 9 handoff, then `PackAnswer.tsx`, `StepAsk.tsx`, `StepContacts.tsx`, `ContactsCard.tsx`, `setup/model.ts`, `PrintPlans.tsx`, the print CSS.
+2. **Why the live bugs happened:** a Pack answer only showed a button for its single `contact_role` field (the ransom answer's role was not IT, and the text named three people); an AI answer (on-device or cloud) never showed one, only the "no answer" fallback did.
+3. **Fix 1, call buttons under answers:**
+   - `src/features/contacts/mentions.ts` (new): `mentionedContacts(text, firstRole?)` finds IT contact, bank, insurer, lawyer, police / law enforcement, staff lead / office manager in EN + FR text, in the order the text names them, the given role first, no duplicates. "IT" is matched in capitals only (so "call it back" is not IT); "assurez-vous" is not the insurer.
+   - `src/features/contacts/AnswerContacts.tsx` (new): one button per role. Saved with phone → "Call IT contact · 555-0142" (`tel:`); email only → "Email …"; not saved → quiet "Add this contact: IT contact" link.
+   - Used in `PackAnswer.tsx` (confident answer: text + `contact_role`; not sure: IT) and `StepAsk.tsx` (AI answer: its text plus the "call your IT contact" line under it; no answer: the step's contact + IT). The old inline `CallButton` code is gone. i18n: `answer.addContact`, `answer.email` (EN + FR).
+   - **Decision:** "Add this contact" links to `#/setup`, not `#/contacts`, because contacts are added on Setup; the Contacts page only lists saved ones and would need a second tap.
+   - CSS: answer buttons sit on the bg2 answer panel, so on screen they get the page colour (`.packans .btn`, same fix as "Back online" in Session 9). Seen in the first screenshot: they were invisible.
+4. **Fix 2, print:** `ContactsCard` renders a print-only line per contact, "IT contact: Riverdale IT Services, Sam · 555-0142 · help@riverdale-it.example" (middle dots, email as text), notes under it; IC3 prints as "FBI IC3: Report cyber crime in the US · www.ic3.gov". Print CSS (`styles.css`, `@media print`): `.printonly` shown, role/name/action columns hidden, rows lose their card; every `button.btn`, quiet button, in-app link (`a.btn[href^="#"]`) and `mailto:` button is hidden; `tel:` links stay as plain text (no box, no padding, no transition). Gotcha: the first check caught a button mid-transition (background fading), hence `transition: none`.
+5. **Fix 3, colours:** measured every tint against the accent and the "Avoid" background (scratch `hue.py`, CIE76 ΔE + WCAG). Ransomware coral `#fdece6` was the same colour as the "Avoid" box `#fdebe5` (ΔE 0.5), and bec amber (hue 39) was close to orange. New colours (paper bg / icon, ink bg / icon):
+   - ransomware **navy** `#e8ebf5` / `#34497a`, `#20263a` / `#aebde6` (was `#fdece6` / `#a8331a`, `#3a221b` / `#ff9a82`)
+   - bec **gold** `#f8f3d6` / `#6b5a08`, `#302c14` / `#dccb73` (was `#fcf1dc` / `#80520a`, `#352a16` / `#e6b765`)
+   - phishing **cyan blue** `#e1f1f7` / `#1c6079`, `#162d36` / `#8ed0e6` (was `#e7f0fa` / `#2a5a92`, `#1b2a3c` / `#9cc3ef`), moved so navy and blue don't look alike (a slate ransomware was ΔE 2.7 from the old phishing blue).
+   - unchanged: lost device green `#e7f2e8` / `#2b6b40`, outage warm grey `#efede8` / `#5a534c`, fix-its teal `#eaf2f1` / `#2c6660`.
+   - Every tint: text ≥ 12.8:1, muted ≥ 5.7:1, icon ≥ 5.6:1. ΔE from "Avoid" now ≥ 9.7 (paper) / 12.5 (ink) except outage 5.9, a near-neutral grey. Navy hue 222° is under the 230–320° purple ban.
+   - New test: no tint with colour (saturation > 20%) in hue 330–45°. It fails on the old ransomware and bec values.
+6. **DESIGN.md:** tint table, the "no red or orange tint" rule with the ΔE numbers, "Answer contacts" component, print rules, two decision lines.
+7. **DEMO_SCRIPT.md:** a "look" note (round font, navy ransomware, More menu; film again anything from before Session 9), More → Offline Pack, Incidents → Close incident, the Avoid box in scene 2, round green check + Logged mark in scene 4, call buttons under answers (scenes 6, 6b; optional 5 s ransom question with three buttons), "Everyday IT problems, not an attack" → "Printer not printing", Print with plain contact lines, two new checklist ticks.
+8. **SUBMISSION.md:** Built with + google-sans-flex, lucide; call buttons under answers and plain printed contacts; a "the look: warm and human" paragraph; the offline arrow gotcha in Challenges; 446 tests; mobile performance 92 to 100.
+9. **Screenshots:** `.brain/screens/session10/` (answer buttons, print contacts, printed fix-it answer, Home light + dark with the new tints, navy ransomware plan); `.brain/screens/applied/` home + plan light/dark refreshed.
+
+**Verification (local, built app):**
+- vitest 446/446 (new: `tests/mentions.test.ts` 9 incl. both live bug sentences, the red/orange tint test), lint 0, `npm run build` + "Secret check: no App Check debug token".
+- Scratch `pw/print10.mjs` 12/12 in real headless Chrome: no contacts → "Add this contact" for IT + insurer → `#/setup`; demo contacts → mocked cloud Wi-Fi fix-it answer shows `tel:5550142` + `tel:5550163`; print media: 0 visible buttons on a plan page, call link has no border/padding/background; printed contacts exact lines (IT, insurer with email), no em dash, 0 Call/Email/Copy buttons, 7 lines; print lines hidden on screen; no page errors.
+- `s4.mjs` all blocks except demo 56/56, demo block alone 5/5. (Gotcha: running `demo` together with the others makes `pack online` and `online` time out, because the demo block loads data that changes later screens. Session 9 ran it alone too. Run them separately.)
+- `csp.mjs` 0 violations, `judge.mjs` 5/5 offline (needs a shots dir as 2nd arg), `pwa.mjs` manifest OK + offline reload, `issues.mjs` TOTAL 0, `fallback.mjs` 11/11 (Session 8 hybrid unchanged).
+- Lighthouse, EN + FR, Home / plan / Pack / Get ready: accessibility, best practices, SEO 100 on every page, desktop and mobile. Performance desktop 99–100, mobile 92 on Home (same as Session 9), 100 elsewhere.
+- Anti-slop: no em dash, "!" or buzzword in the new copy (grep on the diff + copy tests).
+
+**Files:** `src/features/contacts/{mentions.ts,AnswerContacts.tsx}` (new), `src/features/contacts/ContactsCard.tsx`, `src/features/pack/PackAnswer.tsx`, `src/features/ask/StepAsk.tsx`, `src/i18n/{en,fr}.json`, `src/ui/tokens.ts`, `src/ui/styles.css`, `tests/mentions.test.ts` (new), `tests/design.test.ts`, `.brain/{DESIGN,DEMO_SCRIPT,SUBMISSION,SESSION_HANDOFF}.md`, `.brain/screens/session10/*`, `.brain/screens/applied/*`.
+
+**Not verified:** the live site and a real Gemini / Nano answer naming a contact (needs J's deploy: J TODO Session 10). A real printer (print-media screenshots and a PDF only).
+
+**Next:** J deploys and runs the Session 10 + Session 9 checks; film with the updated DEMO_SCRIPT; paste SUBMISSION into Devpost in his own words.

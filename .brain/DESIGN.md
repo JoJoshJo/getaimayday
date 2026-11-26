@@ -45,14 +45,16 @@ Each incident has its own calm colour, used for its tile, the whole plan panel, 
 
 | Tone | Paper bg / icon | Ink bg / icon | Worst text ratio (paper / ink) |
 |---|---|---|---|
-| ransomware | `#fdece6` / `#a8331a` | `#3a221b` / `#ff9a82` | 5.81 / 7.07 |
-| bec | `#fcf1dc` / `#80520a` | `#352a16` / `#e6b765` | 5.99 / 6.74 |
-| phishing | `#e7f0fa` / `#2a5a92` | `#1b2a3c` / `#9cc3ef` | 5.94 / 6.97 |
+| ransomware | `#e8ebf5` / `#34497a` (navy) | `#20263a` / `#aebde6` | 5.74 / 7.19 |
+| bec | `#f8f3d6` / `#6b5a08` (gold) | `#302c14` / `#dccb73` | 6.08 / 6.73 |
+| phishing | `#e1f1f7` / `#1c6079` (cyan blue) | `#162d36` / `#8ed0e6` | 5.90 / 6.88 |
 | lost-device | `#e7f2e8` / `#2b6b40` | `#1d2e21` / `#8fd0a0` | 5.57 / 6.87 |
 | outage | `#efede8` / `#5a534c` | `#2b2825` / `#cfc6bb` | 5.85 / 7.02 |
 | fixit | `#eaf2f1` / `#2c6660` | `#1a2e2c` / `#8fcfc6` | 5.81 / 6.84 |
 
 "Worst" = the lowest of text, muted text and icon ink on that tint. All ≥ 4.5:1, tested.
+
+**No red or orange tint (Session 10).** Red-orange means danger here ("Something's wrong", "Avoid"). v2 first gave ransomware a coral tint that was the same colour as the "Avoid" box (ΔE 0.5) and bec an amber close to orange; they are now navy and gold, and phishing moved to cyan blue to stay apart from navy. Distance from the "Avoid" background (CIE76 ΔE, paper / ink): ransomware 11.2 / 24.1, bec 12.6 / 15.4, phishing 13.5 / 24.7, lost device 10.6 / 21.9, outage 5.9 / 12.5 (a near-neutral grey, saturation under 20%), fix-its 9.7 / 22.5. `tests/design.test.ts` fails on any tint with colour (saturation > 20%) in hue 330–45°.
 
 ### Accent rules (strict)
 `#ff4829` appears only on: (1) the **"Something's wrong"** button, (2) the left bar of **"Avoid"** boxes (and the clean-device warning on Home, which is the same component), with `accentText` for the "Avoid" label. The current step is a white card, not the accent. Done = green, not the accent.
@@ -155,7 +157,9 @@ Body never below 16px. Line length capped at ~66ch.
 
 **Icons** (`src/ui/icons.ts`): lucide-react, stroke 1.75, always `aria-hidden` next to words. Incidents: ransomware Lock, invoice fraud Receipt, phishing MailWarning, lost device Smartphone, outage WifiOff. Fix-its: Wifi, Mail, Monitor, Printer, KeyRound, Zap. No icon containers, no sparkles.
 
-**Print**: plain ink on paper; round check boxes; the accent only on the "Avoid" bar.
+**Answer contacts** (Session 10): under every Pack answer and every Ask answer (plans and fix-its, on-device or cloud), one soft button per contact the answer names, in the order it names them: "Call IT contact · 555-0142". Email only → "Email …"; not saved → quiet "Add this contact: …" link to Setup. Detection: `src/features/contacts/mentions.ts` (EN + FR, tested).
+
+**Print**: plain ink on paper; round check boxes; the accent only on the "Avoid" bar. Contacts print as one line each, "IT contact: Riverdale IT Services, Sam · 555-0142 · help@riverdale-it.example" (notes under it); no Call, Email or Copy buttons. Links that hold a phone number print as plain text; buttons and in-app links are dropped.
 
 ---
 
@@ -191,3 +195,5 @@ Plain, short, calm, imperative, sentence case. No buzzwords, no "!", no emoji, n
 - ✅ 2026-11-25 (Session 4, SHOULD #14): "Double-check with cloud AI" built as specced in §6 (online only, image preview first, PREFER_IN_CLOUD after the tap, suggestions with "Use this" only on fields the user did not edit, one calm failure line, log notes "checked with cloud AI"). An answer that did not really come from the cloud is treated as a failure.
 - ✅ 2026-11-26 (J, Session 9): **direction C "Warm and human"** chosen from three previews (A calm helper, B Google-ish, C warm and human). Applied app-wide in Session 9 step 2; v1 spec replaced by this file. Previews and screenshots: `.brain/screens/redesign/`.
 - ✅ 2026-11-26 (Session 9): the "Avoid" label is now sentence case ("Avoid" / "À éviter"); accent no longer marks the current step or the "Logged" stamp (now green).
+- ✅ 2026-11-26 (Session 10): incident tints moved away from the danger colour: ransomware coral → navy, bec amber → gold, phishing blue → cyan blue. Test added.
+- ✅ 2026-11-26 (Session 10): answers that name a contact (IT contact, bank, insurer, lawyer, police, staff lead) show that contact's call button under them; not saved → "Add this contact". On paper, contacts are one plain line each ("IT contact: name · phone · email") and buttons lose their boxes.
