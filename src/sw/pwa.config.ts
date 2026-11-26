@@ -31,7 +31,7 @@ export const pwaOptions: Partial<VitePWAOptions> = {
     // else). Other subsets are still referenced by the @font-face CSS but only
     // download if such characters ever appear. .woff (non-2) is never cached.
     // public/lab/ = spike S2 test images for the hidden /#/lab page: never precached.
-    globIgnores: ['**/*-{cyrillic,cyrillic-ext,greek,greek-ext,vietnamese,math,symbols}-*.woff2', '**/lab/**'],
+    globIgnores: ['**/*-{cyrillic,cyrillic-ext,greek,greek-ext,vietnamese,math,symbols,canadian-aboriginal,cherokee,nushu,syriac,tifinagh,adlam,symbols2,old-permic}-*.woff2', '**/lab/**'],
     navigateFallback: '/index.html',
     cleanupOutdatedCaches: true,
   },

@@ -14,6 +14,7 @@ npm run build && npx firebase-tools deploy --only hosting
 
 The build must end with "Secret check: no App Check debug token". Then open https://getaimayday.web.app and reload once so the new version loads.
 
+- [ ] (Session 9) **Pick a redesign direction: A, B or C.** Open `/#/styleguide` (locally: `npm run dev`, then http://localhost:5173/#/styleguide), use the switcher at the top (direction, light/dark, EN/FR), or look at `.brain/screens/redesign/` (README there has the comparison table). Reply with the letter (and anything to change). Nothing is applied to the app until you pick, so no deploy needed for this step.
 - [ ] (Session 8) **Deploy Session 8** (fix-it questions use `PREFER_ON_DEVICE`) with the command above. It also ships Session 7 if that deploy is not done yet. Then on the live site:
   1. On your Mac (Nano ready): Home → Everyday IT problems → Printer → Ask a question "how long do I wait before I plug it back in?". Expect the **On-device AI** badge and, under the box, "On this computer, questions about everyday IT problems may be answered by cloud AI. Don't type personal details."
   2. On a laptop without on-device AI (or Chrome with no Nano), Wi-Fi on: same question. Expect the **Cloud AI** badge. This is the SDK's own fallback; there is no preview on purpose (fix-its hold no incident or business data).
@@ -941,3 +942,27 @@ Brief (architect, via J): live site verified by J (App Check + reCAPTCHA Enterpr
 **Not verified:** a real cloud answer from live Gemini on a no-Nano machine, and the On-device badge for a fix-it with real Nano (both need the deploy and J's machines: J TODO Session 8).
 
 **Next:** J deploys and runs the Session 8 checks; film scene 6b.
+
+---
+
+## 2026-11-26 — Session 9 step 1: friendly redesign previews (Claude Code)
+
+**Goal:** J: the app "is not user friendly at all, it looks too IT". Build three visual directions as live previews with Google Sans Flex, then STOP for J to pick. Visual layer only: no logic, AI routing, storage or plan content changed.
+
+**Steps, in order:**
+
+1. `pwd && git remote -v`, pulled main at `253e576`. Read DESIGN.md, tokens.ts, applyTokens.ts, Styleguide.tsx, tests/design.test.ts, pwa.config.ts.
+2. **Verified on npm** (2026-11-26): `@fontsource-variable/google-sans-flex` 5.3.2 OFL, `@fontsource-variable/google-sans-code` 5.3.2 OFL, `lucide-react` 1.80.0 ISC. Installed all three. Google Sans Flex axes: wght 1–1000, wdth, opsz, slnt, GRAD, ROND. The `full.css` latin file is 1.4 MB, so the previews import `rond.css` (wght + ROND, latin 71 KB). Code font: `wght.css` (latin 35 KB).
+3. **Tokens:** `redesign` export added to `src/ui/tokens.ts`: directions a/b/c, each with light + dark palettes (bg, surface, surface2, line, text, muted, accent, accentText, onAccent, primary, onPrimary, ok/okBg, info/infoBg, avoidBg, hero/heroText, focus), radius (A 10/12/16, B 8/16/16, C 12/16/16), ROND (A 60, B 0, C 100), plus per-incident tints (bg + icon ink) for light and dark. Contrast computed first (scratch `pal.py`), every pair ≥ 4.5:1 for text, ≥ 3:1 for UI marks.
+4. **Previews:** `src/features/styleguide/Redesign.tsx` (switcher + static preview screens: top bar with Home · Get ready · Incidents + "More" menu, Home, one ransomware plan step with a done step, the photo confirm panel, the Pack search), `redesignCss.ts` (tokens → `--rd-*` vars, injected with a constructable stylesheet like applyTokens, so CSP-safe), `redesign.css` (shared base + one block per direction, all scoped to `.rd[data-dir]`). Uses real i18n strings and real plan data; a few preview-only words (More, empty state, sample Pack answer) live in the component in EN + FR. Mounted at the top of `/#/styleguide`; the v1 styleguide is unchanged below it.
+5. **Fixes after looking at screenshots:** mobile top bar wrapped into four rows (now: mark + chip + language on one row, nav on the next), tile description spacing (`align-content: start`), C's hero tint was too close to the warning box (now surface2), done-step row on mobile.
+6. **Anti-slop rules updated** (DESIGN.md §8 + new §11; `tests/design.test.ts`): radius ≤ 16px (was 4px), purple check now covers the redesign palettes and tints, new WCAG AA tests for every direction × theme × pair and every tint (text, muted and icon ink on the tint). Still banned: purple/indigo, gradients, glass, glows, shadows, emoji, blobs, stock images, buzzwords, em dashes, "!".
+7. **Offline + CSP:** precache now holds only latin + latin-ext font files (added canadian-aboriginal, cherokee, nushu, syriac, tifinagh, adlam, symbols2, old-permic to `globIgnores`; checked the sw.js list). Gotcha: Vite inlined a tiny font subset as a `data:` URL, which CSP font-src blocks; `vite.config.ts` now sets `assetsInlineLimit` to never inline .woff/.woff2.
+8. **Screenshots:** 30 PNGs in `.brain/screens/redesign/` (each direction: desktop + mobile Home and step, light; desktop dark; desktop FR; desktop confirm + Pack). Comparison table + recommendation (C, with A as the safe fallback) in `.brain/screens/redesign/README.md`. Scratch script `pw/redesign.mjs <outDir>` against `npm run dev`.
+9. **Verification:** vitest 552/552 (408 before + the new redesign contrast tests), lint 0, `npm run build` + secret check OK, scratch `rdoffline.mjs`: previews render offline from the cache, both Google fonts load from the precache, tokens applied under CSP, switcher C · dark · FR works, More menu works, 0 CSP violations, 0 page errors. `s4.mjs` all blocks 56/56, `csp.mjs` 0 violations (app unchanged).
+
+**Files:** `package.json`/lock (3 deps), `src/ui/tokens.ts`, `src/features/styleguide/{Redesign.tsx,redesignCss.ts,redesign.css,Styleguide.tsx}`, `src/sw/pwa.config.ts`, `vite.config.ts`, `tests/design.test.ts`, `.brain/DESIGN.md`, `.brain/screens/redesign/*`, this file.
+
+**Not done (by design):** step 2, applying a direction app-wide. Waiting for J's pick (J TODO Session 9). The old fonts (Archivo, Figtree, IBM Plex Mono) stay until step 2 replaces them.
+
+**Next:** J picks A, B or C → Session 9 step 2: apply it across the app, rewrite DESIGN.md, Lighthouse a11y 100, deploy.

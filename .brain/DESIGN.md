@@ -186,6 +186,8 @@ Plain, short, calm, imperative. No buzzwords ("seamless", "unlock", "supercharge
 
 ## 8. Banned (AI-slop tells) and how it's enforced
 
+**Session 9 update (for the friendly redesign, see §11):** now **allowed**: Google Sans Flex (and Google Sans Code for technical bits), radius up to **16px**, soft section tints (per-incident calm colours). **Still banned:** purple/indigo, gradients, glassmorphism, glows, heavy shadows, emoji icons, 3D blobs, stock images, buzzwords, em dashes, "!". The test now checks radius ≤ 16px and runs the purple check and WCAG AA contrast on every redesign palette and tint.
+
 Banned: purple/violet/indigo; gradients of any kind; glassmorphism / `backdrop-filter` / blur; glows (`box-shadow`/`text-shadow` with color/blur); emoji as icons; 3D blobs, illustrations, stock imagery; centered hero + 3 feature cards; icon-in-a-circle rows; sparkle "AI" icons; buzzword copy; em-dash-heavy copy; Inter/Roboto/Poppins/Space Grotesk/system-ui as primary font.
 
 **Enforcement:** a Vitest test (`tests/design.test.ts`) scans `src/` and fails if it finds: a hex/rgb/hsl color outside `src/ui/tokens.ts`; `gradient(`; `backdrop-filter` or `blur(`; `box-shadow`/`text-shadow`; banned font names; purple/violet/indigo hues (any token with hue 250–300°); emoji in UI strings; banned buzzwords or `—` in `src/i18n/*.json`; `border-radius` > 4px in tokens. Plus a manual self-check pasted into the handoff each session.
@@ -209,3 +211,14 @@ Theme control: the app follows the OS, and `data-theme="light|dark"` on any elem
 - ✅ 2026-11-24 (architect, Session 3c): optional "Double-check with cloud AI" button on the found-on-screen panel (online only, preview first, PREFER_IN_CLOUD only after a tap). Spec in §6; SHOULD.
 - ✅ 2026-11-25 (Session 4, built): found-on-screen panel as specced, plus: "Type it in myself" while the AI reads (the user never waits); without on-device AI the same panel opens empty with a Checklist badge; the log shows each confirmed field with its status ("edited", "added by you", "removed by you"); after confirm, if the type maps to another plan, a "Start that plan" button (src/plans/route.ts).
 - ✅ 2026-11-25 (Session 4, SHOULD #14): "Double-check with cloud AI" built as specced in §6 (online only, image preview first, PREFER_IN_CLOUD after the tap, suggestions with "Use this" only on fields the user did not edit, one calm failure line, log notes "checked with cloud AI"). An answer that did not really come from the cloud is treated as a failure.
+
+---
+
+## 11. Session 9 · friendly redesign (PREVIEWS, waiting for J's pick)
+
+J's feedback: "not user friendly at all, it looks too IT". The user is a stressed office manager. Three directions are previewed on `/#/styleguide` (switcher at the top); comparison and screenshots in `.brain/screens/redesign/README.md`. Nothing is applied app-wide until J picks; then this file gets rewritten for the chosen direction (Session 9 step 2).
+
+- **Fonts:** Google Sans Flex Variable (`@fontsource-variable/google-sans-flex`, OFL, file `rond.css`: weight 1–1000 + roundness axis `ROND`, latin 71 KB) for display and body; Google Sans Code Variable (`@fontsource-variable/google-sans-code`, OFL, `wght.css`) only for times and file extensions. Verified on npm 2026-11-26 (5.3.2). Only latin + latin-ext are precached (`src/sw/pwa.config.ts` globIgnores lists the other subsets); fonts are never inlined as `data:` (blocked by CSP font-src; `vite.config.ts` assetsInlineLimit).
+- **Tokens:** `redesign` in `src/ui/tokens.ts` (three directions × light/dark, radius, ROND value, per-incident tints). Preview CSS: `src/features/styleguide/redesign.css`, scoped to `.rd[data-dir]`.
+- **Icons:** lucide-react line icons, stroke 1.75, one per incident (ransomware Lock, invoice fraud Receipt, phishing MailWarning, lost device Smartphone, outage WifiOff) and per fix-it (Wifi, Mail, Monitor, Printer, KeyRound, Zap). No icon containers, no sparkles.
+- **Accent:** `#ff4829` only for "Something's wrong" and urgent "Avoid". The current step is now marked with ink (A: left bar, B/C: card), not the accent.

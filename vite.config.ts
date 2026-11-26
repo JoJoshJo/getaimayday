@@ -23,4 +23,7 @@ const prodHeaders = Object.fromEntries(
 export default defineConfig({
   plugins: [react(), VitePWA(pwaOptions)],
   preview: { headers: prodHeaders },
+  // Never inline fonts as data: URLs: the CSP font-src only allows 'self' (Session 9:
+  // a tiny Google Sans subset was inlined and blocked).
+  build: { assetsInlineLimit: (file) => (file.endsWith('.woff2') || file.endsWith('.woff') ? false : undefined) },
 })

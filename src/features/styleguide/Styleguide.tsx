@@ -5,6 +5,7 @@ import { DoNot, LangToggle, Progress, Stamp, StatusChip, Wordmark } from '../../
 import { CONTRAST_PAIRS, contrast } from '../../ui/contrast'
 import { tokens, type ColorToken } from '../../ui/tokens'
 import { StepRow } from '../incident/StepRow'
+import { RedesignSwitcher } from './Redesign'
 
 const SAMPLE_TIME = new Date(2026, 10, 24, 14, 2) // fixed sample for the stamp
 
@@ -13,6 +14,7 @@ export default function Styleguide() {
   const [stampKey, setStampKey] = useState(0)
   return (
     <div className="sg">
+      <RedesignSwitcher />
       <header className="sg__head page">
         <p className="kicker mono">AIMayday · design system v1</p>
         <h1 className="plan__title">Styleguide</h1>

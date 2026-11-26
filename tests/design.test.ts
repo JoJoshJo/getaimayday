@@ -9,7 +9,7 @@ import { LANGUAGES, messages } from '../src/i18n/messages'
 import { rawPlans } from '../src/plans'
 import { rawFixits } from '../src/fixits'
 import { CONTRAST_PAIRS, contrast } from '../src/ui/contrast'
-import { tokens } from '../src/ui/tokens'
+import { redesign, tokens } from '../src/ui/tokens'
 
 const SRC = join(__dirname, '..', 'src')
 const TOKENS_FILE = 'ui/tokens.ts'
@@ -52,7 +52,9 @@ describe('banned visual effects', () => {
 })
 
 describe('tokens', () => {
-  const hexes = Object.values(tokens.color).flatMap((p) => Object.entries(p))
+  const rdHexes = Object.values(redesign.directions).flatMap((d) => [...Object.entries(d.light), ...Object.entries(d.dark)])
+  const tintHexes = Object.values(redesign.tints).flatMap((t) => Object.entries(t).flatMap(([k, v]) => [[`${k}.bg`, v.bg], [`${k}.ink`, v.ink]] as [string, string][]))
+  const hexes = [...Object.values(tokens.color).flatMap((p) => Object.entries(p)), ...rdHexes, ...tintHexes]
   const hue = (hex: string) => {
     const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255)
     const max = Math.max(r, g, b), min = Math.min(r, g, b), d = max - min
@@ -68,12 +70,31 @@ describe('tokens', () => {
     })
     expect(bad).toEqual([])
   })
-  it('radius never above 4px', () => {
-    for (const v of Object.values(tokens.radius)) expect(parseFloat(v)).toBeLessThanOrEqual(4)
+  // Session 9: soft corners allowed, up to 16px (was 4px in design v1).
+  it('radius never above 16px', () => {
+    const radii = [...Object.values(tokens.radius), ...Object.values(redesign.directions).flatMap((d) => Object.values(d.radius))]
+    for (const v of radii) expect(parseFloat(v)).toBeLessThanOrEqual(16)
   })
   for (const [name, palette] of Object.entries(tokens.color))
     for (const p of CONTRAST_PAIRS)
       it(`${name}: ${p.fg} on ${p.bg} ≥ ${p.min}:1`, () => expect(contrast(palette[p.fg], palette[p.bg])).toBeGreaterThanOrEqual(p.min))
+})
+
+describe('redesign previews (Session 9): WCAG AA in every direction and theme', () => {
+  type K = keyof (typeof redesign.directions)['a']['light']
+  const PAIRS: [K, K, number][] = [
+    ['text', 'bg', 4.5], ['text', 'surface', 4.5], ['text', 'surface2', 4.5], ['muted', 'bg', 4.5], ['muted', 'surface', 4.5], ['muted', 'surface2', 4.5],
+    ['accentText', 'bg', 4.5], ['accentText', 'avoidBg', 4.5], ['text', 'avoidBg', 4.5], ['onAccent', 'accent', 4.5], ['onPrimary', 'primary', 4.5],
+    ['ok', 'okBg', 4.5], ['ok', 'bg', 4.5], ['info', 'infoBg', 4.5], ['heroText', 'hero', 4.5], ['accent', 'bg', 3], ['accent', 'hero', 3], ['focus', 'bg', 3],
+  ]
+  for (const [dir, d] of Object.entries(redesign.directions))
+    for (const theme of ['light', 'dark'] as const) {
+      for (const [fg, bg, min] of PAIRS) it(`${dir}.${theme}: ${fg} on ${bg} ≥ ${min}:1`, () => expect(contrast(d[theme][fg], d[theme][bg])).toBeGreaterThanOrEqual(min))
+      for (const [k, tint] of Object.entries(redesign.tints[theme]))
+        it(`${dir}.${theme}: text, muted and icon on the ${k} tint ≥ 4.5:1`, () => {
+          for (const fg of [d[theme].text, d[theme].muted, tint.ink]) expect(contrast(fg, tint.bg)).toBeGreaterThanOrEqual(4.5)
+        })
+    }
 })
 
 describe('copy', () => {
