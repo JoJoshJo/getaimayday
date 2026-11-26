@@ -14,8 +14,9 @@ Append one entry per session: date, what was done, files changed, commit hashes,
   4. Open https://getaimayday.web.app, check the chip says "Offline ready" after a reload, then turn Wi-Fi off and reload: the app must still open.
   5. In the console: App Check → AI Logic stays **Enforced**; check the reCAPTCHA Enterprise key's allowed domains.
 - [ ] (Session 4) **Test the back-online jobs with real cloud AI** (App Check needed, as for the Pack): open an incident with a few checks and a note → Back online → Incident report → check the preview, untick/tick "Include my notes" → Send to cloud AI. Expect a document with the Cloud AI badge, [placeholders], no invented names. Try one draft in FR. Copy and Print.
-- [ ] (Session 4) **Test a real Offline Pack build** (needs App Check: run `npm run dev` with your debug token in `.env.local`, or the deployed site): Setup → fill with sample data → Offline Pack → Build → check the preview → Send to cloud AI. Expect 6 parts "saved" with the Cloud AI badge. Then go offline and search 10 questions EN + 10 FR; note how many are right (S3 spike target: 16/20). Report any "Not built" error text.
-- [ ] (Session 4) Review the new plan texts, EN + FR (BEC now; phishing, lost device, outage later this session). Plans: `src/plans/{en,fr}/*.json`.
+- [ ] (Session 4) **Test a real Offline Pack build** (needs App Check: run `npm run dev` with your debug token in `.env.local`, or the deployed site): Setup → fill with sample data → Offline Pack → Build → check the preview → Send to cloud AI. Expect 12 parts (5 plans × EN/FR + 2 glossaries) "saved" with the Cloud AI badge. Then go offline and search 10 questions EN + 10 FR; note how many are right (S3 spike target: 16/20). Report any "Not built" error text.
+- [ ] (Session 4) Review the new plan texts, EN + FR, as Security+ / French reviewer: BEC, phishing, lost device, outage, and the ransomware `report-outside-us` step. Plans: `src/plans/{en,fr}/*.json`.
+- [ ] (Session 4) Run the **hand-test script** at the end of the Session 4 entry, on a real Chrome with Nano if you have one.
 - [ ] (Session 3c) Re-test S2 samples 1–5 + one warm-up check (see the Session 3c entry).
 
 ---
@@ -581,3 +582,35 @@ Brief: build MUST 1–9, then SHOULD 10–14, NICE 15–17, deploy prep, README;
 - `cloudSuggestions(opened, current, cloud)` (pure, tested): a "Cloud AI · value · Use this" line appears only under fields where the cloud found a different non-empty value AND the user has not edited the field. Nothing is overwritten. The triage event gets `cloud_checked: true`; the log shows "checked with cloud AI". The image is not stored again.
 - `PhotoThumb` moved to `src/features/log/PhotoThumb.tsx` (used by the log and the preview; avoids an import cycle).
 - Tests 260/260. E2E 49 PASS: offline no button; online (stub on-device prefill) the preview shows image + what is sent; Cancel leaves the fields. A real cloud answer needs App Check → J TODO.
+- Commit: `38bbfe2`.
+
+### Session 4 — final summary
+
+**Done (all pushed to main):**
+- MUST 1–9: home + classify + keyword fallback (`874da4e`), incident log (`145d529`), found-on-screen confirm panel (`021af49`), BEC plan (`95f2a7b`), setup + contacts (`d71b5af`), Offline Pack (`16499d2`), ask a question per step (`003477a`), back-online cloud documents (`deeb95d`), Get ready + chip + printable plans (`fdf626f`).
+- Deploy prep: `firebase.json`, `.firebaserc`, README (`70a8535`).
+- SHOULD 10–14: phishing plan (`bc7b7ed`), lost device + outage plans (`dbe2c31`), printable plans (in `fdf626f`), cloud double-check (`38bbfe2`).
+- State: 260 unit tests, lint 0, build + secret check OK, 49 offline/e2e checks in headless Chrome (scratch script, not committed).
+
+**Not done:**
+- NICE 15 (IT fix-it library), 16 (opt-in cloud sync with Auth + Firestore; would need you to enable Auth and Firestore and approve rules in the console), 17 (custom plan builder). Not started.
+- Real cloud results (Pack build, back-online documents, cloud double-check) could not be produced here: headless Chrome has no App Check token. All the cloud code paths are tested with faked calls and in the browser up to the preview; the real call is a J TODO.
+- No CSP header yet (see deploy prep).
+- MASTER S3 spike (Pack top-1 ≥ 16/20 on a real cloud-built pack): only checked on a hand-written fixture (20/20). Real check is in the Pack J TODO.
+
+**J TODO:** the list at the top of this file (review plans, real Pack build + S3 count, back-online documents, cloud double-check, deploy, Session 3c S2 re-test, hand-test script below).
+
+**Next session:** act on J's test results (Pack quality, wording fixes), then the NICE items or a CSP after the first deploy.
+
+### Hand-test script for J (about 15 minutes)
+Use Chrome. Start online, in `npm run dev` (debug token in `.env.local`) or on the deployed site.
+1. **Setup:** Get ready (top bar) → Open Setup → fill in business details and at least the IT, bank fraud and insurer contacts with fake data (555-01xx) → Save. The chip should count up.
+2. **Pack:** Offline Pack → Build → read the preview (no business name, city or phone in it) → Send to cloud AI. Wait for all parts to say "saved". Note any "Not built".
+3. **Print:** Get ready → Print plans → Print (or cancel the dialog). Get ready should now show 5/5 or tell you what is left.
+4. **Go offline:** turn Wi-Fi off, reload. The app must open, chip says "Offline".
+5. **Home → incident:** type "all our files have a strange extension and there is a note asking for bitcoin" → Something's wrong. With Nano: badge On-device AI; without: Checklist (keywords). The ransomware plan opens.
+6. **Photo confirm:** in the incident log, Add photo (a ransom-screen picture) → Read the screen. With Nano the fields fill in with On-device AI; without, type them. Change one field, clear one → Confirm. The log shows "edited" / "removed by you". No cloud button while offline.
+7. **Ask a question offline:** on a step, Ask a question about this step → "should I turn the computer off?". Expect an On-device AI answer (Nano) or an Offline Pack answer; for "printer is jammed", expect "No answer" + Call IT contact. Tap the call button: it should open the phone dialer with your IT number.
+8. **Back online:** turn Wi-Fi on. In the same incident, Back online → Incident report → check the preview (toggle "Include my notes") → Send to cloud AI. Read the report, Copy it, Print it. Try "Message to the bank" in FR (switch FR first).
+9. **Cloud double-check (optional):** on another photo, Read the screen → Double-check with cloud AI → Send. Check "Use this" appears only on fields you did not edit.
+Report back: what failed, any wording that sounds wrong, Nano yes/no on your machine, Pack count out of 20.
