@@ -683,3 +683,9 @@ Brief (architect, via J): CSP + security headers; demo setup route with reset; N
 - Not a bug, noted: the Pack screen says "your setup changed since this Pack was built" in the judge run only because the fixture's `input_hash` is fake. A real Pack built after loading demo data does not show it.
 - For judges: with no Pack yet, Ask says "Build the Offline Pack on a calm day" and still offers the call button, so nothing is empty. Building a Pack on the live site needs App Check working on the deployed domain (J TODO deploy item).
 - Tests 315/315, lint 0, build + secret check OK, `s4.mjs` all blocks pass (55 + demo run), judge run all pass.
+- Commit: `d67f3a0`.
+
+### Item 5 — Demo video shot list
+- `.brain/DEMO_SCRIPT.md`: 2:45, 10 scenes with time codes, what is on screen, what J says, what each scene proves. Covers: the problem (6-person dental office, no IT, ransomware), "use a clean device", Wi-Fi OFF + On-device AI badge (classify + Ask), photo triage + confirm, Offline Pack answer on a laptop without on-device AI, back online → incident report + staff message after the exact preview (Cloud AI badge), EN/FR switch, print, last line "the cloud prepares, the device acts".
+- Includes the setup before filming (two machines, `#/demo-setup`, real Pack build, fake ransom note `public/lab/s2-4.png`), a badge checklist for editing, and what to do if something fails (never fake an AI answer).
+- Spoken pace checked by script: 1.0 to 2.3 words per second per scene. Every button name in the script was checked against `src/i18n/en.json`.
