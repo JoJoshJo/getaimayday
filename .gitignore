@@ -158,3 +158,6 @@ vite.config.ts.timestamp-*
 
 # vite-plugin-pwa dev service worker output
 dev-dist
+
+# e2e screenshots (scratch)
+shots4/

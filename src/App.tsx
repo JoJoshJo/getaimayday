@@ -6,6 +6,7 @@ import { IncidentList } from './features/log/IncidentList'
 import { ContactsScreen } from './features/contacts/ContactsScreen'
 import { StepContacts } from './features/contacts/StepContacts'
 import { SetupScreen } from './features/setup/SetupScreen'
+import { PackScreen } from './features/pack/PackScreen'
 import { useI18n } from './i18n'
 import { LangToggle, StatusChip, Wordmark } from './ui/components'
 import { useConnection } from './ui/useConnection'
@@ -25,6 +26,7 @@ function TopBar() {
       <nav className="topbar__nav mono" aria-label={t('nav.label')}>
         <a href="#/contacts">{t('nav.contacts')}</a>
         <a href="#/incidents">{t('nav.incidents')}</a>
+        <a href="#/pack">{t('nav.pack')}</a>
         <a href="#/setup">{t('nav.setup')}</a>
       </nav>
       <div className="topbar__end">
@@ -59,6 +61,7 @@ export default function App() {
   else if (route.path === '/incidents') content = <IncidentList />
   else if (route.path === '/contacts') content = <ContactsScreen />
   else if (route.path === '/setup') content = <SetupScreen />
+  else if (route.path === '/pack') content = <PackScreen />
 
   return (
     <div className="page">

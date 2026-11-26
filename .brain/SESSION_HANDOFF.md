@@ -6,6 +6,7 @@ Append one entry per session: date, what was done, files changed, commit hashes,
 
 ## J TODO (things only J can do: console, login, secrets, hand tests). Newest first. Tick when done.
 
+- [ ] (Session 4) **Test a real Offline Pack build** (needs App Check: run `npm run dev` with your debug token in `.env.local`, or the deployed site): Setup → fill with sample data → Offline Pack → Build → check the preview → Send to cloud AI. Expect 6 parts "saved" with the Cloud AI badge. Then go offline and search 10 questions EN + 10 FR; note how many are right (S3 spike target: 16/20). Report any "Not built" error text.
 - [ ] (Session 4) Review the new plan texts, EN + FR (BEC now; phishing, lost device, outage later this session). Plans: `src/plans/{en,fr}/*.json`.
 - [ ] (Session 3c) Re-test S2 samples 1–5 + one warm-up check (see the Session 3c entry).
 
@@ -495,3 +496,14 @@ Brief: build MUST 1–9, then SHOULD 10–14, NICE 15–17, deploy prep, README;
 - **Gotcha (zod 4):** `z.record(z.enum([...]), X)` is exhaustive in zod 4 (every key required) → saving partial contacts failed silently. Use `z.partialRecord`. Save errors now show `setup.notSaved`; covered by `tests/setup.test.ts`.
 - Tests: `tests/setup.test.ts` (schemas, partial contacts, step map, tel href, sample data is fake 555-01xx). Total 174/174.
 - E2E `s4.mjs` BLOCKS=home,log,triage,setup all PASS offline: empty card + IC3; save + offline reload; `tel:5550142`; sheet opens from a plan step; direct "Call IT contact" button. Screenshots (setup desktop, contacts dark mobile, steps with contacts) checked by eye.
+
+- Fix: e2e screenshots had been written to `shots4/` in the repo and committed with features 2 to 5. Removed from git, folder added to `.gitignore`; screenshots now live in the scratchpad.
+
+### Feature 6 — Offline Incident Pack (MUST #9)
+- Full spec: `.brain/PACK_SCHEMA.md` (new). Summary: `#/pack` (top bar "Offline Pack"). Online: Build → **preview of exactly what is sent** (business context without name/city/contacts, the full prompts, request count, what is not sent) → "Send to cloud AI" → one AI Logic `ONLY_IN_CLOUD` call per plan × EN/FR + glossary per language, structured JSON (`responseJsonSchema`, step ids as enum), validated with zod, saved chunk by chunk in `kv.pack` with version + last updated. Offline: no build button; **Search the Pack** works (MiniSearch, no model), badge Offline Pack; unsure → 3 closest + "Call IT contact".
+- New files: `src/pack/{schema,build,guard,match,store}.ts`, `src/ai/cloud.ts` (`cloudJson`, `cloudText`; lazy chunk, Firebase never in the main shell), `src/ai/prompts/pack.ts`, `src/features/pack/{PackScreen,PackAnswer}.tsx`. Strings `pack.*`, `preview.*` (preview block reused by feature 8), `nav.pack`. CSS `.pack*`, `.preview*`, `.packans*`.
+- Decisions: sources are always copied from the plan step (model never supplies links); chunks not from `in_cloud` are rejected; unsafe advice filtered in code as well as forbidden in the prompt; contacts are sent as roles only, the phone is resolved on the device at answer time; `input_hash` flags "your setup changed".
+- Gotcha: a call button that loaded contacts with its own live query rendered a moment late (e2e caught it); `PackAnswer` now takes `contacts` from its parent.
+- Not verifiable here: a real cloud build (headless has no App Check token) → J TODO at the top. Tests use a faked `generate` only; nothing fake ships.
+- Tests: `tests/pack.test.ts` (24): nothing private in any prompt, job list, hash; validation (unknown step dropped, unsafe dropped, source copied, dashes cleaned, non-cloud rejected, empty rejected); guard; storage versions/chunks; matcher 20-question quality set (EN+FR), confident vs unsure, plan filter, counts. Total 198/198.
+- E2E `s4.mjs` BLOCKS=home,setup,pack: offline no build button; fixture pack put into IndexedDB → status date/version/counts, confident answer + one-tap IT call, unsure → call IT; online: preview names Google Gemini, shows no name/city/phone, Cancel sends nothing. Screenshots checked by eye.
