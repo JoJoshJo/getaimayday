@@ -3,6 +3,9 @@ import { useRoute } from './app/router'
 import { Home } from './features/home/Home'
 import { IncidentView } from './features/incident/IncidentView'
 import { IncidentList } from './features/log/IncidentList'
+import { ContactsScreen } from './features/contacts/ContactsScreen'
+import { StepContacts } from './features/contacts/StepContacts'
+import { SetupScreen } from './features/setup/SetupScreen'
 import { useI18n } from './i18n'
 import { LangToggle, StatusChip, Wordmark } from './ui/components'
 import { useConnection } from './ui/useConnection'
@@ -13,11 +16,17 @@ const Lab = lazy(() => import('./features/lab/Lab'))
 
 function TopBar() {
   const connection = useConnection()
+  const { t } = useI18n()
   return (
     <header className="topbar">
       <a className="topbar__home" href="#/">
         <Wordmark />
       </a>
+      <nav className="topbar__nav mono" aria-label={t('nav.label')}>
+        <a href="#/contacts">{t('nav.contacts')}</a>
+        <a href="#/incidents">{t('nav.incidents')}</a>
+        <a href="#/setup">{t('nav.setup')}</a>
+      </nav>
       <div className="topbar__end">
         <StatusChip state={connection} />
         <LangToggle />
@@ -46,8 +55,10 @@ export default function App() {
   }
 
   let content = <Home />
-  if (route.parts[0] === 'incident' && route.parts[1]) content = <IncidentView id={route.parts[1]} />
+  if (route.parts[0] === 'incident' && route.parts[1]) content = <IncidentView id={route.parts[1]} stepExtras={(step) => <StepContacts step={step} />} />
   else if (route.path === '/incidents') content = <IncidentList />
+  else if (route.path === '/contacts') content = <ContactsScreen />
+  else if (route.path === '/setup') content = <SetupScreen />
 
   return (
     <div className="page">

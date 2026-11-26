@@ -483,3 +483,15 @@ Brief: build MUST 1–9, then SHOULD 10–14, NICE 15–17, deploy prep, README;
 - Tests (`tests/plans.test.ts`): every source host is on an allow-list of the checked official sites; every plan has `report-outside-us` naming both France and Canada; no plan tells the user to pay, wipe/reinstall or contact the attacker (negated sentences like "Do not contact the attackers" are allowed).
 - J TODO: review BEC wording (EN + FR) as Security+ / French reviewer (MASTER §10).
 
+- Commit: `95f2a7b`.
+
+### Feature 5 — Setup (business profile) + emergency contacts card (MUST #8)
+- `src/features/setup/model.ts` (zod): `ProfileSchema` (name, type, city, country US/CA/FR/other, staff, email provider, key systems, backups yes/no/not_sure + where), `CONTACT_ROLES` = it_vendor, bank_fraud, insurer, lawyer, police (non-emergency), staff_lead; `ContactSchema` (name, phone, email, notes); `FIXED_LINKS` (FBI IC3, always shown); `STEP_CONTACT` maps plan step ids to a role (call-it-contact / restore-with-it / check-email-rules → IT, call-insurer → insurer, call-bank-now → bank fraud line, tell-staff / warn-payers → staff lead); `telHref`. `SAMPLE_PROFILE` / `SAMPLE_CONTACTS` = fake Sunrise Dental, Riverdale GA, 555-01xx numbers (dev button only, `import.meta.env.DEV`).
+- Storage: `kv` keys `profile` and `contacts` (IndexedDB, this device only). `useSetup.ts` (live query, `saveProfile`, `saveContacts`).
+- `#/setup` (`SetupScreen.tsx`): loader + form (loader split fixes lint `set-state-in-effect`), Save shows "Saved on this device" or an error line.
+- `#/contacts` (`ContactsScreen.tsx` + `ContactsCard.tsx`): ruled list, one tap `tel:` / `mailto:`, empty roles invite setup, IC3 link always there.
+- Every plan step gets `StepContacts` via the `stepExtras` slot: a **Contacts** button opening a native `<dialog>` sheet with the full card, plus a direct "Call <role> · <phone>" button when the step maps to a filled role. So contacts are one tap from every step.
+- Top bar nav: Contacts, Incidents, Setup.
+- **Gotcha (zod 4):** `z.record(z.enum([...]), X)` is exhaustive in zod 4 (every key required) → saving partial contacts failed silently. Use `z.partialRecord`. Save errors now show `setup.notSaved`; covered by `tests/setup.test.ts`.
+- Tests: `tests/setup.test.ts` (schemas, partial contacts, step map, tel href, sample data is fake 555-01xx). Total 174/174.
+- E2E `s4.mjs` BLOCKS=home,log,triage,setup all PASS offline: empty card + IC3; save + offline reload; `tel:5550142`; sheet opens from a plan step; direct "Call IT contact" button. Screenshots (setup desktop, contacts dark mobile, steps with contacts) checked by eye.
