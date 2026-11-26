@@ -111,7 +111,7 @@ AIMayday helps **small businesses with little or no IT support** respond to cybe
 
                  ┌──────────────── BACK ONLINE ────────────────────────┐
  User taps a job │  Preview "what will be sent" → confirm               │
-                 │  Cloud Gemini (PREFER_IN_CLOUD): report, next steps, │
+                 │  Cloud Gemini (ONLY_IN_CLOUD): report, next steps,   │
                  │  notification drafts                     [Cloud AI]  │
                  └─────────────────────────────────────────────────────┘
 ```
@@ -121,6 +121,17 @@ AIMayday helps **small businesses with little or no IT support** respond to cybe
 - On-device supports: **single-turn** text generation (not chat), text+image input (**JPEG/PNG only**, inline data), **structured output (JSON, enums)**, streaming.
 - Not supported on-device: multi-turn chat, tools/function calling, audio/video/PDF input, image URLs. On-device calls do not appear in Firebase AI monitoring.
 - Inference modes: `PREFER_ON_DEVICE`, `ONLY_ON_DEVICE`, `PREFER_IN_CLOUD`, `ONLY_IN_CLOUD`. Response indicates which source ran — use it for the badge.
+
+### Which mode each feature uses (Session 8, source of truth: `src/ai/modes.ts`, tested in `tests/modes.test.ts`)
+
+**Rule: automatic fallback only where the content is not sensitive.**
+
+| Feature | Mode | Why |
+| --- | --- | --- |
+| Plan picking, ransom-screen reading, Ask on an incident step | `ONLY_ON_DEVICE` | Incident day. The text and photos are sensitive, so they never go to the cloud on their own; works offline. No Nano → Pack → checklist. |
+| Ask on an everyday IT fix-it (Wi-Fi, printer...) | `PREFER_ON_DEVICE` | No incident or business data. Nano when Chrome has it, otherwise the SDK sends the question to cloud Gemini by itself. A notice under the box says so; emails and phone numbers are removed first. Offline with no Nano → the fix-it text + "call your IT contact". |
+| "Double-check with cloud AI" on a ransom photo | `PREFER_IN_CLOUD` | Only after a button and a preview; shown as a cloud check only if `inferenceSource` is in_cloud. |
+| Offline Pack build, report, messages | `ONLY_IN_CLOUD` | Calm day or back online, only after a preview and a button. |
 - Nano context is small (~9k tokens reported). Never send whole packs; send current step + short plan summary.
 - Model download must be triggered by a user gesture and may take minutes; Chrome may evict the model when disk is low. → "Get ready" screen in setup.
 - Hardware for Nano in Chrome: Windows 10/11, macOS 13+, Linux, Chromebook Plus; 22 GB free; GPU >4 GB VRAM **or** 16 GB RAM + 4 cores. Not on mobile Chrome.

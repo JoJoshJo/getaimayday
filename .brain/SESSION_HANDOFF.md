@@ -14,6 +14,12 @@ npm run build && npx firebase-tools deploy --only hosting
 
 The build must end with "Secret check: no App Check debug token". Then open https://getaimayday.web.app and reload once so the new version loads.
 
+- [ ] (Session 8) **Deploy Session 8** (fix-it questions use `PREFER_ON_DEVICE`) with the command above. It also ships Session 7 if that deploy is not done yet. Then on the live site:
+  1. On your Mac (Nano ready): Home → Everyday IT problems → Printer → Ask a question "how long do I wait before I plug it back in?". Expect the **On-device AI** badge and, under the box, "On this computer, questions about everyday IT problems may be answered by cloud AI. Don't type personal details."
+  2. On a laptop without on-device AI (or Chrome with no Nano), Wi-Fi on: same question. Expect the **Cloud AI** badge. This is the SDK's own fallback; there is no preview on purpose (fix-its hold no incident or business data).
+  3. Same laptop, Wi-Fi off: expect Checklist + "No answer on this device for this step" + the call button.
+  4. On an incident plan (any laptop without Nano, Wi-Fi on): Ask a question must never show Cloud AI; the line still says "Your question is not sent anywhere."
+  5. If you film the demo: new scene 6b in `.brain/DEMO_SCRIPT.md` (10 s, Cloud badge on Machine B, or On-device on your Mac).
 - [ ] (Session 7) **Deploy Session 7** (search ranking, form names, no layout shift, robots.txt, printed fix-its) with the command above, then on the live site:
   1. Wi-Fi off → Offline Pack → search "should we pay the ransom": the first answer must be a ransomware one, not lost device.
   2. DevTools → Issues panel: expect 0 (it was ~23). Visit Home, a plan, Pack, Setup, Contacts.
@@ -906,3 +912,32 @@ Brief (architect, via J): live site verified by J (App Check + reCAPTCHA Enterpr
 **Not verified (needs J):** Session 7 on the live site (deploy item at the top of J TODO), live Lighthouse, the final wording of SUBMISSION.md, the video.
 
 **Next step:** J deploys, checks the three live items, edits SUBMISSION.md, films with DEMO_SCRIPT.md, submits before Mon Nov 30, 2:00 PM PST.
+
+---
+
+## 2026-11-26 — Session 8: showcase the SDK's automatic hybrid fallback (Claude Code)
+
+**Goal:** add one clear, privacy-safe use of `InferenceMode.PREFER_ON_DEVICE` (judging: "how effectively it uses Firebase AI Logic hybrid inference"). Rule written into MASTER §5: **automatic fallback only where the content is not sensitive.**
+
+**Steps, in order:**
+
+1. `pwd && git remote -v` (getaimayday, JoJoshJo/getaimayday), pulled main at `0b530d4`.
+2. **Read the SDK** (`node_modules/@firebase/ai/dist/esm/index.esm.js`, @firebase/ai 3.1.0) to confirm what PREFER_ON_DEVICE really does:
+   - `callCloudOrDevice` (~line 2569): PREFER_ON_DEVICE → `chromeAdapter.isAvailable(request)` true → on-device, else **cloud**, with `inferenceSource` set to match.
+   - `isAvailable` (~line 971): for prefer mode, on-device only when `availability === "available"` and the request is on-device compatible (text prompt: yes). "downloadable"/"downloading" → cloud straight away; it does **not** wait for or start a download (only ONLY_ON_DEVICE waits).
+   - Cloud requests in PREFER_* modes carry `hybrid` in the `x-goog-api-client` header (~line 1531). Used as proof in the e2e check.
+   - Offline with no Nano: the cloud fetch fails → router returns `checklist`. The app skips the call when `navigator.onLine` is false to save the wait.
+3. **`src/ai/modes.ts` (new):** one table, feature → mode (plain strings, type-only Firebase import, so the main bundle still has no Firebase; checked: `firebasevertexai` only appears in the lazy chunk). `askMode(guide)`: fix-it (has `topic`, no `incident`) → `prefer_on_device`; anything else or unclear → `only_on_device`. `mayAutoCloud(mode)`.
+4. **`src/features/ask/answer.ts`:** fix-it branch. Calls `deps.ask(prompt, mode)` when Nano is available **or** (fix-it and online). Accepts source `on-device`, or `cloud` only for fix-its. Same in_plan + `isUnsafeAdvice` + `plainText` checks for both. Incident path unchanged (Nano available → ONLY_ON_DEVICE; never cloud). `AskDeps` gained `online()`, `ask(prompt, mode)`; `AskAnswer.ai.source` is `'on-device' | 'cloud'`.
+5. **`src/features/ask/scrub.ts` (new):** `scrubPersonal(text, lang)` removes emails and phone numbers (7 to 15 digits with a separator or +, or a bare run of 10+) before a fix-it question is sent. Keeps error codes (0x80070005, 8-digit codes), dates, IPv4 addresses. Placeholders EN "[email removed]" / "[phone number removed]", FR "[adresse e-mail retirée]" / "[numéro retiré]". Gotcha: the first regex refused a number followed by "." at the end of a sentence; lookarounds are now `(?<!\w|\d\.)` / `(?!\w|\.\d)`.
+6. **`StepAsk.tsx`:** passes the mode through `router.ask(p, mode)`, badge from the real source, and on fix-its the hint under the box is the new `ask.cloudNotice` (EN as in the brief; FR "Sur cet ordinateur, les questions sur les problèmes informatiques courants peuvent recevoir une réponse de l’IA dans le cloud. N’écrivez pas de données personnelles."). Incident steps keep `ask.private`.
+7. **`nano.ts`:** `askAboutStep` loads Remote Config first when the mode is not ONLY_ON_DEVICE, so the cloud fallback uses the configured model name (never throws, works offline). `FoundOnScreen.tsx` now reads `MODES.triageCloudCheck`.
+8. **Tests:** `tests/modes.test.ts` (27): table values are real SDK enum values; exact mode per feature; only PREFER_ON_DEVICE may auto-cloud; every incident plan EN+FR → ONLY_ON_DEVICE, every fix-it → PREFER_ON_DEVICE; unclear → device; source checks (Home/triage call the router with no mode, nano defaults ONLY_ON_DEVICE, cloud.ts only ONLY_IN_CLOUD, PREFER_ON_DEVICE nowhere else in app code); answerQuestion per path (incident: no call without Nano even online, cloud answer rejected, question not scrubbed; fix-it: Nano → on-device, no Nano online → cloud badge, offline → no call, failure/unsafe/off-plan → fallback, scrubbed prompt); scrubPersonal cases. `tests/ask.test.ts` and `tests/fixits.test.ts` updated for the new deps. **408 tests pass.**
+9. **Docs:** MASTER §5 (mode table + the rule; also fixed the diagram, back-online jobs are ONLY_IN_CLOUD in code), README (fix-it row, the rule, the one exception to "nothing goes to the cloud"), SUBMISSION.md ("How we built it" now explains each mode and why; What it does, Accomplishments, test count), DEMO_SCRIPT.md (new scene 6b, 10 s, timings shifted, badge checklist + what to do if it shows Checklist).
+10. **Verification:** `npm run build` (secret check OK), `npm run lint` 0, vitest 408/408. Real headless Chrome through the real SDK (scratch `pw/fallback.mjs`, Gemini endpoint intercepted, no Prompt API in headless): 11/11 PASS: fix-it online no Nano → Cloud AI badge, notice EN + FR, exactly 1 request tagged `hybrid` by the SDK, email + phone removed from the body; incident plan online no Nano → 0 requests, privacy line kept; fix-it offline → Checklist + call, 0 requests; no page errors. `s4.mjs` all blocks 56/56 PASS (incl. the on-device stub fix-it block), `csp.mjs` 0 violations. Anti-slop grep on the diff: no em dashes, "!" or buzzwords in new copy.
+
+**Files:** `src/ai/modes.ts` (new), `src/features/ask/scrub.ts` (new), `src/features/ask/answer.ts`, `src/features/ask/StepAsk.tsx`, `src/ai/nano.ts`, `src/features/triage/FoundOnScreen.tsx`, `src/i18n/{en,fr}.json`, `tests/modes.test.ts` (new), `tests/ask.test.ts`, `tests/fixits.test.ts`, `.brain/{MASTER,SUBMISSION,DEMO_SCRIPT,SESSION_HANDOFF}.md`, `README.md`.
+
+**Not verified:** a real cloud answer from live Gemini on a no-Nano machine, and the On-device badge for a fix-it with real Nano (both need the deploy and J's machines: J TODO Session 8).
+
+**Next:** J deploys and runs the Session 8 checks; film scene 6b.

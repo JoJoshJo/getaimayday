@@ -9,6 +9,7 @@
  */
 import { useEffect, useRef, useState } from 'react'
 import type { InferenceMode } from 'firebase/ai'
+import { MODES } from '../../ai/modes'
 import { blobToBase64 } from '../../ai/image'
 import { router, type Source } from '../../ai/router'
 import { TRIAGE_TYPES, type Confidence, type TriageResult } from '../../ai/schemas'
@@ -33,7 +34,7 @@ type Phase =
 type Cloud = { kind: 'off' } | { kind: 'preview' } | { kind: 'sending' } | { kind: 'done'; suggest: Partial<FormValues> } | { kind: 'failed' }
 
 // Type-only import above keeps Firebase out of the main bundle; this is InferenceMode.PREFER_IN_CLOUD.
-const PREFER_IN_CLOUD = 'prefer_in_cloud' as InferenceMode
+const PREFER_IN_CLOUD = MODES.triageCloudCheck as InferenceMode
 
 export function FoundOnScreen({ incidentId, currentIncident, photoId, onClose }: Props) {
   const { t } = useI18n()

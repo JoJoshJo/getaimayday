@@ -25,7 +25,7 @@ const pack = PackSchema.parse({
 })
 
 function deps(over: Partial<AskDeps>): AskDeps {
-  return { availability: async () => 'available', ask: async () => routed({ in_plan: true, answer: 'Unplug the cable — now!' }), loadPack: async () => pack, ...over }
+  return { availability: async () => 'available', ask: async () => routed({ in_plan: true, answer: 'Unplug the cable — now!' }), loadPack: async () => pack, online: () => true, ...over }
 }
 
 describe('askPrompt', () => {

@@ -11,7 +11,10 @@ AIMayday is an offline-first web app (PWA) built for #BuildHybridAI 2026 with **
 | **Calm day, online** | Cloud Gemini (Firebase AI Logic, `ONLY_IN_CLOUD`), only after you see exactly what is sent | Builds your **Offline Incident Pack**: hundreds of answers fitted to your business, in English and French, saved on the device |
 | **Incident day, offline** | Gemini Nano in Chrome (Firebase AI Logic, `ONLY_ON_DEVICE`), when the device has it | Understands "what is happening", reads a photo of the ransom screen into fields you confirm, answers questions about the current step |
 | **Incident day, no Nano** | No model at all | The Offline Pack answers from local text search (MiniSearch); the checklist and the printed plan always work |
-| **Back online** | Cloud Gemini, after a preview | Incident report, recovery next steps, messages to staff, customers, bank and insurer |
+| **Back online** | Cloud Gemini (`ONLY_IN_CLOUD`), after a preview. The optional "double-check with cloud AI" on a ransom photo uses `PREFER_IN_CLOUD`, also after a button | Incident report, recovery next steps, messages to staff, customers, bank and insurer |
+| **Everyday IT fix-its** | Firebase AI Logic `PREFER_ON_DEVICE`: Gemini Nano when the device has it, otherwise the SDK falls back to cloud Gemini on its own | Answers a question about one fix-it step (Wi-Fi, printer...). Only here, because there is no incident or business data in it |
+
+**The rule: automatic cloud fallback only where the content is not sensitive.** Incident-day jobs use `ONLY_ON_DEVICE`, so a description, a photo or a question about an incident never goes to the cloud on its own. The fix-it question box says that cloud AI may answer, asks you not to type personal details, and the app removes email addresses and phone numbers before sending. The mode for each feature is in `src/ai/modes.ts`.
 
 Every answer shows its real source: **On-device AI**, **Offline Pack**, **Cloud AI** or **Checklist**. The badge comes from the SDK's `inferenceSource`, never a guess. The checklist never waits on AI.
 
@@ -25,10 +28,10 @@ Most office PCs cannot run on-device AI (Chrome needs about 16 GB of RAM or a GP
 - **Found on screen · please confirm**: on-device AI reads the ransom screen; you correct and confirm every field before it is saved.
 - **Emergency contacts** one tap from every plan step.
 - **Ask a question** on any step: on-device AI bound to that step, else the Offline Pack, else "call your IT contact".
-- **Everyday IT fix-its** (Wi-Fi, email not sending, frozen computer, printer, locked account, power outage), with sources from Microsoft, Apple, Google, CISA, FTC and Ready.gov. Ask a question works there too. When a problem looks like an attack, the fix-it opens the matching plan.
+- **Everyday IT fix-its** (Wi-Fi, email not sending, frozen computer, printer, locked account, power outage), with sources from Microsoft, Apple, Google, CISA, FTC and Ready.gov. Ask a question works there too: on-device AI when the device has it, otherwise cloud AI through the SDK's automatic fallback when online, otherwise "call your IT contact". When a problem looks like an attack, the fix-it opens the matching plan.
 - **Get ready** checklist and **printable plans**.
 
-Everything stays on the device (IndexedDB). Nothing goes to the cloud unless you tap a button and see a preview of exactly what will be sent.
+Everything stays on the device (IndexedDB). Nothing about your business or an incident goes to the cloud unless you tap a button and see a preview of exactly what will be sent. The one exception is a question typed on an everyday IT fix-it, on a device without on-device AI, and the question box says so.
 
 ## Run it
 

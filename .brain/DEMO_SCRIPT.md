@@ -11,7 +11,7 @@ All data on screen is fake (Sunrise Dental, Riverdale GA, 555-01xx). The "Demo d
 Two machines:
 
 - **Machine A, "the capable one"**: desktop Chrome with on-device AI (Gemini Nano) downloaded. Check **Get ready → On-device AI = Ready**. Used for scenes 3, 4 and 5.
-- **Machine B, "the office laptop"**: any laptop **without** on-device AI (Get ready says "Not available on this device. That is fine"). Used for scene 6.
+- **Machine B, "the office laptop"**: any laptop **without** on-device AI (Get ready says "Not available on this device. That is fine"). Used for scenes 6 and 6b.
 
 On both, on the live site (`getaimayday.web.app`, after the J TODO deploy steps, so App Check works):
 
@@ -58,22 +58,28 @@ After filming: `#/demo-setup` → **Delete all local data**.
 - **J says:** "Most office laptops can't run AI on the device. That's fine. On a calm day, the cloud built an Offline Pack of answers for this business. Now, with no internet and no AI, it still answers. And one tap calls our IT contact."
 - **Proves:** works without Nano, Offline Pack badge, contacts one tap away, the checklist never waits on AI.
 
-### 7 · Back online: report and messages · 1:47 to 2:15
+### 6b · Everyday IT question, automatic fallback · 1:47 to 1:57
+- **On screen:** still Machine B, Wi-Fi **on** (chip back to online). Home → **Everyday IT problems** → **Printer**. On step 1, **Ask a question**: "how long do I wait before I plug it back in?". Hold on the line under the box: "On this computer, questions about everyday IT problems may be answered by cloud AI. Don't type personal details." The answer comes back with the **Cloud AI** badge.
+- **J says:** "For everyday IT problems, nothing sensitive, the Firebase SDK picks for me. No AI on this laptop, so it answers from the cloud. The badge says so."
+- **Proves:** `PREFER_ON_DEVICE` hybrid fallback chosen by the SDK, true Cloud badge from `inferenceSource`, used only where the content is not sensitive.
+- **If you only have one machine:** do it on Machine A instead. The same question comes back with the **On-device AI** badge. Say: "On this Mac the SDK runs it on the device. On a laptop without AI, the same box answers from the cloud."
+
+### 7 · Back online: report and messages · 1:57 to 2:20
 - **On screen:** Machine A, Wi-Fi **on**. Under **Back online**, click **Incident report**. The preview opens: "Before anything is sent · Sent to: Google Gemini (cloud) via Firebase AI Logic", the exact text, the "include my notes" box. Click **Send to cloud AI**. The report appears with the **Cloud AI** badge. Then **Message to staff** the same way. Show **Copy**.
 - **J says:** "Back online. Now the cloud can help with the paperwork: an incident report, and messages for staff, customers, the bank and the insurer. Nothing leaves the device until I see exactly what will be sent, and press send. This one says Cloud AI."
 - **Proves:** cloud inference via AI Logic only after a button and an exact preview, true Cloud badge, drafts saved in the log.
 
-### 8 · English and French · 2:15 to 2:25
+### 8 · English and French · 2:20 to 2:28
 - **On screen:** click **FR** in the top bar. The plan, the log and the buttons switch to French ("Rançongiciel", "Journal d'incident"). Click **EN** to go back.
 - **J says:** "Every plan and every screen also works in French, with the right agencies for France and Canada."
 - **Proves:** EN + FR, outside-the-US reporting step.
 
-### 9 · Print the plan · 2:25 to 2:35
+### 9 · Print the plan · 2:28 to 2:36
 - **On screen:** **Get ready → Print plans**. The print preview shows the contacts sheet, the five plans, then the everyday IT fix-its (Session 7). Scroll past one plan and stop on "Everyday IT problems" for a second. Optional: hold up the printed page.
 - **J says:** "And print it. When no device works, paper still does."
 - **Proves:** printable plans and contacts, Get ready checklist.
 
-### 10 · The idea · 2:35 to 2:45
+### 10 · The idea · 2:36 to 2:45
 - **On screen:** home screen, then the title card: "AIMayday · the cloud prepares, the device acts".
 - **J says:** "AIMayday. Calm help for a bad day. The cloud prepares, the device acts."
 - **Proves:** the hybrid design in one line.
@@ -84,7 +90,8 @@ After filming: `#/demo-setup` → **Delete all local data**.
 
 - [ ] **On-device AI** badge: scenes 3, 4, 5
 - [ ] **Offline Pack** badge: scene 6
-- [ ] **Cloud AI** badge: scene 7, right after the preview
+- [ ] **Cloud AI** badge: scene 6b (fix-it answer, no preview needed: it is the SDK fallback) and scene 7, right after the preview
+- [ ] Fix-it notice "may be answered by cloud AI" readable: scene 6b
 - [ ] **Offline** chip visible: scenes 3 to 6
 - [ ] Preview "Sent to: Google Gemini (cloud)" fully readable for at least 2 seconds: scene 7
 - [ ] "Demo data" line visible, no real names, numbers or emails anywhere
@@ -92,5 +99,6 @@ After filming: `#/demo-setup` → **Delete all local data**.
 ## If something goes wrong while filming
 
 - On-device AI says "downloading" or is missing on Machine A: wait on Get ready until it says Ready. Do not film scenes 3 to 5 with the Checklist badge and call it AI.
+- Scene 6b shows Checklist instead of Cloud AI: Machine B is offline or App Check is failing. Turn Wi-Fi on and reload. Do not film it as Cloud.
 - Cloud call fails (App Check): check the J TODO deploy item (reCAPTCHA key includes the domain, App Check enforced, Remote Config model). Never edit a cloud answer by hand.
 - Answers must be real. If one comes back odd, film it again; do not fake it.

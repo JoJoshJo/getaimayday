@@ -32,11 +32,11 @@ So I wanted something that gives the right next step, in plain words, on a clean
 - **Ask a question about this step.** On-device AI answers, bound to that one step of the plan. With no on-device AI, the answer comes from the Offline Pack. With no answer, you get a one-tap call to your IT contact.
 - **The Offline Pack.** On a calm day, cloud Gemini writes a few hundred answers to the questions people ask during an incident, fitted to your business, in English and French. They are saved on the device and searched with no internet and no model.
 - **Back online.** Cloud Gemini writes an incident report, recovery next steps, and messages for staff, customers, the bank and the insurer, from your log. You see the exact text that will be sent before anything leaves the device.
-- **Everyday IT fix-its** for the small stuff that is not an attack: Wi-Fi, email not sending, a frozen computer, the printer, a locked account, a power cut. If it starts to look like an attack, the fix-it opens the right plan.
+- **Everyday IT fix-its** for the small stuff that is not an attack: Wi-Fi, email not sending, a frozen computer, the printer, a locked account, a power cut. You can ask a question on any fix-it step: on-device AI answers when the device has it, and otherwise Firebase AI Logic falls back to cloud Gemini on its own. If it starts to look like an attack, the fix-it opens the right plan.
 - **Emergency contacts** one tap away on every step, a **Get ready** checklist, and a **printed plan** for when no device works.
 - **Every AI answer shows where it came from:** On-device AI, Offline Pack, Cloud AI or Checklist. The badge comes from the SDK, not from a guess.
 
-Everything stays in the browser on that device. Nothing goes to the cloud unless you press a button after seeing what will be sent.
+Everything stays in the browser on that device. Nothing about your business or an incident goes to the cloud unless you press a button after seeing what will be sent. The one exception is a question on an everyday IT fix-it, and the question box says so.
 
 ## How we built it
 
@@ -44,10 +44,11 @@ Everything stays in the browser on that device. Nothing goes to the cloud unless
 
 Most office computers cannot run Chrome's on-device model. Chrome needs about 16 GB of RAM or a GPU with more than 4 GB, plus 22 GB of free disk. So on-device AI had to be a bonus, never something the app depends on. The Offline Pack is what makes AIMayday useful on the ordinary laptop a small business actually owns.
 
-All AI goes through **Firebase AI Logic** with its hybrid inference, from one small router in the app:
+All AI goes through **Firebase AI Logic** with its hybrid inference, from one small router in the app. Each feature uses the inference mode that fits how sensitive its content is. The rule is simple: **automatic fallback only where the content is not sensitive.** The choice for every feature sits in one file (`src/ai/modes.ts`) and a test checks it.
 
-- **Incident day, on the device:** Gemini Nano in Chrome through AI Logic with `InferenceMode.ONLY_ON_DEVICE`. It picks the plan from your description, reads the ransom screen photo into a fixed JSON shape, and answers questions about the current step. It works with Wi-Fi off, and the app never falls back to the cloud on its own on incident day.
-- **Calm day and back online, in the cloud:** Gemini 3.5 Flash-Lite through AI Logic with `ONLY_IN_CLOUD`, with structured JSON output for the Pack. It builds the Offline Pack and writes the report and messages. The "double-check with cloud AI" on a ransom screen photo uses `PREFER_IN_CLOUD`, and the app only shows it as a cloud check if the SDK says the answer really came from the cloud. In the test lab I also tried `PREFER_ON_DEVICE` against the other modes.
+- **`ONLY_ON_DEVICE` for incident day.** Gemini Nano in Chrome picks the plan from your description, reads the ransom screen photo into a fixed JSON shape, and answers questions about the current step. This is the sensitive part: what happened to your business, a photo of the attacker's note. So it never goes to the cloud on its own. It works with Wi-Fi off. With no on-device model, the Offline Pack and the checklist take over.
+- **`PREFER_ON_DEVICE` for everyday IT questions.** On a fix-it (Wi-Fi, printer, frozen computer), a question has no incident or business data in it. So here I let the SDK do what hybrid inference is for: Nano answers when the device has it, and when it does not, AI Logic sends the question to cloud Gemini by itself. On my Mac the answer says On-device AI; on an office laptop with no Nano it says Cloud AI, and both badges come from the SDK. A line under the question box says cloud AI may answer and asks people not to type personal details, and the app removes email addresses and phone numbers before sending. Offline with no Nano, you still get the fix-it steps and a button to call your IT contact.
+- **`ONLY_IN_CLOUD` and `PREFER_IN_CLOUD` for the cloud jobs.** Gemini 3.5 Flash-Lite builds the Offline Pack on a calm day (structured JSON output) and writes the report and messages once you are back online. The "double-check with cloud AI" on a ransom screen photo uses `PREFER_IN_CLOUD`, and the app only shows it as a cloud check if the SDK says the answer really came from the cloud. All of these run only after a button and a preview of exactly what will be sent.
 - **The badge** on every answer comes from the SDK's `inferenceSource`.
 - **Firebase App Check with reCAPTCHA Enterprise** protects the cloud calls in production. The debug token is only used locally and never committed; the build fails if it ever ends up in the output.
 - **Firebase Remote Config** holds the cloud model name, so it can change without a redeploy. There is also an optional fallback model for the Pack build.
@@ -60,7 +61,7 @@ All AI goes through **Firebase AI Logic** with its hybrid inference, from one sm
 - Reading 5 fake ransom screens on the device: the first test got **3 out of 5** right (counting small typos). The model invented values and said "high confidence" on every one, even the wrong ones. That result is why every field now needs your confirmation and the confidence is worked out in code, not taken from the model.
 - Live Offline Pack built on getaimayday.web.app with real Gemini: **133 answers in English and 114 in French.**
 - Lighthouse on the built app, English and French: **100 for accessibility, best practices and SEO** on the home page, a plan, the Pack and Get ready. Performance is 95 to 100 on the mobile setting.
-- 381 automated tests, plus offline checks in a real headless Chrome for every screen.
+- 408 automated tests, plus offline checks in a real headless Chrome for every screen.
 
 ## Challenges we ran into
 
@@ -75,7 +76,7 @@ All AI goes through **Firebase AI Logic** with its hybrid inference, from one sm
 ## Accomplishments that we're proud of
 
 - The app works with no internet and no AI, and it still looks complete: the plan, the log, the Pack answers and the printed plan all work.
-- On-device AI, the Offline Pack and cloud AI each have a clear job, and the badge always tells the truth about which one answered.
+- On-device AI, the Offline Pack and cloud AI each have a clear job, and the badge always tells the truth about which one answered. All four inference modes are used, each where it fits: automatic cloud fallback only for questions that hold nothing sensitive.
 - Nothing leaves the device without a button and a preview of exactly what will be sent.
 - Every plan step has an official source, in English and French, with the right agencies outside the US.
 - The AI suggests and the person decides: ransom screen fields are confirmed one by one.

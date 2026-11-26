@@ -1,9 +1,12 @@
 /**
  * "Ask a question" under each plan step. On-device AI → Offline Pack → call your
  * contact (see answer.ts). The plan step itself never waits on this.
+ * On fix-its (no incident) the SDK may answer with cloud AI when there is no
+ * on-device model (PREFER_ON_DEVICE); a notice under the box says so.
  */
 import { useRef, useState } from 'react'
 import { router } from '../../ai/router'
+import { askMode, mayAutoCloud } from '../../ai/modes'
 import { onDeviceAvailability } from '../../ai/warmup'
 import { useI18n } from '../../i18n'
 import { loadPack } from '../../pack/store'
@@ -26,6 +29,7 @@ export function StepAsk({ plan, step, incidentId }: { plan: AskGuide; step: Plan
   const [busy, setBusy] = useState(false)
   const [res, setRes] = useState<AskAnswer | null>(null)
   const run = useRef(0)
+  const autoCloud = mayAutoCloud(askMode(plan))
 
   async function onAsk(e: React.FormEvent) {
     e.preventDefault()
@@ -34,11 +38,16 @@ export function StepAsk({ plan, step, incidentId }: { plan: AskGuide; step: Plan
     const id = ++run.current
     setBusy(true)
     setRes(null)
-    const a = await answerQuestion(question, plan, step, lang as PackLang, { availability: onDeviceAvailability, ask: (p) => router.ask(p), loadPack })
+    const a = await answerQuestion(question, plan, step, lang as PackLang, {
+      availability: onDeviceAvailability,
+      ask: (p, mode) => router.ask(p, mode),
+      loadPack,
+      online: () => navigator.onLine,
+    })
     if (id !== run.current) return
     setRes(a)
     setBusy(false)
-    const source = a.kind === 'ai' ? 'on-device' : a.kind === 'pack' ? 'pack' : 'checklist'
+    const source = a.kind === 'ai' ? a.source : a.kind === 'pack' ? 'pack' : 'checklist'
     if (incidentId) void store.addEvent(incidentId, { kind: 'ai', job: 'ask', source, question })
   }
 
@@ -77,14 +86,14 @@ export function StepAsk({ plan, step, incidentId }: { plan: AskGuide; step: Plan
             {t('ask.close')}
           </button>
         </div>
-        <p className="field__hint">{t('ask.private')}</p>
+        <p className="field__hint">{t(autoCloud ? 'ask.cloudNotice' : 'ask.private')}</p>
       </form>
       <div role="status" aria-live="polite">
         {busy && <p className="mono">{t('ask.reading')}</p>}
         {res?.kind === 'ai' && (
           <div className="packans">
             <p className="packans__head">
-              <SourceBadge source="on-device" /> <span className="mono muted">{t('ask.fromStep')}</span>
+              <SourceBadge source={res.source} /> <span className="mono muted">{t('ask.fromStep')}</span>
             </p>
             <p className="packans__text">{res.text}</p>
             <p className="muted">{t('ask.checkWith')}</p>

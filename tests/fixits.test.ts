@@ -88,17 +88,19 @@ describe('ask a question on a fix-it', () => {
       availability: async () => 'available',
       ask: async () => ({ data: { answer: 'Wait about 30 seconds before you plug it back in.', in_plan: true }, source: 'on-device', seconds: 1 }),
       loadPack: pack,
+      online: () => false,
     })
     expect(a).toEqual({ kind: 'ai', source: 'on-device', text: 'Wait about 30 seconds before you plug it back in.' })
   })
 
-  it('no Nano and no related plan → "call your contact", Pack untouched', async () => {
+  it('offline, no Nano and no related plan → "call your contact", Pack untouched', async () => {
     const a = await answerQuestion('How long should I wait?', { ...fixit, packPlan: null }, step, 'en', {
       availability: async () => 'unavailable',
       ask: async () => {
         throw new Error('no model')
       },
       loadPack: pack,
+      online: () => false,
     })
     expect(a).toEqual({ kind: 'none', reason: 'no-ai' })
   })
@@ -112,6 +114,7 @@ describe('ask a question on a fix-it', () => {
         return { data: null, source: 'checklist', seconds: 0 }
       },
       loadPack: async () => null,
+      online: () => false,
     })
     expect(prompt).toMatch(/everyday IT problem \("printer"\)/)
     expect(prompt).not.toMatch(/incident/)

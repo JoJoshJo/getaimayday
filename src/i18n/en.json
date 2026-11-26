@@ -221,6 +221,7 @@
   "ask.submit": "Ask",
   "ask.close": "Close",
   "ask.private": "Answered on this device. Your question is not sent anywhere.",
+  "ask.cloudNotice": "On this computer, questions about everyday IT problems may be answered by cloud AI. Don't type personal details.",
   "ask.reading": "Looking for an answer",
   "ask.fromStep": "Based on this step of your plan",
   "ask.checkWith": "If you are not sure, call your IT contact before you act.",

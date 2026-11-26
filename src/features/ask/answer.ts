@@ -5,8 +5,16 @@
  *   2. Offline Pack (MiniSearch, no model), limited to this plan (a fix-it searches
  *      its related incident plan, or skips the Pack when it has none).
  *   3. Nothing → "call your contact" (badge Checklist).
- * Never cloud: this runs on incident day.
+ * Incident plans never use the cloud: this runs on incident day.
+ *
+ * Everyday IT fix-its (no incident, no business data) use PREFER_ON_DEVICE instead
+ * (Session 8, see src/ai/modes.ts): Nano when Chrome has it, otherwise the SDK sends
+ * the question to cloud Gemini by itself. That needs the internet; offline with no
+ * Nano, the call is skipped and the fallback above runs. Emails and phone numbers
+ * are removed from the question first, and the badge shows the SDK's real source.
  */
+import type { InferenceMode } from 'firebase/ai'
+import { askMode, mayAutoCloud } from '../../ai/modes'
 import type { Routed } from '../../ai/router'
 import type { AskResult } from '../../ai/schemas'
 import { askPrompt, type AskGuide } from '../../ai/prompts/ask'
@@ -14,23 +22,30 @@ import { isUnsafeAdvice, plainText } from '../../pack/guard'
 import { buildIndex, matchPack, type PackMatch } from '../../pack/match'
 import type { Pack, PackLang } from '../../pack/schema'
 import type { PlanStep } from '../../plans/schema'
+import { scrubPersonal } from './scrub'
 
 export type AskAnswer =
-  | { kind: 'ai'; source: 'on-device'; text: string }
+  | { kind: 'ai'; source: 'on-device' | 'cloud'; text: string }
   | { kind: 'pack'; match: PackMatch }
   | { kind: 'none'; reason: 'no-pack' | 'no-answer' | 'no-ai' }
 
 export type AskDeps = {
   availability: () => Promise<string>
-  ask: (prompt: string) => Promise<Routed<AskResult | null>>
+  ask: (prompt: string, mode: InferenceMode) => Promise<Routed<AskResult | null>>
   loadPack: () => Promise<Pack | null>
+  /** navigator.onLine in the app. Only read for fix-its (cloud fallback). */
+  online: () => boolean
 }
 
 export async function answerQuestion(question: string, plan: AskGuide, step: PlanStep, lang: PackLang, deps: AskDeps): Promise<AskAnswer> {
-  if ((await deps.availability()) === 'available') {
-    const r = await deps.ask(askPrompt(plan, step, question, lang))
+  const mode = askMode(plan)
+  const auto = mayAutoCloud(mode)
+  const nano = (await deps.availability()) === 'available'
+  if (nano || (auto && deps.online())) {
+    const r = await deps.ask(askPrompt(plan, step, auto ? scrubPersonal(question, lang) : question, lang), mode)
     const text = r.data ? plainText(r.data.answer) : ''
-    if (r.source === 'on-device' && r.data?.in_plan && text && !isUnsafeAdvice(text)) return { kind: 'ai', source: 'on-device', text }
+    const source = r.source === 'on-device' || (auto && r.source === 'cloud') ? r.source : null
+    if (source && r.data?.in_plan && text && !isUnsafeAdvice(text)) return { kind: 'ai', source, text }
   }
   const planId = plan.packPlan === undefined ? plan.id : plan.packPlan
   if (planId === null) return { kind: 'none', reason: 'no-ai' }

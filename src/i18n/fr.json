@@ -221,6 +221,7 @@
   "ask.submit": "Demander",
   "ask.close": "Fermer",
   "ask.private": "Réponse donnée sur cet appareil. Votre question n’est envoyée nulle part.",
+  "ask.cloudNotice": "Sur cet ordinateur, les questions sur les problèmes informatiques courants peuvent recevoir une réponse de l’IA dans le cloud. N’écrivez pas de données personnelles.",
   "ask.reading": "Recherche d’une réponse",
   "ask.fromStep": "D’après cette étape de votre plan",
   "ask.checkWith": "En cas de doute, appelez votre contact informatique avant d’agir.",

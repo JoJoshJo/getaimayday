@@ -11,7 +11,7 @@ import { getGenerativeModel, InferenceMode, type GenerativeModel, type Inference
 import { ai } from './firebase'
 import { classifyPrompt } from './prompts/classify'
 import { TRIAGE_PROMPT } from './prompts/triage'
-import { getCloudModel } from './remoteConfig'
+import { getCloudModel, initRemoteConfig } from './remoteConfig'
 import { markOnDeviceActivity, ON_DEVICE_IO } from './warmup'
 import {
   AskResult,
@@ -101,8 +101,13 @@ export async function classifyIncident(text: string, mode: InferenceMode = Infer
   return track({ data: data.incident, inferenceSource: result.response.inferenceSource })
 }
 
-/** "Ask a question" on a plan step: one prompt (step + short plan summary + question), one answer. */
+/**
+ * "Ask a question" on a plan step: one prompt (step + short plan summary + question), one answer.
+ * Fix-its pass PREFER_ON_DEVICE (src/ai/modes.ts): the SDK may then answer in the cloud,
+ * so the Remote Config model name is loaded first (never throws; works offline).
+ */
 export async function askAboutStep(prompt: string, mode: InferenceMode = InferenceMode.ONLY_ON_DEVICE): Promise<JobResult<AskResult>> {
+  if (mode !== InferenceMode.ONLY_ON_DEVICE) await initRemoteConfig()
   const result = await model('ask', mode).generateContent(prompt)
   const data = parseJson(result.response.text(), AskResult)
   return track({ data, inferenceSource: result.response.inferenceSource })
