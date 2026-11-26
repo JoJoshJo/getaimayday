@@ -1,0 +1,106 @@
+{
+  "id": "bec",
+  "incident": "bec",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "id": "call-bank-now",
+      "title": "If money was sent, call your bank's fraud line now",
+      "detail": "Call the fraud line on the back of your bank card or on your contacts card. Say you sent a payment because of a fake email and ask them to recall or stop the transfer.",
+      "why": "Banks can sometimes stop or recall a transfer, but only in the first hours. The sooner they know, the better the chance.",
+      "source_name": "FBI IC3: Business Email Compromise",
+      "source_url": "https://www.ic3.gov/CrimeInfo/BEC",
+      "do_not": "Do not wait until you are sure. Call first, then check the details."
+    },
+    {
+      "id": "do-not-reply",
+      "title": "Do not reply to the email",
+      "detail": "Leave the email as it is. Do not answer it, click its links or open its attachments.",
+      "why": "The person who wrote it may control that address. A reply tells them you noticed and gives them more time.",
+      "source_name": "FTC: Cybersecurity for Small Business",
+      "source_url": "https://www.ftc.gov/business-guidance/small-businesses/cybersecurity",
+      "do_not": "Do not call phone numbers or use contact details from the suspicious email."
+    },
+    {
+      "id": "verify-sender",
+      "title": "Check with the real person using a number you already have",
+      "detail": "Call the supplier, client or manager on a number from an old invoice, their website or your contacts card. Ask if they really sent the request.",
+      "why": "Fake emails often copy a real name and logo. A call on a number you trust is the quickest way to know.",
+      "source_name": "FBI IC3: Business Email Compromise",
+      "source_url": "https://www.ic3.gov/CrimeInfo/BEC"
+    },
+    {
+      "id": "keep-evidence",
+      "title": "Keep the email and the payment details",
+      "detail": "Do not delete anything. Write down the amount, date, time and the bank account the money went to. Take a photo of the email on screen.",
+      "why": "Your bank, the police and your insurer will ask for these exact details.",
+      "source_name": "NIST SP 800-61r3",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+      "do_not": "Do not delete the email or empty your trash."
+    },
+    {
+      "id": "report-ic3",
+      "title": "Report it to the FBI at ic3.gov",
+      "detail": "From a clean device, file a complaint at ic3.gov. Include the amount, the date and the bank account details of the transfer.",
+      "why": "The FBI works with banks to try to freeze stolen money. Quick reports help.",
+      "source_name": "FBI IC3: Business Email Compromise",
+      "source_url": "https://www.ic3.gov/CrimeInfo/BEC"
+    },
+    {
+      "id": "secure-email",
+      "title": "Change your email password and turn on two-step login",
+      "detail": "From a clean device, change the password of the email account involved. Turn on two-step login (a code on your phone).",
+      "why": "Attackers often get into a real mailbox first, then send fake invoices from it.",
+      "source_name": "FTC: Cybersecurity for Small Business",
+      "source_url": "https://www.ftc.gov/business-guidance/small-businesses/cybersecurity"
+    },
+    {
+      "id": "check-email-rules",
+      "title": "Ask your IT contact to check the mailbox",
+      "detail": "Ask them to look for forwarding rules, unknown sign-ins and messages you did not send.",
+      "why": "Attackers often add hidden rules that forward or delete replies, so you do not see warnings.",
+      "source_name": "FTC: Cybersecurity for Small Business",
+      "source_url": "https://www.ftc.gov/business-guidance/small-businesses/cybersecurity"
+    },
+    {
+      "id": "call-it-contact",
+      "title": "Call your IT contact",
+      "detail": "Tell them what happened and when. Read them your notes. Follow their advice on what to check next.",
+      "why": "They can check whether other accounts or computers are affected.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    },
+    {
+      "id": "warn-payers",
+      "title": "Warn everyone who pays bills",
+      "detail": "Tell the people who pay invoices what happened. From now on, any change of bank details is confirmed by phone on a known number.",
+      "why": "The same attackers often try again with a new email.",
+      "source_name": "FTC: Cybersecurity for Small Business",
+      "source_url": "https://www.ftc.gov/business-guidance/small-businesses/cybersecurity"
+    },
+    {
+      "id": "call-insurer",
+      "title": "Call your insurance company",
+      "detail": "If you have cyber or business insurance, call their claims line and say you may have lost money to email fraud.",
+      "why": "Many policies need quick notice, and some cover this kind of loss.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    },
+    {
+      "id": "report-ftc",
+      "title": "Report it to the FTC",
+      "detail": "From a clean device, report the scam at ReportFraud.ftc.gov.",
+      "why": "Reports help the FTC warn other businesses about the same scam.",
+      "source_name": "FTC ReportFraud",
+      "source_url": "https://reportfraud.ftc.gov/"
+    },
+    {
+      "id": "report-outside-us",
+      "title": "Outside the US? Report it in your country",
+      "detail": "In Canada, report it to the Canadian Centre for Cyber Security at cyber.gc.ca and to your local police. In France, get help at cybermalveillance.gouv.fr.",
+      "why": "National services can help you report the crime and recover.",
+      "source_name": "Canadian Centre for Cyber Security",
+      "source_url": "https://www.cyber.gc.ca/en/incident-management"
+    }
+  ]
+}

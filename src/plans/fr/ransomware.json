@@ -1,7 +1,7 @@
 {
   "id": "ransomware",
   "incident": "ransomware",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "steps": [
     {
       "id": "use-clean-device",
@@ -112,6 +112,14 @@
       "why": "La CISA peut offrir une aide gratuite et prévenir d’autres entreprises de la même attaque.",
       "source_name": "CISA",
       "source_url": "https://www.cisa.gov/report"
+    },
+    {
+      "id": "report-outside-us",
+      "title": "Hors des États-Unis ? Signalez-le dans votre pays",
+      "detail": "En France, faites-vous aider sur cybermalveillance.gouv.fr. Au Canada, signalez-le au Centre canadien pour la cybersécurité sur cyber.gc.ca et à votre police locale.",
+      "why": "Les services nationaux peuvent vous aider à signaler l’attaque et à vous rétablir.",
+      "source_name": "Cybermalveillance.gouv.fr",
+      "source_url": "https://www.cybermalveillance.gouv.fr/"
     },
     {
       "id": "change-passwords",

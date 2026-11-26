@@ -1,0 +1,106 @@
+{
+  "id": "bec",
+  "incident": "bec",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "id": "call-bank-now",
+      "title": "Argent envoyé ? Appelez tout de suite le service fraude de votre banque",
+      "detail": "Appelez le numéro fraude au dos de votre carte bancaire ou sur votre fiche contacts. Dites que vous avez fait un paiement à cause d’un faux e-mail et demandez l’arrêt ou le rappel du virement.",
+      "why": "Les banques peuvent parfois arrêter ou rappeler un virement, mais seulement dans les premières heures. Plus elles le savent tôt, plus les chances sont grandes.",
+      "source_name": "FBI IC3: Business Email Compromise",
+      "source_url": "https://www.ic3.gov/CrimeInfo/BEC",
+      "do_not": "N’attendez pas d’en être sûr. Appelez d’abord, vérifiez ensuite."
+    },
+    {
+      "id": "do-not-reply",
+      "title": "Ne répondez pas à l’e-mail",
+      "detail": "Laissez l’e-mail tel quel. N’y répondez pas, ne cliquez pas sur ses liens et n’ouvrez pas ses pièces jointes.",
+      "why": "La personne qui l’a écrit contrôle peut-être cette adresse. Une réponse lui montre que vous avez remarqué et lui donne plus de temps.",
+      "source_name": "FTC: Cybersecurity for Small Business",
+      "source_url": "https://www.ftc.gov/business-guidance/small-businesses/cybersecurity",
+      "do_not": "N’appelez pas les numéros et n’utilisez pas les coordonnées de l’e-mail suspect."
+    },
+    {
+      "id": "verify-sender",
+      "title": "Vérifiez auprès de la vraie personne, avec un numéro connu",
+      "detail": "Appelez le fournisseur, le client ou le responsable avec un numéro tiré d’une ancienne facture, de son site ou de votre fiche contacts. Demandez s’il a vraiment envoyé cette demande.",
+      "why": "Les faux e-mails copient souvent un vrai nom et un vrai logo. Un appel à un numéro de confiance est le moyen le plus rapide de savoir.",
+      "source_name": "FBI IC3: Business Email Compromise",
+      "source_url": "https://www.ic3.gov/CrimeInfo/BEC"
+    },
+    {
+      "id": "keep-evidence",
+      "title": "Gardez l’e-mail et les détails du paiement",
+      "detail": "Ne supprimez rien. Notez le montant, la date, l’heure et le compte bancaire qui a reçu l’argent. Prenez une photo de l’e-mail à l’écran.",
+      "why": "Votre banque, la police et votre assureur vous demanderont ces détails exacts.",
+      "source_name": "NIST SP 800-61r3",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final",
+      "do_not": "Ne supprimez pas l’e-mail et ne videz pas la corbeille."
+    },
+    {
+      "id": "report-ic3",
+      "title": "Signalez-le au FBI sur ic3.gov",
+      "detail": "Depuis un appareil sain, déposez une plainte sur ic3.gov. Indiquez le montant, la date et les coordonnées bancaires du virement.",
+      "why": "Le FBI travaille avec les banques pour tenter de bloquer l’argent volé. Un signalement rapide aide.",
+      "source_name": "FBI IC3: Business Email Compromise",
+      "source_url": "https://www.ic3.gov/CrimeInfo/BEC"
+    },
+    {
+      "id": "secure-email",
+      "title": "Changez le mot de passe de la messagerie et activez la double validation",
+      "detail": "Depuis un appareil sain, changez le mot de passe du compte e-mail concerné. Activez la validation en deux étapes (un code sur votre téléphone).",
+      "why": "Les attaquants entrent souvent d’abord dans une vraie boîte mail, puis envoient de fausses factures depuis celle-ci.",
+      "source_name": "FTC: Cybersecurity for Small Business",
+      "source_url": "https://www.ftc.gov/business-guidance/small-businesses/cybersecurity"
+    },
+    {
+      "id": "check-email-rules",
+      "title": "Demandez à votre contact informatique de vérifier la boîte mail",
+      "detail": "Demandez-lui de chercher des règles de transfert, des connexions inconnues et des messages que vous n’avez pas envoyés.",
+      "why": "Les attaquants ajoutent souvent des règles cachées qui transfèrent ou suppriment les réponses, pour que vous ne voyiez pas les alertes.",
+      "source_name": "FTC: Cybersecurity for Small Business",
+      "source_url": "https://www.ftc.gov/business-guidance/small-businesses/cybersecurity"
+    },
+    {
+      "id": "call-it-contact",
+      "title": "Appelez votre contact informatique",
+      "detail": "Dites-lui ce qui s’est passé et quand. Lisez-lui vos notes. Suivez ses conseils sur ce qu’il faut vérifier ensuite.",
+      "why": "Il peut vérifier si d’autres comptes ou ordinateurs sont touchés.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    },
+    {
+      "id": "warn-payers",
+      "title": "Prévenez toutes les personnes qui paient les factures",
+      "detail": "Expliquez ce qui s’est passé à ceux qui règlent les factures. Désormais, tout changement de coordonnées bancaires se confirme par téléphone, à un numéro connu.",
+      "why": "Les mêmes attaquants réessaient souvent avec un nouvel e-mail.",
+      "source_name": "FTC: Cybersecurity for Small Business",
+      "source_url": "https://www.ftc.gov/business-guidance/small-businesses/cybersecurity"
+    },
+    {
+      "id": "call-insurer",
+      "title": "Appelez votre assureur",
+      "detail": "Si vous avez une assurance cyber ou professionnelle, appelez leur service sinistres et dites que vous avez peut-être perdu de l’argent à cause d’une fraude par e-mail.",
+      "why": "Beaucoup de contrats exigent une déclaration rapide, et certains couvrent ce type de perte.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    },
+    {
+      "id": "report-ftc",
+      "title": "Signalez-le à la FTC",
+      "detail": "Depuis un appareil sain, signalez l’arnaque sur ReportFraud.ftc.gov (si vous êtes aux États-Unis).",
+      "why": "Les signalements aident la FTC à prévenir d’autres entreprises de la même arnaque.",
+      "source_name": "FTC ReportFraud",
+      "source_url": "https://reportfraud.ftc.gov/"
+    },
+    {
+      "id": "report-outside-us",
+      "title": "Hors des États-Unis ? Signalez-le dans votre pays",
+      "detail": "En France, faites-vous aider sur cybermalveillance.gouv.fr. Au Canada, signalez-le au Centre canadien pour la cybersécurité sur cyber.gc.ca et à votre police locale.",
+      "why": "Les services nationaux peuvent vous aider à signaler le délit et à vous rétablir.",
+      "source_name": "Cybermalveillance.gouv.fr",
+      "source_url": "https://www.cybermalveillance.gouv.fr/"
+    }
+  ]
+}

@@ -6,6 +6,7 @@ Append one entry per session: date, what was done, files changed, commit hashes,
 
 ## J TODO (things only J can do: console, login, secrets, hand tests). Newest first. Tick when done.
 
+- [ ] (Session 4) Review the new plan texts, EN + FR (BEC now; phishing, lost device, outage later this session). Plans: `src/plans/{en,fr}/*.json`.
 - [ ] (Session 3c) Re-test S2 samples 1–5 + one warm-up check (see the Session 3c entry).
 
 ---
@@ -472,4 +473,13 @@ Brief: build MUST 1–9, then SHOULD 10–14, NICE 15–17, deploy prep, README;
 - Strings `triage.*` (EN/FR). CSS `.found*`, `.log__triage`, `.log__fields`.
 - Tests: `tests/confirm.test.ts` (prefill never shows "unknown"/0; save trims/parses; J's sample 4 corrected by the user → group/contact/extension "edited"; no-AI → "added"/"empty").
 - E2E (`s4.mjs` BLOCKS=triage): (a) real headless Chrome **offline**, no AI: panel opens empty with Checklist badge; typed fields saved as "added by you"; the button disappears for that photo. (b) Stub Prompt API (`globalThis.LanguageModel` returning J's sample-4 JSON) through the **real SDK** in the built app: prefilled with On-device AI badge + "Confidence: high"; user clears "CRYPTO" and fixes the wallet → log shows "Group name removed by you" and the wallet "edited". The stub is test-only, never shipped.
+- Commit: `021af49`.
+
+### Feature 4 — Invoice / payment fraud (BEC) plan (MUST #7)
+- **Sources checked first** (web-fetch subagent, 2026-11-25; final URL, HTTP status, title). Used (all HTTP 200): `ic3.gov/CrimeInfo/BEC`, `ic3.gov`, `ftc.gov/business-guidance/small-businesses/cybersecurity`, `reportfraud.ftc.gov`, `consumer.ftc.gov/articles/how-spot-avoid-and-report-tech-support-scams`, `ftc.gov/business-guidance/resources/data-breach-response-guide-business`, `cisa.gov/secure-our-world/recognize-and-report-phishing` (page marked "Archived Content" by CISA), `cisa.gov/stopransomware/ransomware-guide`, `csrc.nist.gov/pubs/sp/800/61/r3/final`, `nist.gov/itl/smallbusinesscyber`, `csrc.nist.gov/pubs/sp/800/34/r1/upd1/final`, `ready.gov/business`, `ready.gov/power-outages`, `cybermalveillance.gouv.fr`, `cyber.gc.ca/en/incident-management`, `cyber.gc.ca/fr/cyberincidents`. `cisa.gov/report` → 301 to `myservices.cisa.gov/irf` (CISA's "IRF Incident Reporting Start"), kept.
+  **Dead, not used:** fbi.gov BEC pages (403 to bots), FTC `…/business-email-imposters`, `…/cybersecurity/phishing`, `…/physical-security`, `…/cybersecurity/basics` (404), `cyber.gc.ca/fr/gestion-des-incidents` (404), CISA phishing topic page (404).
+- `src/plans/{en,fr}/bec.json` v1.0.0, 12 steps: call the bank's fraud line now (recall), don't reply, verify on a known number, keep evidence, report to IC3, secure the mailbox (password + two-step), IT checks mailbox rules, call IT contact, warn whoever pays bills, insurer, report to FTC, **outside the US** (Canada: Canadian Centre for Cyber Security + police; France: cybermalveillance.gouv.fr). FR titles shortened to fit the 80-char schema limit.
+- Ransomware plan → **v1.1.0**: added the same `report-outside-us` step after `report-cisa` (EN source cyber.gc.ca, FR source cybermalveillance.gouv.fr; both details name both countries).
+- Tests (`tests/plans.test.ts`): every source host is on an allow-list of the checked official sites; every plan has `report-outside-us` naming both France and Canada; no plan tells the user to pay, wipe/reinstall or contact the attacker (negated sentences like "Do not contact the attackers" are allowed).
+- J TODO: review BEC wording (EN + FR) as Security+ / French reviewer (MASTER §10).
 

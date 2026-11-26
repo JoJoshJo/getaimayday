@@ -72,3 +72,29 @@ describe('i18n messages', () => {
     }
   })
 })
+
+describe('plan content rules (Session 4)', () => {
+  // Official sources only (each URL was fetched and checked in Session 4; see SESSION_HANDOFF.md).
+  const ALLOWED = ['www.cisa.gov', 'csrc.nist.gov', 'www.nist.gov', 'www.ic3.gov', 'www.ftc.gov', 'consumer.ftc.gov', 'reportfraud.ftc.gov', 'www.identitytheft.gov', 'www.cyber.gc.ca', 'www.cybermalveillance.gouv.fr', 'www.ready.gov']
+  for (const id of planIds)
+    for (const lang of LANGUAGES) {
+      const plan = PlanSchema.parse(rawPlans[lang][id])
+      it(`[${lang}/${id}] every source is an allowed official site`, () => {
+        for (const s of plan.steps) expect(ALLOWED, `${s.id}: ${s.source_url}`).toContain(new URL(s.source_url).host)
+      })
+      it(`[${lang}/${id}] has an "outside the US" reporting step (France + Canada)`, () => {
+        const s = plan.steps.find((x) => x.id === 'report-outside-us')
+        expect(s).toBeDefined()
+        expect(s!.detail).toMatch(/cybermalveillance\.gouv\.fr/)
+        expect(s!.detail).toMatch(/cyber\.gc\.ca/)
+      })
+      it(`[${lang}/${id}] never tells the user to pay, wipe, or contact the attacker`, () => {
+        // Sentences that say NOT to do it ("Do not contact the attackers") are fine.
+        const positive = plan.steps
+          .flatMap((s) => `${s.title}. ${s.detail}`.split(/(?<=[.?])\s+/))
+          .filter((x) => !/\b(do not|don't|never)\b|\bne\b|\bn['’]/i.test(x))
+        const text = positive.join(' ').toLowerCase()
+        expect(text).not.toMatch(/\b(pay the ransom|payez la rançon|wipe|reinstall|réinstallez|formatez|contact the attackers|contactez les attaquants)\b/)
+      })
+    }
+})
