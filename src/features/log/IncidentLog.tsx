@@ -8,9 +8,9 @@ import type { Plan } from '../../plans/schema'
 import type { IncidentRecord, LogEvent } from '../../storage/db'
 import { store } from '../../storage/localAdapter'
 import { SourceBadge } from '../../ui/components'
-import { fmtDateTime, fmtTime } from './format'
-
-export const PHOTO_TYPES = ['image/png', 'image/jpeg']
+import { FoundOnScreen } from '../triage/FoundOnScreen'
+import type { TriageFieldName } from '../../storage/db'
+import { fmtDateTime, fmtTime, PHOTO_TYPES } from './format'
 
 export function PhotoThumb({ photoId, alt }: { photoId: string; alt: string }) {
   const [url, setUrl] = useState<string>()
@@ -34,6 +34,8 @@ export function IncidentLog({ record, plan, extras }: { record: IncidentRecord; 
   const { lang, t } = useI18n()
   const [note, setNote] = useState('')
   const [photoError, setPhotoError] = useState('')
+  const [reading, setReading] = useState<string | null>(null)
+  const triaged = new Set(record.events.flatMap((e) => (e.kind === 'triage' ? [e.photo_id] : [])))
   const stepTitle = (id: string) => plan.steps.find((s) => s.id === id)?.title ?? id
 
   async function addNote(e: React.FormEvent) {
@@ -48,7 +50,8 @@ export function IncidentLog({ record, plan, extras }: { record: IncidentRecord; 
     setPhotoError('')
     if (!file) return
     if (!PHOTO_TYPES.includes(file.type)) return setPhotoError(t('log.photoType'))
-    await store.addPhoto(record.id, file, file.name)
+    const p = await store.addPhoto(record.id, file, file.name)
+    return p
   }
 
   function line(e: LogEvent): ReactNode {
@@ -64,12 +67,34 @@ export function IncidentLog({ record, plan, extras }: { record: IncidentRecord; 
           <span className="log__photo">
             {t('log.ev.photo')}
             <PhotoThumb photoId={e.photo_id} alt={t('log.ev.photo')} />
+            {!triaged.has(e.photo_id) && reading !== e.photo_id && (
+              <span>
+                <button type="button" className="btn" onClick={() => setReading(e.photo_id)}>
+                  {t('triage.read')}
+                </button>
+              </span>
+            )}
           </span>
         )
       case 'triage':
         return (
-          <span>
-            <SourceBadge source={e.source} /> {t('log.ev.triage')}
+          <span className="log__triage">
+            <span className="home__line">
+              <SourceBadge source={e.source} /> {t('log.ev.triage')}
+            </span>
+            <dl className="log__fields">
+              {(Object.keys(e.fields) as TriageFieldName[])
+                .filter((k) => e.fields[k] !== null || e.status[k] === 'edited')
+                .map((k) => (
+                  <div key={k} className="notes__row">
+                    <dt className="mono">{t(`triage.f.${k}`)}</dt>
+                    <dd>
+                      {e.fields[k] === null ? <span className="muted">{t('triage.st.removed')}</span> : k === 'incident_type' ? t(`triage.type.${e.fields[k] as 'ransomware'}`) : k === 'is_ransom_demand' ? t(e.fields[k] ? 'triage.yes' : 'triage.no') : String(e.fields[k])}
+                      {e.status[k] !== 'found' && e.fields[k] !== null && <span className="mono muted"> · {t(`triage.st.${e.status[k]}`)}</span>}
+                    </dd>
+                  </div>
+                ))}
+            </dl>
           </span>
         )
       case 'ai':
@@ -103,11 +128,21 @@ export function IncidentLog({ record, plan, extras }: { record: IncidentRecord; 
           </button>
           <label className="btn">
             {t('log.addPhoto')}
-            <input className="visually-hidden" type="file" accept="image/png,image/jpeg" onChange={(e) => void addPhoto(e.target.files?.[0]).then(() => (e.target.value = ''))} />
+            <input
+              className="visually-hidden"
+              type="file"
+              accept="image/png,image/jpeg"
+              onChange={(e) => {
+                const input = e.target
+                void addPhoto(input.files?.[0]).then(() => (input.value = ''))
+              }}
+            />
           </label>
         </div>
         {photoError && <p className="field__hint">{photoError}</p>}
       </form>
+
+      {reading && <FoundOnScreen incidentId={record.id} currentIncident={record.incident} photoId={reading} onClose={() => setReading(null)} />}
 
       {extras}
 

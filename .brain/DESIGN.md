@@ -207,3 +207,4 @@ Theme control: the app follows the OS, and `data-theme="light|dark"` on any elem
 - Open: logo glyph (later). `public/logo.svg` is a placeholder in the palette.
 - ✅ 2026-11-24 (architect, Session 3b): triage results are always shown as "FOUND ON SCREEN · PLEASE CONFIRM", every field editable before saving to the incident log (spec in §6; build with the incident log).
 - ✅ 2026-11-24 (architect, Session 3c): optional "Double-check with cloud AI" button on the found-on-screen panel (online only, preview first, PREFER_IN_CLOUD only after a tap). Spec in §6; SHOULD.
+- ✅ 2026-11-25 (Session 4, built): found-on-screen panel as specced, plus: "Type it in myself" while the AI reads (the user never waits); without on-device AI the same panel opens empty with a Checklist badge; the log shows each confirmed field with its status ("edited", "added by you", "removed by you"); after confirm, if the type maps to another plan, a "Start that plan" button (src/plans/route.ts).
