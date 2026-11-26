@@ -105,7 +105,7 @@ export function IncidentLog({ record, plan, extras }: { record: IncidentRecord; 
       <form className="log__form" onSubmit={addNote}>
         <label className="field">
           <span className="field__label mono">{t('log.noteLabel')}</span>
-          <textarea className="input input--area" rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder={t('log.notePlaceholder')} />
+          <textarea name="note" className="input input--area" rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder={t('log.notePlaceholder')} />
         </label>
         <div className="log__actions">
           <button type="submit" className="btn" disabled={!note.trim()}>
@@ -114,6 +114,7 @@ export function IncidentLog({ record, plan, extras }: { record: IncidentRecord; 
           <label className="btn">
             {t('log.addPhoto')}
             <input
+              name="photo"
               className="visually-hidden"
               type="file"
               accept="image/png,image/jpeg"

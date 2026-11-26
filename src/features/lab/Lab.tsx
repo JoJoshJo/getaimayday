@@ -156,7 +156,7 @@ export default function Lab() {
           </button>
           <label className="lab__field">
             <span className="mono">Mode</span>
-            <select className="lab__select" value={mode} onChange={(e) => setMode(e.target.value as Mode)}>
+            <select name="lab-mode" className="lab__select" value={mode} onChange={(e) => setMode(e.target.value as Mode)}>
               {MODES.map((m) => (
                 <option key={m} value={m}>
                   {m}
@@ -176,7 +176,7 @@ export default function Lab() {
             </button>
           ))}
         </div>
-        <textarea className="lab__text" rows={3} value={text} onChange={(e) => setText(e.target.value)} />
+        <textarea name="lab-text" className="lab__text" rows={3} value={text} onChange={(e) => setText(e.target.value)} />
         <div>
           <button type="button" className="btn btn--strong" onClick={onClassify} disabled={busy || !text.trim()}>
             Run classify
@@ -194,7 +194,7 @@ export default function Lab() {
           ))}
           <label className="btn">
             Choose PNG/JPEG…
-            <input className="visually-hidden" type="file" accept="image/png,image/jpeg" onChange={(e) => pickFile(e.target.files?.[0])} />
+            <input name="lab-photo" className="visually-hidden" type="file" accept="image/png,image/jpeg" onChange={(e) => pickFile(e.target.files?.[0])} />
           </label>
         </div>
         {image && <img className="lab__img" src={image.url} alt={`Selected test image ${image.label}`} />}

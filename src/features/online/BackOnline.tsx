@@ -68,7 +68,7 @@ export function BackOnline({ record, plan }: { record: IncidentRecord; plan: Pla
                 <strong>{t('preview.sentTo')}</strong> {t('preview.gemini')}
               </p>
               <label className="online__check">
-                <input type="checkbox" checked={includeNotes} onChange={(e) => setIncludeNotes(e.target.checked)} /> {t('online.includeNotes')}
+                <input type="checkbox" name="include-notes" checked={includeNotes} onChange={(e) => setIncludeNotes(e.target.checked)} /> {t('online.includeNotes')}
               </label>
               <p className="muted">{t('online.notSent')}</p>
               <p className="mono preview__label">{t('online.exact')}</p>

@@ -240,7 +240,7 @@ function PackSearch({ pack, lang, contacts }: { pack: Pack | null; lang: Lang; c
       >
         <label className="field">
           <span className="field__label mono">{t('pack.searchLabel')}</span>
-          <input className="input" value={q} onChange={(e) => setQ(e.target.value)} autoComplete="off" />
+          <input name="pack-question" className="input" value={q} onChange={(e) => setQ(e.target.value)} autoComplete="off" />
         </label>
         <div>
           <button type="submit" className="btn">

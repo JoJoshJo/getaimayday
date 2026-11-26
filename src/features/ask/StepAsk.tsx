@@ -58,7 +58,7 @@ export function StepAsk({ plan, step, incidentId }: { plan: AskGuide; step: Plan
       <form className="ask__form" onSubmit={onAsk}>
         <label className="field">
           <span className="field__label mono">{t('ask.label')}</span>
-          <input className="input" value={q} onChange={(e) => setQ(e.target.value)} maxLength={500} autoComplete="off" autoFocus />
+          <input name="question" className="input" value={q} onChange={(e) => setQ(e.target.value)} maxLength={500} autoComplete="off" autoFocus />
         </label>
         <div className="log__actions">
           <button type="submit" className="btn btn--strong" disabled={busy}>

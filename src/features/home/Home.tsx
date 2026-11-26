@@ -96,6 +96,7 @@ export function Home() {
           <label className="field">
             <span className="field__label mono">{t('home.describe')}</span>
             <textarea
+              name="description"
               className="input input--area"
               rows={3}
               value={text}

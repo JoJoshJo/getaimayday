@@ -58,7 +58,7 @@ function SetupForm({ initialProfile, initialContacts }: { initialProfile: Profil
   const text = (k: 'name' | 'city' | 'staff' | 'email_provider' | 'backups_where', type = 'text') => (
     <label className="field">
       <span className="field__label mono">{t(`setup.f.${k}`)}</span>
-      <input className="input" type={type} value={p[k]} onChange={(e) => setField(k, e.target.value)} autoComplete="off" />
+      <input name={`business-${k}`} className="input" type={type} value={p[k]} onChange={(e) => setField(k, e.target.value)} autoComplete="off" />
     </label>
   )
 
@@ -91,7 +91,7 @@ function SetupForm({ initialProfile, initialContacts }: { initialProfile: Profil
         {text('name')}
         <label className="field">
           <span className="field__label mono">{t('setup.f.type')}</span>
-          <select className="input" value={p.type} onChange={(e) => setField('type', e.target.value as Profile['type'])}>
+          <select name="business-type" className="input" value={p.type} onChange={(e) => setField('type', e.target.value as Profile['type'])}>
             {BUSINESS_TYPES.map((v) => (
               <option key={v} value={v}>
                 {t(`setup.type.${v}`)}
@@ -102,7 +102,7 @@ function SetupForm({ initialProfile, initialContacts }: { initialProfile: Profil
         {text('city')}
         <label className="field">
           <span className="field__label mono">{t('setup.f.country')}</span>
-          <select className="input" value={p.country} onChange={(e) => setField('country', e.target.value as Profile['country'])}>
+          <select name="business-country" className="input" value={p.country} onChange={(e) => setField('country', e.target.value as Profile['country'])}>
             {COUNTRIES.map((v) => (
               <option key={v} value={v}>
                 {t(`setup.country.${v}`)}
@@ -114,11 +114,11 @@ function SetupForm({ initialProfile, initialContacts }: { initialProfile: Profil
         {text('email_provider')}
         <label className="field">
           <span className="field__label mono">{t('setup.f.key_systems')}</span>
-          <textarea className="input input--area" rows={2} value={p.key_systems} onChange={(e) => setField('key_systems', e.target.value)} placeholder={t('setup.keySystemsHint')} />
+          <textarea name="business-key-systems" className="input input--area" rows={2} value={p.key_systems} onChange={(e) => setField('key_systems', e.target.value)} placeholder={t('setup.keySystemsHint')} />
         </label>
         <label className="field">
           <span className="field__label mono">{t('setup.f.backups')}</span>
-          <select className="input" value={p.backups} onChange={(e) => setField('backups', e.target.value as Profile['backups'])}>
+          <select name="business-backups" className="input" value={p.backups} onChange={(e) => setField('backups', e.target.value as Profile['backups'])}>
             {BACKUPS.map((v) => (
               <option key={v} value={v}>
                 {t(`setup.backups.${v}`)}
@@ -141,6 +141,7 @@ function SetupForm({ initialProfile, initialContacts }: { initialProfile: Profil
               <label key={k} className="field">
                 <span className="field__label mono">{t(`setup.c.${k}`)}</span>
                 <input
+                  name={`${role}-${k}`}
                   className="input"
                   type={k === 'phone' ? 'tel' : k === 'email' ? 'email' : 'text'}
                   value={c[role]?.[k] ?? ''}

@@ -831,3 +831,12 @@ Brief (architect, via J): live site verified by J (App Check + reCAPTCHA Enterpr
 - Plan-scoped search (Ask on a step, fix-its) is unchanged: filter only, no hint. Tested.
 - **Top-1 plan accuracy on the 20 questions: before 19/20 (the miss was exactly the live bug), after 20/20.** The live question now returns the ransomware "pay" answer first.
 - Tests: `tests/pack-ranking.test.ts` (live bug → ransomware pay answer; ≥ 19/20, logs the score and misses; plan-scoped unchanged; a question with no incident words still searches all plans). The older 20-question set in `tests/pack.test.ts` still passes. Total 378/378, build + secret check, lint 0, `s4.mjs` all blocks, `csp.mjs`, `judge.mjs` pass.
+- Commit: `b7bd740`.
+
+### Item 2 — Chrome DevTools "Issues"
+- Reproduced with scratch `issues.mjs`: built app (`vite preview`, same headers as Hosting), headless Chrome, CDP `Audits.enable` → every `Audits.issueAdded`, while visiting every screen (home, describe → plan, Ask open, contacts sheet, photo + Read the screen, incidents, contacts, setup, pack + preview, ready, print, fix-its, demo-setup, lab).
+- **Before: 39 issues, all one kind**: "A form field element should have an id or name attribute" (`FormEmptyIdAndNameAttributesForInputError`). Every input/textarea/select in the app had a label but no `name`/`id`: the description box, Ask, Pack search, setup fields and selects, the 6 × 4 contact fields, triage fields, note, photo picker, step checkboxes, "include my notes", and the lab controls. The live site's ~23 is the subset on the screens J opened.
+- After adding names: 1 new issue, "An autocomplete attribute value was assigned to id or name" (`FormInputAssignedAutocompleteValueToIdOrNameAttributeError`): a select named `country` (an autocomplete token). Setup fields are now `business-*`, contacts `<role>-<field>`, triage fields their key, step checkboxes `step-<id>`.
+- **After: 0 issues** on every screen.
+- Every field already had a visible `<label>`; this only adds names (no layout change).
+- Test `tests/forms.test.ts`: scans every `.tsx` for `<input|textarea|select>` without `name`/`id`, and static names that are autocomplete tokens. 381/381.

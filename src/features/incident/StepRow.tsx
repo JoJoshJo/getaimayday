@@ -33,7 +33,7 @@ export const StepRow = forwardRef<HTMLElement, Props>(function StepRow({ step, i
 
         <div className="step__action">
           <label className="check">
-            <input type="checkbox" checked={checked} onChange={onToggle} aria-labelledby={titleId} aria-describedby={`step-detail-${step.id}`} />
+            <input type="checkbox" name={`step-${step.id}`} checked={checked} onChange={onToggle} aria-labelledby={titleId} aria-describedby={`step-detail-${step.id}`} />
             <span className="check__box" aria-hidden="true" />
           </label>
           <h3 id={titleId} className="step__title">

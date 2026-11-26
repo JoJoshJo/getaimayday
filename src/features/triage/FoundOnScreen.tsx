@@ -172,7 +172,7 @@ export function FoundOnScreen({ incidentId, currentIncident, photoId, onClose }:
 
           <label className="found__row">
             <span className="mono found__label">{t('triage.f.incident_type')}</span>
-            <select ref={firstField} className="input" value={form.incident_type} onChange={(e) => set('incident_type', e.target.value as FormValues['incident_type'])}>
+            <select name="incident_type" ref={firstField} className="input" value={form.incident_type} onChange={(e) => set('incident_type', e.target.value as FormValues['incident_type'])}>
               <option value="">{t('triage.notFound')}</option>
               {TRIAGE_TYPES.map((ty) => (
                 <option key={ty} value={ty}>
@@ -202,6 +202,7 @@ export function FoundOnScreen({ incidentId, currentIncident, photoId, onClose }:
             <label className="found__row">
               <span className="mono found__label">{t(`triage.f.${k}`)}</span>
               <input
+                name={k}
                 className="input"
                 inputMode={k === 'ransom_amount' ? 'decimal' : undefined}
                 value={form[k]}
