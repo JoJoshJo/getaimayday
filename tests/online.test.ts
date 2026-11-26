@@ -1,6 +1,8 @@
 /** Back-online cloud jobs: what is sent, prompts, output checks. Cloud calls are faked. */
 import { describe, expect, it } from 'vitest'
-import { cleanDoc, DOC_JOBS, incidentSummary, jobPrompt, runDocJob, type DocGenerate } from '../src/features/online/jobs'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
+import { cleanDoc, DOC_JOBS, docTime, incidentSummary, jobPlaceholders, jobPrompt, RULE_STEP_IDS, runDocJob, type DocGenerate } from '../src/features/online/jobs'
 import { rawPlans } from '../src/plans'
 import type { Plan } from '../src/plans/schema'
 import type { IncidentRecord } from '../src/storage/db'
@@ -21,10 +23,11 @@ const record: IncidentRecord = {
 }
 
 describe('incidentSummary (what is sent)', () => {
-  const withNotes = incidentSummary(record, plan, { includeNotes: true })
-  const noNotes = incidentSummary(record, plan, { includeNotes: false })
+  const NY = 'America/New_York'
+  const withNotes = incidentSummary(record, plan, { includeNotes: true, timeZone: NY })
+  const noNotes = incidentSummary(record, plan, { includeNotes: false, timeZone: NY })
   it('has the timeline, done and open steps, confirmed screen fields', () => {
-    expect(withNotes).toContain('2026-11-25 09:01 UTC: Use a clean device')
+    expect(withNotes).toContain('Nov 25, 4:01 AM EST: Marked done: Use a clean device, not the infected computer')
     expect(withNotes).toMatch(/not done yet:[\s\S]*Restore/)
     expect(withNotes).toContain('ransom_amount: 0.35')
     expect(withNotes).not.toContain('group_name')
@@ -42,7 +45,7 @@ describe('jobPrompt', () => {
     expect(p).toContain('<incident_log>\nLOG\n</incident_log>')
     expect(p).toContain('French')
     expect(p).toMatch(/Never advise paying a ransom/)
-    expect(p).toMatch(/placeholder in square brackets/)
+    expect(p).toMatch(/placeholders in square brackets/)
   })
 })
 
@@ -63,4 +66,66 @@ describe('runDocJob', () => {
     expect((await runDocJob('p', gen('Do not pay the ransom.'))).text).toBe('Do not pay the ransom.')
   })
   it('cleanDoc', () => expect(cleanDoc('a – b')).toBe('a, b'))
+})
+
+// ---- Session 13 ----
+const NY = 'America/New_York'
+const frPlan = rawPlans.fr.ransomware as Plan
+
+describe('Session 13: the log sent to the AI', () => {
+  const en = incidentSummary(record, plan, { includeNotes: true, timeZone: NY })
+  const fr = incidentSummary(record, frPlan, { includeNotes: true, lang: 'fr', timeZone: NY })
+  it('local time with a short zone label, never UTC (EN and FR)', () => {
+    expect(en).toContain('Started: Nov 25, 2026, 4:00 AM EST')
+    expect(fr).toContain('Début : 25 nov. 2026, 04:00 EST'.replace(' :', ':'))
+    for (const s of [en, fr]) expect(s).not.toMatch(/UTC/)
+    expect(docTime(T0, 'fr', { timeZone: 'Europe/Paris' })).toBe('25 nov., 10:00 GMT+1')
+    expect(docTime(T0, 'en', { timeZone: 'UTC' })).toBe('Nov 25, 9:00 AM GMT')
+  })
+  it('ticked steps are listed as "Marked done: <exact title>"', () => {
+    for (const s of plan.steps.filter((s) => record.steps[s.id])) expect(en).toContain(`Marked done: ${s.title}`)
+    expect(fr).toContain('Cochée: Utilisez un appareil sain, pas l’ordinateur infecté')
+  })
+  it('notes are labelled "Note added", only when ticked', () => {
+    expect(en).toContain('Nov 25, 4:03 AM EST: Note added: Called Riverdale IT at 555-0142.')
+    expect(fr).toContain('Note ajoutée: Called Riverdale IT')
+    expect(incidentSummary(record, plan, { includeNotes: false })).not.toContain('Note added')
+  })
+  it('rule steps go under Remember, not under "not done yet"', () => {
+    const open = en.slice(en.indexOf('Plan steps not done yet:'), en.indexOf('Remember'))
+    expect(open).not.toContain('Do not contact the attackers')
+    expect(open).not.toContain('Leave affected computers as they are')
+    expect(open).toContain('Restore only with your IT contact')
+    expect(en).toMatch(/Remember \(rules from the plan, not tasks\):\n- Do not contact the attackers\n- Leave affected computers as they are/)
+    expect(fr).toContain('À retenir')
+  })
+  it('every rule step id exists in a plan (renames fail here)', () => {
+    const ids = new Set(Object.values(rawPlans.en).flatMap((p) => (p as Plan).steps.map((s) => s.id)))
+    for (const id of RULE_STEP_IDS) expect(ids.has(id)).toBe(true)
+  })
+})
+
+describe('Session 13: every document prompt has the shared rules (EN and FR)', () => {
+  for (const lang of ['en', 'fr'] as const)
+    it.each(DOC_JOBS)(`${lang} %s: "Marked done" rule, placeholder rule, no UTC`, (job) => {
+      const p = jobPrompt(job, 'LOG', lang)
+      expect(p).toContain(`Report each one as "${lang === 'fr' ? 'Cochée' : 'Marked done'}: <exact step title>"`)
+      expect(p).toMatch(/Never reword a ticked step/)
+      expect(p).toMatch(/never fill in real contact details/)
+      for (const ph of jobPlaceholders(job, lang)) expect(p).toContain(ph)
+      expect(p).toContain(lang === 'fr' ? 'Note ajoutée' : 'Note added')
+    })
+  it('bank and insurer get what they need to act', () => {
+    expect(jobPlaceholders('draft_bank', 'en')).toEqual(['[Business name]', '[Account number]', '[Your name]', '[Phone number]'])
+    expect(jobPlaceholders('draft_insurer', 'en')).toEqual(['[Business name]', '[Policy number]', '[Your name]', '[Phone number]'])
+    expect(jobPlaceholders('draft_bank', 'fr')).toContain('[Numéro de compte]')
+  })
+  it('the report has a Remember section', () => expect(jobPrompt('report', 'LOG', 'en')).toMatch(/Remember \(only the rules/))
+})
+
+describe('Session 13: "Include my notes" is off by default', () => {
+  it('BackOnline starts with includeNotes false', () => {
+    const src = readFileSync(join(__dirname, '..', 'src', 'features', 'online', 'BackOnline.tsx'), 'utf8')
+    expect(src).toMatch(/const \[includeNotes, setIncludeNotes\] = useState\(false\)/)
+  })
 })

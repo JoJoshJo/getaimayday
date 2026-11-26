@@ -14,6 +14,11 @@ npm run build && npx firebase-tools deploy --only hosting
 
 The build must end with "Secret check: no App Check debug token". Then open https://getaimayday.web.app and reload once so the new version loads.
 
+- [ ] (Session 13) Back-online documents. Not pushed yet.
+  1) **Push:** `cd ~/Desktop/getaimayday && git push origin main`
+  2) **Deploy:** `cd ~/Desktop/getaimayday && npm run build && npx firebase-tools deploy --only hosting`
+  3) **Close all AIMayday tabs and windows once** (and the installed app), then open https://getaimayday.web.app again. (Needed once if a tab still ran a build from before Session 12; after that the "New version ready" banner handles it.)
+  4) **On the demo incident**, Back online → regenerate **Incident report** and **Message to the bank**. In the preview first: "Include my notes" is **unticked**; the log shows local times like "Nov 26, 9:53 AM EST" (no UTC), "Marked done: <step title>", a "Remember" list, and (after you tick the box) "Note added: …". In the documents: ticked steps read "Marked done: …" (not "Restored only…"), times are local, notes read "Note added", the report has a Remember section, the bank draft has [Account number], [Your name], [Phone number]. Try the bank draft once in FR ("Cochée", "Note ajoutée", [Numéro de compte]). Paste both documents into the next session.
 - [ ] (Session 12b) Not pushed yet: `cd ~/Desktop/getaimayday && git push origin main` first.
   1) **Deploy:** `cd ~/Desktop/getaimayday && npm run build && npx firebase-tools deploy --only hosting`
   2) **One time only, after this deploy:** close EVERY AIMayday tab and window (and the installed app, if you installed it), then open https://getaimayday.web.app again. A reload is not enough this once: a tab that opened the Session 11 build keeps running the Session 11 code (that is why the Lab still showed `group_name ","` and "warm" at 8.69 s). Or: DevTools → Application → Service workers → "skipWaiting". From then on the "New version ready · Reload" banner handles updates.
@@ -1201,6 +1206,26 @@ Brief (architect, via J): live site verified by J (App Check + reCAPTCHA Enterpr
 **Verified.** vitest 489, tsc, oxlint clean, `npm run build` (secret check, lab samples check), s4 blocks, demo, lab12, csp, issues: pass.
 
 **Files.** src/ai/schemas.ts, src/ai/nano.ts, src/ai/router.ts, src/features/lab/Lab.tsx, src/features/log/IncidentLog.tsx, tests/triage-path.test.ts, tests/warmup.test.ts, .brain/SESSION_HANDOFF.md.
+
+Committed, not pushed, not deployed.
+
+## 2026-11-26 — Session 13: back-online document fixes from J's live test (Claude Code)
+
+Scope kept to the log builder, document prompts and send preview (`src/features/online/jobs.ts`, `BackOnline.tsx`). No change to routing, model, Pack, plan content, triage or tokens.
+
+**What changed and why (src/features/online/jobs.ts unless noted).**
+1. **Ticked steps.** The log now lists them under "Plan steps marked done by the user" as `<time>: Marked done: <exact title>` (FR "Cochée"). New shared rule in every prompt: ticked steps only mean a checklist tick; report each as "Marked done: <exact step title>" word for word, never reworded into a claim (with J's example "Restore only with your IT contact" ≠ "Files were restored").
+2. **Local time.** `docTime(ms, lang)` replaces the UTC `iso()`: device local time + short zone, via Intl. EN "Nov 26, 9:53 AM EST", FR "26 nov., 09:53 EST"; "Started" adds the year. The zone label is always the English short name (EST, GMT+1): French Intl writes "UTC−5", which would bring "UTC" back into French documents. A device set to UTC prints "GMT". Shared rule: copy times exactly, do not convert, do not add UTC or guess the time of day. A line "(Times are local time on this device)" is in the log.
+3. **Notes.** Listed as `<time>: Note added: <text>` (FR "Note ajoutée"); shared rule: in a timeline, a note is "Note added: <text>", never an event that happened at that time.
+4. **Remember.** The plan format has no step type, and `do_not` (the Avoid box) is on ordinary task steps too (e.g. "Call your IT contact"), so neither can separate rules from tasks. Used: `RULE_STEP_IDS` = `do-not-contact-attackers`, `keep-evidence` (ransomware) and `do-not-reply` (BEC), by id, same ids in EN/FR. These are left out of "not done yet" and listed under "Remember (rules from the plan, not tasks)". A test fails if an id no longer exists in a plan. The report prompt has a Remember section; next steps end with one if rules are listed. A ticked rule step still appears as "Marked done".
+5. **Placeholders.** `jobPlaceholders(job, lang)`: report [Business name] [Your name] [Phone number]; next steps [IT contact name] [IT contact phone]; staff [Your name] [Phone number]; customers [Business name] [Phone number] [Email address]; bank [Business name] [Account number] [Your name] [Phone number]; insurer [Business name] [Policy number] [Your name] [Phone number]. FR versions in French ([Numéro de compte], [Numéro de contrat], …). Rule: never fill in real contact details; put these where the reader needs them. Nothing real is added to what is sent.
+6. **Privacy by default** (`BackOnline.tsx`): "Include my notes" starts unticked for every document.
+7. **French.** The log itself is now built in the UI language (labels, FR dates, "ouvert"/"fermé"), and the FR prompt gets "Cochée"/"Note ajoutée" and FR placeholders. The instruction text stays in English (as before) with "Write in French".
+
+**Tests (509, was 489).** `tests/online.test.ts`: log has local time + zone and no "UTC" (EN, FR, Paris, a UTC device), ticked steps as "Marked done: <title>" (FR "Cochée"), notes as "Note added" only when ticked, rule steps under Remember not in the open list, rule ids exist; every prompt × EN/FR has the "Marked done" rule, the no-reword rule, the placeholder rule and its placeholders; bank/insurer placeholders; report has Remember; notes checkbox defaults to false (source check). Existing expectation updated from "2026-11-25 09:01 UTC" to "Nov 25, 4:01 AM EST: Marked done: …".
+- Browser (`scratchpad/pw/s4.mjs`, updated): preview shows notes off by default and checkbox unticked; log part has no UTC, local "h:mm AM/PM ZONE", Remember; ticking adds "Note added: …"; unticking removes it. Full run 58 pass, 0 fail; demo, csp (0 violations), issues (0), pwa offline reload, fallback pass. vitest, tsc, oxlint clean; build with secret + lab checks; Lighthouse a11y 100 on all 16 (desktop + mobile).
+
+**Not verified here:** real gemini-3.5-flash-lite output with the new prompts (needs App Check on the live site): J TODO step 4.
 
 Committed, not pushed, not deployed.
 

@@ -21,10 +21,11 @@ export function BackOnline({ record, plan }: { record: IncidentRecord; plan: Pla
   const { t, lang } = useI18n()
   const online = useConnection() !== 'offline'
   const [phase, setPhase] = useState<Phase>({ kind: 'idle' })
-  const [includeNotes, setIncludeNotes] = useState(true)
+  // Session 13: privacy by default, the user opts in to sending notes.
+  const [includeNotes, setIncludeNotes] = useState(false)
 
   const docs = record.events.flatMap((e) => (e.kind === 'ai' && e.source === 'cloud' && e.text && isDocJob(e.job) ? [{ ...e, job: e.job as DocJob }] : [])).reverse()
-  const prompt = (job: DocJob) => jobPrompt(job, incidentSummary(record, plan, { includeNotes }), lang === 'fr' ? 'fr' : 'en')
+  const prompt = (job: DocJob) => jobPrompt(job, incidentSummary(record, plan, { includeNotes, lang: lang === 'fr' ? 'fr' : 'en' }), lang === 'fr' ? 'fr' : 'en')
 
   async function send(job: DocJob) {
     setPhase({ kind: 'writing', job })
