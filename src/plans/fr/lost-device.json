@@ -1,0 +1,96 @@
+{
+  "id": "lost-device",
+  "incident": "lost-device",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "id": "locate-and-lock",
+      "title": "Localisez-le et verrouillez-le depuis un autre appareil",
+      "detail": "Utilisez le service de localisation du fabricant depuis un autre appareil. Verrouillez-le et affichez un message avec un numéro à appeler.",
+      "why": "Un appareil verrouillé est beaucoup plus difficile à utiliser. Sa position peut aider la police.",
+      "source_name": "FTC: How to protect your phone and the data on it",
+      "source_url": "https://consumer.ftc.gov/articles/how-protect-your-phone-and-data-it",
+      "do_not": "N’allez pas seul le récupérer dans un lieu inconnu. Donnez la position à la police."
+    },
+    {
+      "id": "write-down-events",
+      "title": "Notez ce que vous savez",
+      "detail": "Notez quand et où vous l’avez eu pour la dernière fois, de quel appareil il s’agit, son numéro de série si vous l’avez, et quels comptes et fichiers il contenait.",
+      "why": "Votre contact informatique, la police et votre assureur vous demanderont ces détails.",
+      "source_name": "NIST SP 800-61r3",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+    },
+    {
+      "id": "change-passwords",
+      "title": "Changez les mots de passe utilisés sur cet appareil",
+      "detail": "Depuis un autre appareil, changez d’abord le mot de passe de l’e-mail, puis ceux de la banque, de la paie et de tout outil de travail connecté dessus.",
+      "why": "La personne qui a l’appareil pourrait entrer dans les comptes restés connectés.",
+      "source_name": "CISA: Use strong passwords",
+      "source_url": "https://www.cisa.gov/secure-our-world/use-strong-passwords"
+    },
+    {
+      "id": "sign-out-device",
+      "title": "Déconnectez l’appareil de vos comptes",
+      "detail": "Sur la page sécurité de chaque compte, déconnectez l’appareil perdu ou tous les appareils. Retirez-le de la liste des appareils de confiance.",
+      "why": "Cela ferme les sessions qui resteraient ouvertes même après un changement de mot de passe.",
+      "source_name": "NIST SP 800-61r3",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+    },
+    {
+      "id": "call-it-contact",
+      "title": "Appelez votre contact informatique",
+      "detail": "Dites-lui ce qu’il y avait sur l’appareil. Demandez-lui de le bloquer sur les outils de travail, de vous dire s’il était chiffré, et de décider avec vous s’il faut l’effacer à distance.",
+      "why": "L’effacer à distance protège les données mais empêche ensuite de le localiser : décidez ensemble.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    },
+    {
+      "id": "call-bank-now",
+      "title": "Si des applis bancaires ou des cartes y étaient, appelez votre banque",
+      "detail": "Appelez la ligne fraude au dos de votre carte ou sur votre fiche contacts. Demandez de surveiller le compte et de bloquer les cartes enregistrées sur l’appareil.",
+      "why": "Les banques bloquent les paiements plus vite quand elles sont prévenues tôt.",
+      "source_name": "FTC: How to protect your phone and the data on it",
+      "source_url": "https://consumer.ftc.gov/articles/how-protect-your-phone-and-data-it"
+    },
+    {
+      "id": "report-police",
+      "title": "S’il a été volé, portez plainte",
+      "detail": "Contactez la police (numéro hors urgence sur votre fiche contacts). Donnez le numéro de série et la dernière position connue. Gardez le numéro de plainte.",
+      "why": "Votre assureur demandera en général le numéro de plainte.",
+      "source_name": "NIST SP 800-61r3",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+    },
+    {
+      "id": "check-customer-data",
+      "title": "Si des données de clients ou de patients y étaient, vérifiez quoi faire",
+      "detail": "Demandez à votre contact informatique si l’appareil était chiffré. S’il contenait des données personnelles non chiffrées, vous devrez peut-être prévenir les personnes concernées. Demandez à votre avocat ou à votre assureur.",
+      "why": "Les règles pour prévenir les clients dépendent des données et du pays. Un conseil rapide évite les erreurs.",
+      "source_name": "FTC: Data breach response, a guide for business",
+      "source_url": "https://www.ftc.gov/business-guidance/resources/data-breach-response-guide-business"
+    },
+    {
+      "id": "call-insurer",
+      "title": "Appelez votre assureur",
+      "detail": "Dites-lui qu’un appareil a été perdu ou volé et ce qu’il contenait. Demandez ce dont il a besoin.",
+      "why": "Beaucoup de contrats demandent d’être prévenu rapidement.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    },
+    {
+      "id": "protect-next-time",
+      "title": "Ensuite, protégez les autres appareils",
+      "detail": "Avec votre contact informatique, activez le verrouillage d’écran, le chiffrement et la localisation sur chaque ordinateur portable et téléphone utilisé pour le travail.",
+      "why": "Un appareil verrouillé, chiffré et localisable pose un bien plus petit problème la prochaine fois.",
+      "source_name": "FTC: Protecting personal information, a guide for business",
+      "source_url": "https://www.ftc.gov/business-guidance/resources/protecting-personal-information-guide-business"
+    },
+    {
+      "id": "report-outside-us",
+      "title": "Hors des États-Unis ? Signalez-le dans votre pays",
+      "detail": "En France, faites-vous aider sur cybermalveillance.gouv.fr. Au Canada, signalez-le au Centre canadien pour la cybersécurité sur cyber.gc.ca et à votre police locale.",
+      "why": "Les services nationaux peuvent vous aider à signaler le délit et à vous rétablir.",
+      "source_name": "Cybermalveillance.gouv.fr",
+      "source_url": "https://www.cybermalveillance.gouv.fr/"
+    }
+  ]
+}

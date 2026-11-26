@@ -1,0 +1,104 @@
+{
+  "id": "outage",
+  "incident": "outage",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "id": "stay-safe",
+      "title": "Coupure de courant : la sécurité d’abord",
+      "detail": "Débranchez les ordinateurs et les appareils électroniques pour qu’une surtension ne les abîme pas au retour du courant. Utilisez des lampes torches, pas de bougies.",
+      "why": "Les surtensions au retour du courant peuvent abîmer le matériel. Les bougies présentent un risque d’incendie.",
+      "source_name": "Ready.gov: Power outages",
+      "source_url": "https://www.ready.gov/power-outages",
+      "do_not": "N’utilisez jamais de groupe électrogène à l’intérieur ou dans un garage. Le monoxyde de carbone peut tuer."
+    },
+    {
+      "id": "check-for-attack",
+      "title": "Vérifiez que ce n’est pas une attaque",
+      "detail": "Cherchez des signes d’attaque : un message de rançon, des fichiers aux noms étranges, des comptes inaccessibles, de l’argent déplacé. Si c’est le cas, revenez en arrière et choisissez ce plan.",
+      "why": "Une attaque demande d’autres étapes qu’une panne normale, et les premières minutes comptent.",
+      "source_name": "NIST SP 800-61r3",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+    },
+    {
+      "id": "check-scope",
+      "title": "Identifiez ce qui ne marche plus et pour qui",
+      "detail": "Regardez si d’autres appareils, d’autres pièces ou les voisins sont touchés. Notez ce qui ne fonctionne pas : internet, courant, e-mail, téléphones, terminal de paiement, un outil important.",
+      "why": "Connaître l’étendue du problème vous dit qui appeler : votre fournisseur, le distributeur d’électricité ou votre contact informatique.",
+      "source_name": "NIST SP 800-34: Contingency planning",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/34/r1/upd1/final"
+    },
+    {
+      "id": "call-provider",
+      "title": "Appelez le fournisseur et notez le numéro de ticket",
+      "detail": "Appelez votre fournisseur d’internet, de téléphone ou d’électricité depuis un portable. Demandez la durée prévue et notez le numéro de ticket.",
+      "why": "Le numéro de ticket accélère les rappels et peut servir pour une déclaration.",
+      "source_name": "Ready.gov: Business",
+      "source_url": "https://www.ready.gov/business"
+    },
+    {
+      "id": "call-it-contact",
+      "title": "Appelez votre contact informatique",
+      "detail": "Dites-lui ce qui ne marche plus, depuis quand, et ce qu’a dit le fournisseur.",
+      "why": "Il peut vérifier votre propre matériel et vous aider à contourner le problème.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    },
+    {
+      "id": "work-without-it",
+      "title": "Passez à votre mode de travail de secours",
+      "detail": "Utilisez le partage de connexion d’un téléphone pour l’urgent, des formulaires papier pour les commandes ou les patients, et le mode hors ligne du terminal de paiement s’il en a un. Gardez la liste de ce qu’il faudra saisir ensuite.",
+      "why": "Faire tourner l’entreprise compte plus qu’attendre le retour des systèmes.",
+      "source_name": "Ready.gov: Business continuity planning",
+      "source_url": "https://www.ready.gov/business/emergency-plans/continuity-planning"
+    },
+    {
+      "id": "tell-staff",
+      "title": "Prévenez le personnel et les clients",
+      "detail": "Dites à l’équipe ce qui fonctionne encore et quoi faire à la place. Affichez un mot court à l’entrée ou au comptoir si les clients sont touchés.",
+      "why": "Une information claire et calme évite les erreurs et l’agacement.",
+      "source_name": "Ready.gov: Business",
+      "source_url": "https://www.ready.gov/business"
+    },
+    {
+      "id": "write-down-events",
+      "title": "Tenez une chronologie simple",
+      "detail": "Notez quand cela a commencé, qui vous avez appelé, les numéros de ticket et ce que vous avez fait.",
+      "why": "Cela aide pour les rappels, les déclarations et pour préparer la prochaine fois.",
+      "source_name": "NIST SP 800-34: Contingency planning",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/34/r1/upd1/final"
+    },
+    {
+      "id": "restore-carefully",
+      "title": "Au retour, redémarrez étape par étape",
+      "detail": "Rebranchez les appareils un par un. Vérifiez que les outils importants et les données récentes sont là. Saisissez les fiches papier.",
+      "why": "Tout rallumer d’un coup peut faire sauter le courant à nouveau, et vérifier les données tôt trouve les problèmes tant qu’ils sont petits.",
+      "source_name": "Ready.gov: Power outages",
+      "source_url": "https://www.ready.gov/power-outages"
+    },
+    {
+      "id": "call-insurer",
+      "title": "Si vous avez perdu du chiffre ou du matériel, appelez votre assureur",
+      "detail": "Dites-lui combien de temps cela a duré et ce qui a été abîmé ou perdu. Donnez les numéros de ticket.",
+      "why": "Certains contrats couvrent la perte d’exploitation ou le matériel abîmé.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    },
+    {
+      "id": "plan-next-time",
+      "title": "Ensuite, notez ce qui vous aurait aidé",
+      "detail": "Par exemple : un partage de connexion, une batterie pour la box, des formulaires papier prêts, une fiche contacts imprimée.",
+      "why": "Chaque panne montre quoi préparer pour la suivante.",
+      "source_name": "NIST SP 800-34: Contingency planning",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/34/r1/upd1/final"
+    },
+    {
+      "id": "report-outside-us",
+      "title": "Si vous pensez à une attaque hors des États-Unis, faites-vous aider",
+      "detail": "En France, faites-vous aider sur cybermalveillance.gouv.fr. Au Canada, signalez-le au Centre canadien pour la cybersécurité sur cyber.gc.ca. Aux États-Unis, suivez le plan de cette attaque.",
+      "why": "Les services nationaux peuvent vous aider à vérifier et signaler une attaque.",
+      "source_name": "Cybermalveillance.gouv.fr",
+      "source_url": "https://www.cybermalveillance.gouv.fr/"
+    }
+  ]
+}

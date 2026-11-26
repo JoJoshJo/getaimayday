@@ -561,3 +561,14 @@ Brief: build MUST 1–9, then SHOULD 10–14, NICE 15–17, deploy prep, README;
 - Routing: `tech_support_scam` and `phishing_page` (photo triage) and `phishing` (classify / keywords) now open this plan; the phishing tile appears on home. Contacts one-tap works on its steps through the existing STEP_CONTACT ids (call-it-contact, check-email-rules, call-bank-now, tell-staff).
 - Tests 240/240 (plan rules apply automatically: sources allow-list, outside-US step, no pay/wipe/contact advice, EN/FR parity). E2E 46 PASS, 3 tiles.
 - J TODO (existing item): review phishing wording EN + FR.
+- Commit: `bc7b7ed`.
+
+### SHOULD #11 + #12 — Lost / stolen device and Outage plans, EN + FR
+- Sources: only URLs checked this session (see the #10 entry). Lost device uses FTC phone page, FTC Protecting Personal Information, FTC Data Breach Response, CISA strong passwords, NIST 800-61r3, NIST small business corner. Outage uses Ready.gov power outages / business / continuity planning, NIST 800-34, NIST 800-61r3.
+- `lost-device.json` v1.0.0, 11 steps: locate + lock (do not go get it yourself), write down what you know, change passwords, sign the device out, call IT (blocking, encryption, decide together on remote erase), bank if cards/apps, police report if stolen, customer/patient data check (lawyer/insurer), insurer, protect other devices, outside the US.
+- `outage.json` v1.0.0, 12 steps: stay safe (unplug electronics; never a generator indoors), check it is not an attack (else choose that plan), find what is down, call provider + ticket number, call IT, backup way of working (hotspot, paper, card reader offline mode), tell staff and customers, timeline, restart step by step, insurer, write down what would have helped, outside the US "if you think it was an attack". The outage plan does not invent a reporting duty for a normal outage.
+- Lost device "erase remotely" is phrased as a decision taken with the IT contact (it also stops tracking). The plan guard bans "wipe/reinstall" wording; "erase" with IT is the official advice for lost devices (FTC).
+- STEP_CONTACT: `report-police` → police (non-emergency), `check-customer-data` → lawyer (one-tap buttons on those steps).
+- All five incidents now have plans: home shows 5 tiles, classify/keywords/triage routing all land on a plan, print shows 5 plans, the Pack builds 5 plans × 2 languages + 2 glossaries (12 requests).
+- Tests 258/258, E2E 46 PASS.
+- J TODO (existing item): review lost-device and outage wording EN + FR.

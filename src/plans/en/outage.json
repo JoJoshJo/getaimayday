@@ -1,0 +1,104 @@
+{
+  "id": "outage",
+  "incident": "outage",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "id": "stay-safe",
+      "title": "Power cut: stay safe first",
+      "detail": "Unplug computers and other electronics so a power surge does not damage them when power returns. Use flashlights, not candles.",
+      "why": "Surges when power comes back can damage equipment. Candles are a fire risk.",
+      "source_name": "Ready.gov: Power outages",
+      "source_url": "https://www.ready.gov/power-outages",
+      "do_not": "Never run a generator indoors or in a garage. It can kill with carbon monoxide."
+    },
+    {
+      "id": "check-for-attack",
+      "title": "Check it is not an attack",
+      "detail": "Look for signs of an attack: a ransom message, files with strange names, accounts you cannot sign in to, money moved. If you see any, go back and choose that plan.",
+      "why": "An attack needs different steps than a normal outage, and the first minutes matter.",
+      "source_name": "NIST SP 800-61r3",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+    },
+    {
+      "id": "check-scope",
+      "title": "Find out what is down and for whom",
+      "detail": "Check if other devices, other rooms or neighbors are affected. Note what does not work: internet, power, email, phones, card reader, a key system.",
+      "why": "Knowing the size of the problem tells you who to call: your provider, the utility or your IT contact.",
+      "source_name": "NIST SP 800-34: Contingency planning",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/34/r1/upd1/final"
+    },
+    {
+      "id": "call-provider",
+      "title": "Call the provider and get a ticket number",
+      "detail": "Call your internet, phone or power provider from a mobile phone. Ask how long it should last and write down the ticket number.",
+      "why": "The ticket number speeds up follow-up calls and may be needed for a claim.",
+      "source_name": "Ready.gov: Business",
+      "source_url": "https://www.ready.gov/business"
+    },
+    {
+      "id": "call-it-contact",
+      "title": "Call your IT contact",
+      "detail": "Tell them what is down, since when, and what the provider said.",
+      "why": "They can check your own equipment and help you work around the problem.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    },
+    {
+      "id": "work-without-it",
+      "title": "Switch to your backup way of working",
+      "detail": "Use a phone hotspot for urgent tasks, paper forms for orders or patients, and your card reader's offline mode if it has one. Keep a list of what you will need to enter later.",
+      "why": "Keeping the business running matters more than waiting for systems to come back.",
+      "source_name": "Ready.gov: Business continuity planning",
+      "source_url": "https://www.ready.gov/business/emergency-plans/continuity-planning"
+    },
+    {
+      "id": "tell-staff",
+      "title": "Tell staff and customers",
+      "detail": "Tell staff what still works and what to do instead. Put a short sign at the door or the counter if customers are affected.",
+      "why": "Clear, calm information avoids mistakes and frustration.",
+      "source_name": "Ready.gov: Business",
+      "source_url": "https://www.ready.gov/business"
+    },
+    {
+      "id": "write-down-events",
+      "title": "Keep a simple timeline",
+      "detail": "Write down when it started, who you called, ticket numbers and what you did.",
+      "why": "It helps with follow-up calls, claims and planning for next time.",
+      "source_name": "NIST SP 800-34: Contingency planning",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/34/r1/upd1/final"
+    },
+    {
+      "id": "restore-carefully",
+      "title": "When it comes back, restart step by step",
+      "detail": "Plug devices back in one at a time. Check that key systems and recent data are there. Enter the paper records.",
+      "why": "Restarting everything at once can trip power again, and checking data early finds problems while they are small.",
+      "source_name": "Ready.gov: Power outages",
+      "source_url": "https://www.ready.gov/power-outages"
+    },
+    {
+      "id": "call-insurer",
+      "title": "If you lost income or equipment, call your insurer",
+      "detail": "Tell them how long it lasted and what was damaged or lost. Give the ticket numbers.",
+      "why": "Some policies cover business interruption or damaged equipment.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    },
+    {
+      "id": "plan-next-time",
+      "title": "Afterwards, write down what would have helped",
+      "detail": "For example: a phone hotspot, a battery for the router, paper forms ready, a printed contacts card.",
+      "why": "Each outage shows what to prepare for the next one.",
+      "source_name": "NIST SP 800-34: Contingency planning",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/34/r1/upd1/final"
+    },
+    {
+      "id": "report-outside-us",
+      "title": "If you think it was an attack outside the US, get help",
+      "detail": "In Canada, report it to the Canadian Centre for Cyber Security at cyber.gc.ca. In France, get help at cybermalveillance.gouv.fr. In the US, use the plan for that attack.",
+      "why": "National services can help you check and report an attack.",
+      "source_name": "Canadian Centre for Cyber Security",
+      "source_url": "https://www.cyber.gc.ca/en/incident-management"
+    }
+  ]
+}

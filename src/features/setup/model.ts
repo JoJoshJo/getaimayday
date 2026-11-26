@@ -49,6 +49,8 @@ export const STEP_CONTACT: Record<string, ContactRole> = {
   'call-bank-now': 'bank_fraud',
   'tell-staff': 'staff_lead',
   'warn-payers': 'staff_lead',
+  'report-police': 'police',
+  'check-customer-data': 'lawyer',
 }
 
 export const hasContact = (c?: Contact) => !!c && (c.phone.trim() !== '' || c.email.trim() !== '' || c.name.trim() !== '')

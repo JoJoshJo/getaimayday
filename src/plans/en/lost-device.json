@@ -1,0 +1,96 @@
+{
+  "id": "lost-device",
+  "incident": "lost-device",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "id": "locate-and-lock",
+      "title": "Locate and lock it from another device",
+      "detail": "Use the phone or computer maker's find-my-device service from another device. Lock it and show a message with a phone number to call.",
+      "why": "A locked device is much harder to use. Its location can help the police.",
+      "source_name": "FTC: How to protect your phone and the data on it",
+      "source_url": "https://consumer.ftc.gov/articles/how-protect-your-phone-and-data-it",
+      "do_not": "Do not go to an unknown place to get it back yourself. Give the location to the police."
+    },
+    {
+      "id": "write-down-events",
+      "title": "Write down what you know",
+      "detail": "Note when and where you last had it, what kind of device it is, its serial number if you have it, and which accounts and files were on it.",
+      "why": "Your IT contact, the police and your insurer will ask for these details.",
+      "source_name": "NIST SP 800-61r3",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+    },
+    {
+      "id": "change-passwords",
+      "title": "Change the passwords used on that device",
+      "detail": "From another device, change the passwords for email first, then banking, payroll and any work system that was signed in on it.",
+      "why": "Someone holding the device may get into accounts that stayed signed in.",
+      "source_name": "CISA: Use strong passwords",
+      "source_url": "https://www.cisa.gov/secure-our-world/use-strong-passwords"
+    },
+    {
+      "id": "sign-out-device",
+      "title": "Sign the device out of your accounts",
+      "detail": "In each account's security page, sign out of the lost device or of all devices. Remove it from your list of trusted devices.",
+      "why": "This closes sessions that would stay open even after a password change.",
+      "source_name": "NIST SP 800-61r3",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+    },
+    {
+      "id": "call-it-contact",
+      "title": "Call your IT contact",
+      "detail": "Tell them what was on the device. Ask them to block it from work systems, tell you if it was encrypted, and decide with you whether to erase it remotely.",
+      "why": "Erasing it remotely protects data but also removes any chance to find it with tracking, so decide together.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    },
+    {
+      "id": "call-bank-now",
+      "title": "If banking apps or cards were on it, call your bank",
+      "detail": "Call the fraud line on the back of your card or on your contacts card. Ask them to watch the account and block cards saved on the device.",
+      "why": "Banks can stop payments faster when they know early.",
+      "source_name": "FTC: How to protect your phone and the data on it",
+      "source_url": "https://consumer.ftc.gov/articles/how-protect-your-phone-and-data-it"
+    },
+    {
+      "id": "report-police",
+      "title": "If it was stolen, report it to the police",
+      "detail": "Use the police non-emergency number on your contacts card. Give the serial number and the last known location. Keep the report number.",
+      "why": "Your insurer will usually ask for the police report number.",
+      "source_name": "NIST SP 800-61r3",
+      "source_url": "https://csrc.nist.gov/pubs/sp/800/61/r3/final"
+    },
+    {
+      "id": "check-customer-data",
+      "title": "If customer or patient data was on it, check what to do",
+      "detail": "Ask your IT contact whether the device was encrypted. If it held personal data and was not encrypted, you may have to tell the people affected. Ask your lawyer or insurer.",
+      "why": "Rules on telling customers depend on the data and the place. Getting advice early avoids mistakes.",
+      "source_name": "FTC: Data breach response, a guide for business",
+      "source_url": "https://www.ftc.gov/business-guidance/resources/data-breach-response-guide-business"
+    },
+    {
+      "id": "call-insurer",
+      "title": "Call your insurer",
+      "detail": "Tell them a device was lost or stolen and what was on it. Ask what they need from you.",
+      "why": "Many policies need you to tell them quickly.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    },
+    {
+      "id": "protect-next-time",
+      "title": "Afterwards, protect the other devices",
+      "detail": "With your IT contact, turn on screen locks, encryption and find-my-device on every laptop and phone used for work.",
+      "why": "A locked, encrypted device that can be found is a much smaller problem next time.",
+      "source_name": "FTC: Protecting personal information, a guide for business",
+      "source_url": "https://www.ftc.gov/business-guidance/resources/protecting-personal-information-guide-business"
+    },
+    {
+      "id": "report-outside-us",
+      "title": "Outside the US? Report it in your country",
+      "detail": "In Canada, report it to the Canadian Centre for Cyber Security at cyber.gc.ca and to your local police. In France, get help at cybermalveillance.gouv.fr.",
+      "why": "National services can help you report the crime and recover.",
+      "source_name": "Canadian Centre for Cyber Security",
+      "source_url": "https://www.cyber.gc.ca/en/incident-management"
+    }
+  ]
+}
