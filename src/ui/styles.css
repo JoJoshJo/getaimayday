@@ -1416,3 +1416,16 @@ a.tile {
   display: grid;
   gap: var(--space-2);
 }
+
+/* ---- Ask a question on a step ---- */
+.ask {
+  display: grid;
+  gap: var(--space-3);
+  flex-basis: 100%;
+  max-width: var(--size-measure);
+}
+
+.ask__form {
+  display: grid;
+  gap: var(--space-3);
+}

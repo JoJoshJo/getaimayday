@@ -33,7 +33,7 @@ export type LogEvent = { at: number } & (
       status: Record<TriageFieldName, FieldStatus>
       cloud_checked?: boolean
     }
-  | { kind: 'ai'; job: string; source: Source }
+  | { kind: 'ai'; job: string; source: Source; question?: string }
   | { kind: 'closed' }
   | { kind: 'reopened' }
 )

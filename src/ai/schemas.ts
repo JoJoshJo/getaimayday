@@ -31,6 +31,22 @@ export const classifyJsonSchema = {
 export const ClassifyResult = z.object({ incident: z.enum(INCIDENT_TYPES) }).strict()
 export type ClassifyResult = z.infer<typeof ClassifyResult>
 
+// ---------- askAboutStep (single-turn, bound to one plan step) ----------
+
+export const askJsonSchema = {
+  type: 'object',
+  properties: {
+    in_plan: { type: 'boolean' },
+    answer: { type: 'string' },
+  },
+  required: ['in_plan', 'answer'],
+  additionalProperties: false,
+} as const
+
+/** in_plan = false → the plan does not cover it; the app falls back to the Pack. */
+export const AskResult = z.object({ in_plan: z.boolean(), answer: z.string().trim().max(1200) }).strict()
+export type AskResult = z.infer<typeof AskResult>
+
 // ---------- triageRansomScreen ----------
 
 export const CONFIDENCE = ['low', 'medium', 'high'] as const

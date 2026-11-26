@@ -15,7 +15,7 @@
  * Firebase is imported lazily so the offline shell never depends on it.
  */
 import type { InferenceMode, InferenceSource } from 'firebase/ai'
-import type { IncidentType, TriageResult } from './schemas'
+import type { AskResult, IncidentType, TriageResult } from './schemas'
 
 export type Source = 'on-device' | 'cloud' | 'pack' | 'checklist'
 
@@ -33,6 +33,7 @@ type JobResult<T> = { data: T; inferenceSource: InferenceSource | undefined }
 export type RouterDeps = {
   classify: (text: string, mode?: InferenceMode) => Promise<JobResult<IncidentType>>
   triage: (image: { base64: string; mimeType: string }, mode?: InferenceMode) => Promise<JobResult<TriageResult>>
+  ask: (prompt: string, mode?: InferenceMode) => Promise<JobResult<AskResult>>
   now: () => number
 }
 
@@ -63,6 +64,8 @@ export function createRouter(deps: RouterDeps) {
     /** Ransom-screen photo → fixed fields. Fallback: null → user reads the screen. */
     triage: (image: { base64: string; mimeType: string }, mode?: InferenceMode) =>
       run<TriageResult | null>(() => deps.triage(image, mode), null),
+    /** Question about one plan step. Fallback: null → Offline Pack → "call your contact". */
+    ask: (prompt: string, mode?: InferenceMode) => run<AskResult | null>(() => deps.ask(prompt, mode), null),
   }
 }
 
@@ -70,5 +73,6 @@ export function createRouter(deps: RouterDeps) {
 export const router = createRouter({
   classify: async (text, mode) => (await import('./nano')).classifyIncident(text, mode),
   triage: async (image, mode) => (await import('./nano')).triageRansomScreen(image, mode),
+  ask: async (prompt, mode) => (await import('./nano')).askAboutStep(prompt, mode),
   now: () => performance.now(),
 })

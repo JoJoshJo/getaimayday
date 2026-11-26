@@ -6,13 +6,13 @@ import { useLiveQuery } from 'dexie-react-hooks'
 import { useState, type ReactNode } from 'react'
 import { useI18n } from '../../i18n'
 import { getPlan } from '../../plans'
-import type { PlanStep } from '../../plans/schema'
+import type { Plan, PlanStep } from '../../plans/schema'
 import { store } from '../../storage/localAdapter'
 import { SourceBadge } from '../../ui/components'
 import { IncidentLog } from '../log/IncidentLog'
 import { PlanView } from './PlanView'
 
-type Props = { id: string; stepExtras?: (step: PlanStep, incidentId: string) => ReactNode; logExtras?: (incidentId: string) => ReactNode }
+type Props = { id: string; stepExtras?: (step: PlanStep, incidentId: string, plan: Plan) => ReactNode; logExtras?: (incidentId: string) => ReactNode }
 
 export function IncidentView({ id, stepExtras, logExtras }: Props) {
   const { lang, t } = useI18n()
@@ -55,7 +55,7 @@ export function IncidentView({ id, stepExtras, logExtras }: Props) {
         doneAt={steps}
         initialStep={firstOpen}
         onToggle={toggle}
-        stepExtras={stepExtras ? (s) => stepExtras(s, record.id) : undefined}
+        stepExtras={stepExtras ? (s) => stepExtras(s, record.id, plan) : undefined}
       />
       <IncidentLog record={record} plan={plan} extras={logExtras?.(record.id)} />
     </>

@@ -507,3 +507,14 @@ Brief: build MUST 1–9, then SHOULD 10–14, NICE 15–17, deploy prep, README;
 - Not verifiable here: a real cloud build (headless has no App Check token) → J TODO at the top. Tests use a faked `generate` only; nothing fake ships.
 - Tests: `tests/pack.test.ts` (24): nothing private in any prompt, job list, hash; validation (unknown step dropped, unsafe dropped, source copied, dashes cleaned, non-cloud rejected, empty rejected); guard; storage versions/chunks; matcher 20-question quality set (EN+FR), confident vs unsure, plan filter, counts. Total 198/198.
 - E2E `s4.mjs` BLOCKS=home,setup,pack: offline no build button; fixture pack put into IndexedDB → status date/version/counts, confident answer + one-tap IT call, unsure → call IT; online: preview names Google Gemini, shows no name/city/phone, Cancel sends nothing. Screenshots checked by eye.
+- Commit: `16499d2`.
+
+### Feature 7 — "Ask a question" on each plan step
+- Every step gets **Ask a question about this step** (in the `stepExtras` slot, next to Contacts). Order (`src/features/ask/answer.ts`, pure + tested):
+  1. On-device AI only when `onDeviceAvailability() === 'available'`: `router.ask` → `askAboutStep` (AI Logic, `ONLY_ON_DEVICE`, JSON `{in_plan, answer}` via responseConstraint). Prompt (`src/ai/prompts/ask.ts`) = current step (title, detail, avoid, why) + the plan's step titles only (Nano context is small) + the fenced question. Used only if source is really on-device, `in_plan` is true, the text is non-empty and passes the Pack guard. Badge On-device AI + "If you are not sure, call your IT contact before you act."
+  2. Else the Offline Pack, searched **only inside this plan** (badge Offline Pack; unsure → 3 closest + call).
+  3. Else "call your contact": this step's contact (STEP_CONTACT) or the IT contact; badge Checklist. No Pack → says to build it on a calm day.
+- Never cloud. The question never leaves the device. Each question is logged as an `ai` event (`job: 'ask'`, real source, `question`), shown in the log as "Question asked: …". Late answers are ignored when a newer question or Close happens (run counter).
+- `IncidentView.stepExtras` now also receives the plan. `router` gained `ask`; `schemas.ts` gained `askJsonSchema` / `AskResult`; `nano.ts` model cache keyed by job.
+- Tests `tests/ask.test.ts` (10): prompt bound to step + titles, injection fence; on-device used and cleaned; no Nano → model never called; Pack limited to the plan; Nano says not in plan / fails / unsafe → Pack; no Pack / no match → call contact. Total 208/208.
+- E2E (all blocks, 35 PASS, offline): Pack answer on a step with no Nano; unrelated → Checklist + one-tap IT call; questions in the log. Stub Prompt API through the real SDK: On-device answer shown, and the prompt sent holds the current step.

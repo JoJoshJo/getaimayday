@@ -7,6 +7,7 @@ function deps(over: Partial<RouterDeps>): RouterDeps {
   return {
     classify: async () => ({ data: 'ransomware', inferenceSource: 'on_device' }),
     triage: async () => ({ data: null as never, inferenceSource: 'on_device' }),
+    ask: async () => ({ data: { in_plan: true, answer: 'x' }, inferenceSource: 'on_device' }),
     now: () => (t += 1500), // each call advances 1.5 s
     ...over,
   }

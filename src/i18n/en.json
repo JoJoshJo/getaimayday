@@ -207,5 +207,15 @@
   "preview.whatSent": "What is sent about your business",
   "preview.exact": "Show the exact text that will be sent",
   "preview.send": "Send to cloud AI",
-  "preview.cancel": "Cancel"
+  "preview.cancel": "Cancel",
+  "ask.open": "Ask a question about this step",
+  "ask.label": "Your question",
+  "ask.submit": "Ask",
+  "ask.close": "Close",
+  "ask.private": "Answered on this device. Your question is not sent anywhere.",
+  "ask.reading": "Looking for an answer",
+  "ask.fromStep": "Based on this step of your plan",
+  "ask.checkWith": "If you are not sure, call your IT contact before you act.",
+  "ask.noPack": "No answer on this device. Build the Offline Pack on a calm day for more answers.",
+  "log.ev.ask": "Question asked: {question}"
 }

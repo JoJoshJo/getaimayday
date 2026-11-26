@@ -14,6 +14,8 @@ import { TRIAGE_PROMPT } from './prompts/triage'
 import { getCloudModel } from './remoteConfig'
 import { markOnDeviceActivity, ON_DEVICE_IO } from './warmup'
 import {
+  AskResult,
+  askJsonSchema,
   ClassifyResult,
   classifyJsonSchema,
   normalizeTriage,
@@ -49,11 +51,12 @@ function makeModel(mode: InferenceMode, jsonSchema: object): GenerativeModel {
 
 // One model per job+mode, so initializeDeviceModel's download promise is reused.
 const cache = new Map<string, GenerativeModel>()
-function model(job: 'classify' | 'triage', mode: InferenceMode): GenerativeModel {
+const SCHEMAS = { classify: classifyJsonSchema, triage: triageJsonSchema, ask: askJsonSchema }
+function model(job: keyof typeof SCHEMAS, mode: InferenceMode): GenerativeModel {
   const key = `${job}:${mode}:${getCloudModel()}`
   let m = cache.get(key)
   if (!m) {
-    m = makeModel(mode, job === 'classify' ? classifyJsonSchema : triageJsonSchema)
+    m = makeModel(mode, SCHEMAS[job])
     cache.set(key, m)
   }
   return m
@@ -96,6 +99,13 @@ export async function classifyIncident(text: string, mode: InferenceMode = Infer
   const result = await model('classify', mode).generateContent(classifyPrompt(text))
   const data = parseJson(result.response.text(), ClassifyResult)
   return track({ data: data.incident, inferenceSource: result.response.inferenceSource })
+}
+
+/** "Ask a question" on a plan step: one prompt (step + short plan summary + question), one answer. */
+export async function askAboutStep(prompt: string, mode: InferenceMode = InferenceMode.ONLY_ON_DEVICE): Promise<JobResult<AskResult>> {
+  const result = await model('ask', mode).generateContent(prompt)
+  const data = parseJson(result.response.text(), AskResult)
+  return track({ data, inferenceSource: result.response.inferenceSource })
 }
 
 export const TRIAGE_MIME_TYPES = ['image/png', 'image/jpeg'] as const

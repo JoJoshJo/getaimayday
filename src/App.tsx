@@ -5,6 +5,7 @@ import { IncidentView } from './features/incident/IncidentView'
 import { IncidentList } from './features/log/IncidentList'
 import { ContactsScreen } from './features/contacts/ContactsScreen'
 import { StepContacts } from './features/contacts/StepContacts'
+import { StepAsk } from './features/ask/StepAsk'
 import { SetupScreen } from './features/setup/SetupScreen'
 import { PackScreen } from './features/pack/PackScreen'
 import { useI18n } from './i18n'
@@ -57,7 +58,12 @@ export default function App() {
   }
 
   let content = <Home />
-  if (route.parts[0] === 'incident' && route.parts[1]) content = <IncidentView id={route.parts[1]} stepExtras={(step) => <StepContacts step={step} />} />
+  if (route.parts[0] === 'incident' && route.parts[1]) content = <IncidentView id={route.parts[1]} stepExtras={(step, incidentId, plan) => (
+        <>
+          <StepContacts step={step} />
+          <StepAsk key={step.id} plan={plan} step={step} incidentId={incidentId} />
+        </>
+      )} />
   else if (route.path === '/incidents') content = <IncidentList />
   else if (route.path === '/contacts') content = <ContactsScreen />
   else if (route.path === '/setup') content = <SetupScreen />

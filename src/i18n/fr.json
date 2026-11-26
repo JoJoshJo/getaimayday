@@ -207,5 +207,15 @@
   "preview.whatSent": "Ce qui est envoyé sur votre entreprise",
   "preview.exact": "Afficher le texte exact qui sera envoyé",
   "preview.send": "Envoyer à l’IA cloud",
-  "preview.cancel": "Annuler"
+  "preview.cancel": "Annuler",
+  "ask.open": "Poser une question sur cette étape",
+  "ask.label": "Votre question",
+  "ask.submit": "Demander",
+  "ask.close": "Fermer",
+  "ask.private": "Réponse donnée sur cet appareil. Votre question n’est envoyée nulle part.",
+  "ask.reading": "Recherche d’une réponse",
+  "ask.fromStep": "D’après cette étape de votre plan",
+  "ask.checkWith": "En cas de doute, appelez votre contact informatique avant d’agir.",
+  "ask.noPack": "Pas de réponse sur cet appareil. Créez le Pack hors ligne un jour calme pour avoir plus de réponses.",
+  "log.ev.ask": "Question posée : {question}"
 }

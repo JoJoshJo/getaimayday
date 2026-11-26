@@ -100,7 +100,7 @@ export function IncidentLog({ record, plan, extras }: { record: IncidentRecord; 
       case 'ai':
         return (
           <span>
-            <SourceBadge source={e.source} /> {t('log.ev.ai', { job: e.job })}
+            <SourceBadge source={e.source} /> {e.job === 'ask' ? t('log.ev.ask', { question: e.question ?? '' }) : t('log.ev.ai', { job: e.job })}
           </span>
         )
       case 'closed':
