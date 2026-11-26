@@ -13,6 +13,7 @@ import { ReadyScreen } from './features/ready/ReadyScreen'
 import { useReadiness } from './features/ready/useReadiness'
 import { PrintPlans } from './features/print/PrintPlans'
 import { DemoSetup } from './features/demo/DemoSetup'
+import { FixitList, FixitView } from './features/fixit/FixitScreens'
 import { useDemo } from './features/demo/demo'
 import { useI18n } from './i18n'
 import { LangToggle, StatusChip, Wordmark } from './ui/components'
@@ -81,6 +82,8 @@ export default function App() {
   else if (route.path === '/ready') content = <ReadyScreen />
   else if (route.path === '/print') content = <PrintPlans />
   else if (route.path === '/demo-setup') content = <DemoSetup />
+  else if (route.parts[0] === 'fixit' && route.parts[1]) content = <FixitView key={route.parts[1]} id={route.parts[1]} />
+  else if (route.path === '/fixit') content = <FixitList />
 
   return (
     <div className="page">

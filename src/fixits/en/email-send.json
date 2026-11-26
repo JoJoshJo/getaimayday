@@ -1,0 +1,49 @@
+{
+  "id": "email-send",
+  "topic": "email-send",
+  "version": "1.0.0",
+  "related": "phishing",
+  "steps": [
+    {
+      "id": "check-internet",
+      "title": "Check that you are online",
+      "detail": "Open a website. If nothing loads, fix the internet first (Wi-Fi fix-it).",
+      "why": "Email cannot leave without a connection; it waits in the Outbox.",
+      "source_name": "Microsoft: Outlook email stuck",
+      "source_url": "https://support.microsoft.com/en-us/outlook/outlook-email-stuck"
+    },
+    {
+      "id": "check-offline",
+      "title": "Make sure Outlook is not set to work offline",
+      "detail": "In Outlook, open the Send/Receive tab and check that Work Offline is not turned on. Then click Send/Receive.",
+      "why": "Outlook keeps messages in the Outbox while it works offline.",
+      "source_name": "Microsoft: Outlook email stuck",
+      "source_url": "https://support.microsoft.com/en-us/outlook/outlook-email-stuck"
+    },
+    {
+      "id": "big-attachment",
+      "title": "Look in the Outbox for a large attachment",
+      "detail": "Open the Outbox. If a message has a big file attached, delete it or send a smaller file, then send again.",
+      "why": "A file that is too big can block every message behind it.",
+      "source_name": "Microsoft: Outlook email stuck",
+      "source_url": "https://support.microsoft.com/en-us/outlook/outlook-email-stuck"
+    },
+    {
+      "id": "strange-sent",
+      "title": "If people get emails you did not send, treat it as an attack",
+      "detail": "Bounced messages you never wrote, or replies to emails you did not send, mean someone may be using your account. Open the phishing plan.",
+      "why": "A taken-over mailbox is used to trick your customers and suppliers.",
+      "source_name": "FTC: Cybersecurity for Small Business",
+      "source_url": "https://www.ftc.gov/business-guidance/small-businesses/cybersecurity",
+      "do_not": "Do not keep using the account as normal: change the password from a clean device first."
+    },
+    {
+      "id": "call-it-contact",
+      "title": "Still stuck? Call your IT contact",
+      "detail": "Tell them what you tried and what you see on screen. A photo of the screen helps.",
+      "why": "They can check settings and equipment you cannot reach.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    }
+  ]
+}

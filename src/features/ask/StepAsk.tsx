@@ -8,7 +8,8 @@ import { onDeviceAvailability } from '../../ai/warmup'
 import { useI18n } from '../../i18n'
 import { loadPack } from '../../pack/store'
 import type { PackLang } from '../../pack/schema'
-import type { Plan, PlanStep } from '../../plans/schema'
+import type { AskGuide } from '../../ai/prompts/ask'
+import type { PlanStep } from '../../plans/schema'
 import { store } from '../../storage/localAdapter'
 import { SourceBadge } from '../../ui/components'
 import { PackAnswer } from '../pack/PackAnswer'
@@ -16,7 +17,8 @@ import { hasContact, STEP_CONTACT, telHref } from '../setup/model'
 import { useSetup } from '../setup/useSetup'
 import { answerQuestion, type AskAnswer } from './answer'
 
-export function StepAsk({ plan, step, incidentId }: { plan: Plan; step: PlanStep; incidentId: string }) {
+/** `incidentId` is set inside an incident (questions are logged); fix-its have none. */
+export function StepAsk({ plan, step, incidentId }: { plan: AskGuide; step: PlanStep; incidentId?: string }) {
   const { t, lang } = useI18n()
   const { contacts } = useSetup()
   const [open, setOpen] = useState(false)
@@ -37,7 +39,7 @@ export function StepAsk({ plan, step, incidentId }: { plan: Plan; step: PlanStep
     setRes(a)
     setBusy(false)
     const source = a.kind === 'ai' ? 'on-device' : a.kind === 'pack' ? 'pack' : 'checklist'
-    void store.addEvent(incidentId, { kind: 'ai', job: 'ask', source, question })
+    if (incidentId) void store.addEvent(incidentId, { kind: 'ai', job: 'ask', source, question })
   }
 
   if (!open)

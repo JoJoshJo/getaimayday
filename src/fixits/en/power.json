@@ -1,0 +1,41 @@
+{
+  "id": "power",
+  "topic": "power",
+  "version": "1.0.0",
+  "related": "outage",
+  "steps": [
+    {
+      "id": "unplug",
+      "title": "Unplug computers and electronics",
+      "detail": "Unplug computers, screens and the internet box so a surge does not damage them when power comes back.",
+      "why": "Power surges can damage equipment.",
+      "source_name": "Ready.gov: Power outages",
+      "source_url": "https://www.ready.gov/power-outages",
+      "do_not": "Never run a generator indoors or in a garage."
+    },
+    {
+      "id": "long-outage",
+      "title": "If it lasts, follow the Outage plan",
+      "detail": "For more than a short cut, open the Outage plan: it covers working without systems, telling staff and customers, and restarting.",
+      "why": "A plan keeps the business running while you wait.",
+      "source_name": "Ready.gov: Business",
+      "source_url": "https://www.ready.gov/business"
+    },
+    {
+      "id": "restart-slowly",
+      "title": "When power is back, plug in one device at a time",
+      "detail": "Wait a few minutes, then plug devices back in one by one, starting with the internet box.",
+      "why": "Turning everything on at once can trip the power again.",
+      "source_name": "Ready.gov: Power outages",
+      "source_url": "https://www.ready.gov/power-outages"
+    },
+    {
+      "id": "call-it-contact",
+      "title": "Still stuck? Call your IT contact",
+      "detail": "Tell them what you tried and what you see on screen. A photo of the screen helps.",
+      "why": "They can check settings and equipment you cannot reach.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    }
+  ]
+}

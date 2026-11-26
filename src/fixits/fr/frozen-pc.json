@@ -1,0 +1,58 @@
+{
+  "id": "frozen-pc",
+  "topic": "frozen-pc",
+  "version": "1.0.0",
+  "related": "ransomware",
+  "steps": [
+    {
+      "id": "pop-up-scam",
+      "title": "Une fenêtre vous dit d’appeler un numéro : c’est une arnaque",
+      "detail": "Fermez le navigateur. S’il ne se ferme pas, redémarrez l’ordinateur.",
+      "why": "Les vraies entreprises ne bloquent pas votre écran pour vous faire appeler.",
+      "source_name": "FTC: Tech support scams",
+      "source_url": "https://consumer.ftc.gov/articles/how-spot-avoid-and-report-tech-support-scams",
+      "do_not": "N’appelez pas le numéro et ne laissez personne se connecter à votre ordinateur."
+    },
+    {
+      "id": "ransom-signs",
+      "title": "Fichiers aux noms étranges ou demande de rançon : arrêtez-vous",
+      "detail": "C’est un rançongiciel, pas un ordinateur figé. Débranchez le câble réseau, coupez le Wi-Fi, laissez l’ordinateur allumé et ouvrez le plan rançongiciel.",
+      "why": "Un rançongiciel demande d’autres étapes, et les premières minutes comptent.",
+      "source_name": "CISA: Stop Ransomware",
+      "source_url": "https://www.cisa.gov/stopransomware",
+      "do_not": "Ne redémarrez pas et n’éteignez pas l’ordinateur."
+    },
+    {
+      "id": "end-task-windows",
+      "title": "Windows : fermez l’app bloquée avec le Gestionnaire des tâches",
+      "detail": "Faites un clic droit sur le bouton Démarrer, choisissez Gestionnaire des tâches, sélectionnez l’app qui ne répond pas et cliquez sur Terminer la tâche. Rouvrez-la ensuite.",
+      "why": "Cela ferme seulement l’app bloquée, pas tout l’ordinateur.",
+      "source_name": "Microsoft : Outlook pour Windows ne répond pas",
+      "source_url": "https://support.microsoft.com/fr-fr/outlook/getstarted/outlook-for-windows-not-responding-hangs-freezes-or-stops-working"
+    },
+    {
+      "id": "force-quit-mac",
+      "title": "Mac : forcez la fermeture de l’app bloquée",
+      "detail": "Appuyez ensemble sur Option, Commande et Échap, choisissez l’app et cliquez sur Forcer à quitter. Si le Mac entier ne répond plus, redémarrez-le.",
+      "why": "Cela ferme seulement l’app bloquée.",
+      "source_name": "Apple : Forcer la fermeture d’une app sur Mac",
+      "source_url": "https://support.apple.com/fr-fr/102586"
+    },
+    {
+      "id": "update",
+      "title": "Quand tout remarche, installez les mises à jour",
+      "detail": "Installez les mises à jour en attente pour l’ordinateur et pour l’app qui s’est figée.",
+      "why": "Les mises à jour corrigent beaucoup de plantages et de failles de sécurité.",
+      "source_name": "CISA: Update software",
+      "source_url": "https://www.cisa.gov/secure-our-world/update-software"
+    },
+    {
+      "id": "call-it-contact",
+      "title": "Toujours bloqué ? Appelez votre contact informatique",
+      "detail": "Dites-lui ce que vous avez essayé et ce que vous voyez à l’écran. Une photo de l’écran aide.",
+      "why": "Il peut vérifier des réglages et du matériel auxquels vous n’avez pas accès.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    }
+  ]
+}

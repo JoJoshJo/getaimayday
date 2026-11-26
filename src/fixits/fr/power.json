@@ -1,0 +1,41 @@
+{
+  "id": "power",
+  "topic": "power",
+  "version": "1.0.0",
+  "related": "outage",
+  "steps": [
+    {
+      "id": "unplug",
+      "title": "Débranchez les ordinateurs et l’électronique",
+      "detail": "Débranchez les ordinateurs, les écrans et la box internet pour qu’une surtension ne les abîme pas au retour du courant.",
+      "why": "Les surtensions peuvent abîmer le matériel.",
+      "source_name": "Ready.gov: Power outages",
+      "source_url": "https://www.ready.gov/power-outages",
+      "do_not": "N’utilisez jamais de groupe électrogène à l’intérieur ou dans un garage."
+    },
+    {
+      "id": "long-outage",
+      "title": "Si cela dure, suivez le plan Panne",
+      "detail": "Au-delà d’une courte coupure, ouvrez le plan Panne : il explique comment travailler sans les systèmes, prévenir l’équipe et les clients, et redémarrer.",
+      "why": "Un plan fait tourner l’entreprise pendant l’attente.",
+      "source_name": "Ready.gov: Business",
+      "source_url": "https://www.ready.gov/business"
+    },
+    {
+      "id": "restart-slowly",
+      "title": "Au retour du courant, rebranchez un appareil à la fois",
+      "detail": "Attendez quelques minutes, puis rebranchez les appareils un par un, en commençant par la box internet.",
+      "why": "Tout rallumer d’un coup peut faire sauter le courant à nouveau.",
+      "source_name": "Ready.gov: Power outages",
+      "source_url": "https://www.ready.gov/power-outages"
+    },
+    {
+      "id": "call-it-contact",
+      "title": "Toujours bloqué ? Appelez votre contact informatique",
+      "detail": "Dites-lui ce que vous avez essayé et ce que vous voyez à l’écran. Une photo de l’écran aide.",
+      "why": "Il peut vérifier des réglages et du matériel auxquels vous n’avez pas accès.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    }
+  ]
+}

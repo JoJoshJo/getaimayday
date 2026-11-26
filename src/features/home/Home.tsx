@@ -16,6 +16,7 @@ import { CLASSIFY_TO_INCIDENT, incidentsWithPlan, type Incident } from '../../pl
 import { DoNot, SourceBadge } from '../../ui/components'
 import { startIncident } from '../incident/start'
 import { OpenIncidents } from '../log/OpenIncidents'
+import { FixitTiles } from '../fixit/FixitScreens'
 import { IncidentTiles } from './IncidentTiles'
 import { keywordMatch } from './keywords'
 
@@ -133,6 +134,13 @@ export function Home() {
         <p className="home__more">
           <a href="#/incidents">{t('log.past')}</a>
         </p>
+      </section>
+
+      <section className="home__tiles" aria-labelledby="fixits-title">
+        <h2 id="fixits-title" className="mono home__tiles-title">
+          {t('fixit.homeTitle')}
+        </h2>
+        <FixitTiles />
       </section>
     </div>
   )

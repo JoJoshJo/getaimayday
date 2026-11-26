@@ -1,0 +1,65 @@
+{
+  "id": "locked-account",
+  "topic": "locked-account",
+  "version": "1.0.0",
+  "related": "phishing",
+  "steps": [
+    {
+      "id": "type-address",
+      "title": "Allez vous-même sur la page de connexion",
+      "detail": "Tapez vous-même l’adresse du service, ou utilisez son app. N’utilisez jamais un lien reçu par e-mail ou SMS disant que votre compte est bloqué.",
+      "why": "Les faux messages « compte bloqué » sont un moyen courant de voler des mots de passe.",
+      "source_name": "FTC: How to recognize and avoid phishing scams",
+      "source_url": "https://consumer.ftc.gov/articles/how-recognize-and-avoid-phishing-scams",
+      "do_not": "Ne donnez votre mot de passe ou un code à personne qui vous appelle ou vous écrit."
+    },
+    {
+      "id": "microsoft",
+      "title": "Compte Microsoft : suivez les étapes de déblocage",
+      "detail": "Connectez-vous sur account.microsoft.com. S’il indique que le compte est verrouillé, suivez les étapes pour recevoir un code de sécurité par SMS et le débloquer.",
+      "why": "Microsoft verrouille les comptes quand il voit une activité inhabituelle, pour vous protéger.",
+      "source_name": "Microsoft : Le compte Microsoft a été verrouillé",
+      "source_url": "https://support.microsoft.com/fr-fr/accounts-billing/manage/microsoft-account-has-been-locked"
+    },
+    {
+      "id": "microsoft-form",
+      "title": "Microsoft : si cela échoue, utilisez le formulaire de récupération",
+      "detail": "Essayez d’abord l’assistant de connexion. S’il ne fonctionne pas, remplissez le formulaire de récupération depuis un ordinateur et un lieu habituels.",
+      "why": "Le formulaire vérifie que vous êtes le propriétaire ; un appareil et un lieu habituels aident.",
+      "source_name": "Microsoft : Formulaire de récupération de compte",
+      "source_url": "https://support.microsoft.com/fr-fr/accounts-billing/manage/help-with-the-microsoft-account-recovery-form"
+    },
+    {
+      "id": "google",
+      "title": "Compte Google : utilisez la page de récupération du compte",
+      "detail": "Partez de la page de récupération de compte de Google. Répondez au plus de questions possible, depuis un appareil et un lieu habituels.",
+      "why": "Google compare les réponses à ce qu’il sait de vous.",
+      "source_name": "Google : Conseils pour récupérer votre compte",
+      "source_url": "https://support.google.com/accounts/answer/7299973?hl=fr"
+    },
+    {
+      "id": "after-recovery",
+      "title": "Une fois reconnecté, protégez le compte",
+      "detail": "Changez le mot de passe pour un nouveau mot de passe long et activez la vérification en deux étapes.",
+      "why": "Un compte verrouillé a peut-être été attaqué.",
+      "source_name": "CISA: More than a password (MFA)",
+      "source_url": "https://www.cisa.gov/MFA"
+    },
+    {
+      "id": "not-you",
+      "title": "Si vous n’êtes pas à l’origine du blocage, ouvrez le plan hameçonnage",
+      "detail": "Si vous n’avez pas saisi plusieurs fois un mauvais mot de passe, quelqu’un d’autre a peut-être essayé. Suivez le plan hameçonnage et mot de passe volé.",
+      "why": "C’est un signe que votre mot de passe est peut-être connu.",
+      "source_name": "FTC: How to recognize and avoid phishing scams",
+      "source_url": "https://consumer.ftc.gov/articles/how-recognize-and-avoid-phishing-scams"
+    },
+    {
+      "id": "call-it-contact",
+      "title": "Toujours bloqué ? Appelez votre contact informatique",
+      "detail": "Dites-lui ce que vous avez essayé et ce que vous voyez à l’écran. Une photo de l’écran aide.",
+      "why": "Il peut vérifier des réglages et du matériel auxquels vous n’avez pas accès.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    }
+  ]
+}

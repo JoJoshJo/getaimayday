@@ -1,0 +1,65 @@
+{
+  "id": "wifi",
+  "topic": "wifi",
+  "version": "1.0.0",
+  "related": "outage",
+  "steps": [
+    {
+      "id": "check-others",
+      "title": "Vérifiez si d’autres appareils ont internet",
+      "detail": "Essayez un téléphone sur le même Wi-Fi et un autre ordinateur. Si rien n’a internet, le problème vient de la connexion, pas de cet ordinateur.",
+      "why": "Cela vous dit s’il faut réparer cet ordinateur ou appeler votre fournisseur.",
+      "source_name": "Ready.gov: Business",
+      "source_url": "https://www.ready.gov/business"
+    },
+    {
+      "id": "wifi-on",
+      "title": "Vérifiez que le Wi-Fi est activé et le mode avion désactivé",
+      "detail": "Cliquez sur l’icône réseau en bas à droite de l’écran. Vérifiez que le Wi-Fi est activé et le mode avion désactivé, puis choisissez votre réseau.",
+      "why": "Un bouton désactivé par erreur est la cause la plus fréquente.",
+      "source_name": "Microsoft : Résoudre les problèmes de connexion Wi-Fi dans Windows",
+      "source_url": "https://support.microsoft.com/fr-fr/topic/9424a1f7-6a3b-65a6-4d78-7f07eee84d2c"
+    },
+    {
+      "id": "restart-router",
+      "title": "Redémarrez la box internet",
+      "detail": "Débranchez la box (modem et routeur) de la prise, attendez 30 secondes, rebranchez-la et attendez que les voyants soient stables.",
+      "why": "Un redémarrage règle beaucoup de problèmes de connexion.",
+      "source_name": "Microsoft : Résoudre les problèmes de connexion Wi-Fi dans Windows",
+      "source_url": "https://support.microsoft.com/fr-fr/topic/9424a1f7-6a3b-65a6-4d78-7f07eee84d2c",
+      "do_not": "N’appuyez pas sur le bouton reset de la box : il peut effacer ses réglages."
+    },
+    {
+      "id": "troubleshooter",
+      "title": "Lancez l’utilitaire de résolution des problèmes réseau",
+      "detail": "Dans Windows, ouvrez Paramètres, puis l’utilitaire de résolution des problèmes réseau, et suivez ses indications.",
+      "why": "Windows peut trouver et corriger seul les problèmes réseau courants.",
+      "source_name": "Microsoft : Résoudre les problèmes de connexion Wi-Fi dans Windows",
+      "source_url": "https://support.microsoft.com/fr-fr/topic/9424a1f7-6a3b-65a6-4d78-7f07eee84d2c"
+    },
+    {
+      "id": "forget-network",
+      "title": "Oubliez le réseau Wi-Fi et reconnectez-vous",
+      "detail": "Dans les réglages Wi-Fi, choisissez votre réseau, sélectionnez Oublier, puis reconnectez-vous avec le mot de passe Wi-Fi.",
+      "why": "Une connexion enregistrée peut mal fonctionner après un changement de mot de passe ou de box.",
+      "source_name": "Microsoft : Résoudre les problèmes de connexion Wi-Fi dans Windows",
+      "source_url": "https://support.microsoft.com/fr-fr/topic/9424a1f7-6a3b-65a6-4d78-7f07eee84d2c"
+    },
+    {
+      "id": "call-provider",
+      "title": "Si rien n’a internet, appelez votre fournisseur",
+      "detail": "Appelez depuis un portable. Demandez s’il y a une panne dans votre secteur et notez le numéro de ticket.",
+      "why": "Une panne côté fournisseur ne peut être réparée que par lui.",
+      "source_name": "Ready.gov: Business",
+      "source_url": "https://www.ready.gov/business"
+    },
+    {
+      "id": "call-it-contact",
+      "title": "Toujours bloqué ? Appelez votre contact informatique",
+      "detail": "Dites-lui ce que vous avez essayé et ce que vous voyez à l’écran. Une photo de l’écran aide.",
+      "why": "Il peut vérifier des réglages et du matériel auxquels vous n’avez pas accès.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    }
+  ]
+}

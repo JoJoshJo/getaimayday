@@ -1,0 +1,49 @@
+{
+  "id": "email-send",
+  "topic": "email-send",
+  "version": "1.0.0",
+  "related": "phishing",
+  "steps": [
+    {
+      "id": "check-internet",
+      "title": "Vérifiez que vous êtes en ligne",
+      "detail": "Ouvrez un site web. Si rien ne s’affiche, réglez d’abord internet (fiche Wi-Fi).",
+      "why": "Un e-mail ne part pas sans connexion ; il attend dans la boîte d’envoi.",
+      "source_name": "Microsoft : E-mail Outlook bloqué",
+      "source_url": "https://support.microsoft.com/fr-fr/outlook/outlook-email-stuck"
+    },
+    {
+      "id": "check-offline",
+      "title": "Vérifiez qu’Outlook n’est pas en mode hors connexion",
+      "detail": "Dans Outlook, ouvrez l’onglet Envoyer/recevoir et vérifiez que Travail hors connexion n’est pas activé. Cliquez ensuite sur Envoyer/recevoir.",
+      "why": "Outlook garde les messages dans la boîte d’envoi tant qu’il est hors connexion.",
+      "source_name": "Microsoft : E-mail Outlook bloqué",
+      "source_url": "https://support.microsoft.com/fr-fr/outlook/outlook-email-stuck"
+    },
+    {
+      "id": "big-attachment",
+      "title": "Cherchez une grosse pièce jointe dans la boîte d’envoi",
+      "detail": "Ouvrez la boîte d’envoi. Si un message contient un gros fichier, supprimez-le ou envoyez un fichier plus petit, puis renvoyez.",
+      "why": "Un fichier trop gros peut bloquer tous les messages qui suivent.",
+      "source_name": "Microsoft : E-mail Outlook bloqué",
+      "source_url": "https://support.microsoft.com/fr-fr/outlook/outlook-email-stuck"
+    },
+    {
+      "id": "strange-sent",
+      "title": "Des gens reçoivent des e-mails que vous n’avez pas envoyés : c’est une attaque",
+      "detail": "Des messages renvoyés que vous n’avez jamais écrits, ou des réponses à des e-mails que vous n’avez pas envoyés, indiquent que quelqu’un utilise peut-être votre compte. Ouvrez le plan hameçonnage.",
+      "why": "Une boîte mail piratée sert à tromper vos clients et vos fournisseurs.",
+      "source_name": "FTC: Cybersecurity for Small Business",
+      "source_url": "https://www.ftc.gov/business-guidance/small-businesses/cybersecurity",
+      "do_not": "Ne continuez pas à utiliser le compte normalement : changez d’abord le mot de passe depuis un appareil sain."
+    },
+    {
+      "id": "call-it-contact",
+      "title": "Toujours bloqué ? Appelez votre contact informatique",
+      "detail": "Dites-lui ce que vous avez essayé et ce que vous voyez à l’écran. Une photo de l’écran aide.",
+      "why": "Il peut vérifier des réglages et du matériel auxquels vous n’avez pas accès.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    }
+  ]
+}

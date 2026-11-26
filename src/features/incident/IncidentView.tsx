@@ -52,6 +52,7 @@ export function IncidentView({ id, stepExtras, logExtras }: Props) {
       </p>
       <PlanView
         key={`${record.id}:${lang}`}
+        title={t(`incident.${plan.incident}`)}
         plan={plan}
         doneAt={steps}
         initialStep={firstOpen}

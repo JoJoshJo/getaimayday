@@ -1,0 +1,65 @@
+{
+  "id": "locked-account",
+  "topic": "locked-account",
+  "version": "1.0.0",
+  "related": "phishing",
+  "steps": [
+    {
+      "id": "type-address",
+      "title": "Go to the sign-in page yourself",
+      "detail": "Type the address of the service yourself, or use its app. Never use a link from an email or text that says your account is locked.",
+      "why": "Fake \"account locked\" messages are a common way to steal passwords.",
+      "source_name": "FTC: How to recognize and avoid phishing scams",
+      "source_url": "https://consumer.ftc.gov/articles/how-recognize-and-avoid-phishing-scams",
+      "do_not": "Do not give your password or a code to anyone who calls or writes to you."
+    },
+    {
+      "id": "microsoft",
+      "title": "Microsoft account: follow the unlock steps",
+      "detail": "Sign in at account.microsoft.com. If it says the account is locked, follow the steps to get a security code by text and unlock it.",
+      "why": "Microsoft locks accounts when it sees unusual activity, to protect you.",
+      "source_name": "Microsoft: Microsoft account has been locked",
+      "source_url": "https://support.microsoft.com/en-us/accounts-billing/manage/microsoft-account-has-been-locked"
+    },
+    {
+      "id": "microsoft-form",
+      "title": "Microsoft: if that fails, use the recovery form",
+      "detail": "Use the sign-in helper first. If it does not work, fill in the account recovery form from a computer and place you often use.",
+      "why": "The form checks that you are the owner; a familiar device and place help.",
+      "source_name": "Microsoft: Help with the account recovery form",
+      "source_url": "https://support.microsoft.com/en-us/accounts-billing/manage/help-with-the-microsoft-account-recovery-form"
+    },
+    {
+      "id": "google",
+      "title": "Google account: use the account recovery page",
+      "detail": "Start from Google's account recovery page. Answer as many questions as you can, from a device and place you often use.",
+      "why": "Google checks the answers against what it knows about you.",
+      "source_name": "Google: Tips to complete account recovery steps",
+      "source_url": "https://support.google.com/accounts/answer/7299973?hl=en"
+    },
+    {
+      "id": "after-recovery",
+      "title": "Once you are back in, protect the account",
+      "detail": "Change the password to a new, long one and turn on two-step verification.",
+      "why": "An account that was locked may have been under attack.",
+      "source_name": "CISA: More than a password (MFA)",
+      "source_url": "https://www.cisa.gov/MFA"
+    },
+    {
+      "id": "not-you",
+      "title": "If you did not cause the lock, open the phishing plan",
+      "detail": "If you did not type a wrong password many times, someone else may have tried. Follow the phishing and stolen password plan.",
+      "why": "It is a sign that your password may be known.",
+      "source_name": "FTC: How to recognize and avoid phishing scams",
+      "source_url": "https://consumer.ftc.gov/articles/how-recognize-and-avoid-phishing-scams"
+    },
+    {
+      "id": "call-it-contact",
+      "title": "Still stuck? Call your IT contact",
+      "detail": "Tell them what you tried and what you see on screen. A photo of the screen helps.",
+      "why": "They can check settings and equipment you cannot reach.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    }
+  ]
+}

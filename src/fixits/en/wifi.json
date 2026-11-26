@@ -1,0 +1,65 @@
+{
+  "id": "wifi",
+  "topic": "wifi",
+  "version": "1.0.0",
+  "related": "outage",
+  "steps": [
+    {
+      "id": "check-others",
+      "title": "Check if other devices have internet",
+      "detail": "Try a phone on the same Wi-Fi and another computer. If nothing has internet, the problem is the connection, not this computer.",
+      "why": "It tells you whether to fix this computer or call your provider.",
+      "source_name": "Ready.gov: Business",
+      "source_url": "https://www.ready.gov/business"
+    },
+    {
+      "id": "wifi-on",
+      "title": "Check that Wi-Fi is on and airplane mode is off",
+      "detail": "Click the network icon at the bottom right of the screen. Make sure Wi-Fi is on and airplane mode is off, then pick your network.",
+      "why": "A switch turned off by mistake is the most common cause.",
+      "source_name": "Microsoft: Fix Wi-Fi connection issues in Windows",
+      "source_url": "https://support.microsoft.com/en-us/topic/9424a1f7-6a3b-65a6-4d78-7f07eee84d2c"
+    },
+    {
+      "id": "restart-router",
+      "title": "Restart the modem and router",
+      "detail": "Unplug the internet box (modem and router) from power, wait 30 seconds, plug it back in and wait until its lights are steady.",
+      "why": "Restarting clears many connection problems.",
+      "source_name": "Microsoft: Fix Wi-Fi connection issues in Windows",
+      "source_url": "https://support.microsoft.com/en-us/topic/9424a1f7-6a3b-65a6-4d78-7f07eee84d2c",
+      "do_not": "Do not press the reset button on the box: it can erase its settings."
+    },
+    {
+      "id": "troubleshooter",
+      "title": "Run the network troubleshooter",
+      "detail": "In Windows, open Settings, then the network troubleshooter, and follow what it says.",
+      "why": "Windows can find and fix common network problems by itself.",
+      "source_name": "Microsoft: Fix Wi-Fi connection issues in Windows",
+      "source_url": "https://support.microsoft.com/en-us/topic/9424a1f7-6a3b-65a6-4d78-7f07eee84d2c"
+    },
+    {
+      "id": "forget-network",
+      "title": "Forget the Wi-Fi network and join again",
+      "detail": "In the Wi-Fi settings, choose your network, select Forget, then connect again with the Wi-Fi password.",
+      "why": "A saved connection can go wrong after a password or box change.",
+      "source_name": "Microsoft: Fix Wi-Fi connection issues in Windows",
+      "source_url": "https://support.microsoft.com/en-us/topic/9424a1f7-6a3b-65a6-4d78-7f07eee84d2c"
+    },
+    {
+      "id": "call-provider",
+      "title": "If nothing has internet, call your provider",
+      "detail": "Call from a mobile phone. Ask if there is an outage in your area and write down the ticket number.",
+      "why": "Outages on the provider's side can only be fixed by them.",
+      "source_name": "Ready.gov: Business",
+      "source_url": "https://www.ready.gov/business"
+    },
+    {
+      "id": "call-it-contact",
+      "title": "Still stuck? Call your IT contact",
+      "detail": "Tell them what you tried and what you see on screen. A photo of the screen helps.",
+      "why": "They can check settings and equipment you cannot reach.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    }
+  ]
+}

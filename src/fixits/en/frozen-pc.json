@@ -1,0 +1,58 @@
+{
+  "id": "frozen-pc",
+  "topic": "frozen-pc",
+  "version": "1.0.0",
+  "related": "ransomware",
+  "steps": [
+    {
+      "id": "pop-up-scam",
+      "title": "If a pop-up says your computer is locked and to call a number, it is a scam",
+      "detail": "Close the browser. If it will not close, restart the computer.",
+      "why": "Real companies do not lock your screen and ask you to call.",
+      "source_name": "FTC: Tech support scams",
+      "source_url": "https://consumer.ftc.gov/articles/how-spot-avoid-and-report-tech-support-scams",
+      "do_not": "Do not call the number and do not let anyone connect to your computer."
+    },
+    {
+      "id": "ransom-signs",
+      "title": "If files have strange names or a ransom note appears, stop",
+      "detail": "That is ransomware, not a frozen computer. Unplug the network cable, turn off Wi-Fi, leave the computer on and open the ransomware plan.",
+      "why": "Ransomware needs different steps, and the first minutes matter.",
+      "source_name": "CISA: Stop Ransomware",
+      "source_url": "https://www.cisa.gov/stopransomware",
+      "do_not": "Do not restart or switch off the computer."
+    },
+    {
+      "id": "end-task-windows",
+      "title": "Windows: close the stuck app with Task Manager",
+      "detail": "Right-click the Start button, choose Task Manager, select the app that is not responding and click End task. Then open it again.",
+      "why": "This closes only the stuck app, not the whole computer.",
+      "source_name": "Microsoft: Outlook for Windows not responding",
+      "source_url": "https://support.microsoft.com/en-us/outlook/getstarted/outlook-for-windows-not-responding-hangs-freezes-or-stops-working"
+    },
+    {
+      "id": "force-quit-mac",
+      "title": "Mac: force the stuck app to quit",
+      "detail": "Press Option, Command and Esc together, choose the app and click Force Quit. If the whole Mac does not respond, restart it.",
+      "why": "This closes only the stuck app.",
+      "source_name": "Apple: How to force an app to quit on Mac",
+      "source_url": "https://support.apple.com/en-us/102586"
+    },
+    {
+      "id": "update",
+      "title": "When it works again, install updates",
+      "detail": "Install waiting updates for the computer and the app that froze.",
+      "why": "Updates fix many crashes and security holes.",
+      "source_name": "CISA: Update software",
+      "source_url": "https://www.cisa.gov/secure-our-world/update-software"
+    },
+    {
+      "id": "call-it-contact",
+      "title": "Still stuck? Call your IT contact",
+      "detail": "Tell them what you tried and what you see on screen. A photo of the screen helps.",
+      "why": "They can check settings and equipment you cannot reach.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    }
+  ]
+}

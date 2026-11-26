@@ -7,6 +7,7 @@ import { join, relative } from 'node:path'
 import { describe, expect, it } from 'vitest'
 import { LANGUAGES, messages } from '../src/i18n/messages'
 import { rawPlans } from '../src/plans'
+import { rawFixits } from '../src/fixits'
 import { CONTRAST_PAIRS, contrast } from '../src/ui/contrast'
 import { tokens } from '../src/ui/tokens'
 
@@ -80,6 +81,7 @@ describe('copy', () => {
   const strings = [
     ...LANGUAGES.flatMap((l) => Object.entries(messages[l]).map(([k, v]) => [`i18n/${l}:${k}`, v])),
     ...Object.entries(rawPlans).flatMap(([l, byId]) => Object.entries(byId).map(([id, p]) => [`plans/${l}/${id}`, JSON.stringify(p)])),
+    ...Object.entries(rawFixits).flatMap(([l, byId]) => Object.entries(byId).map(([id, p]) => [`fixits/${l}/${id}`, JSON.stringify(p)])),
   ]
   // UI strings only: plan content may use these words literally ("unlock files").
   it('no buzzwords in UI copy', () =>

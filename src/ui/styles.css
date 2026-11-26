@@ -1647,3 +1647,22 @@ a.tile {
   letter-spacing: var(--tracking-mono);
   text-transform: uppercase;
 }
+
+/* ---- IT fix-its (#/fixit) ---- */
+.fixits {
+  display: grid;
+  gap: var(--space-4);
+  padding-top: var(--space-5);
+}
+.fixit__attack {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+  margin-top: var(--space-6);
+  padding-top: var(--space-4);
+  border-top: var(--border-strong) solid var(--color-rule-strong);
+  max-width: var(--size-content);
+}
+.fixit__attack p {
+  margin: 0;
+}

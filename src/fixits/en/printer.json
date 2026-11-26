@@ -1,0 +1,47 @@
+{
+  "id": "printer",
+  "topic": "printer",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "id": "restart-printer",
+      "title": "Turn the printer off and on again",
+      "detail": "Switch it off, unplug it for 30 seconds, plug it back in and switch it on.",
+      "why": "Restarting clears most stuck print jobs.",
+      "source_name": "Microsoft: Fix printer connection and printing problems in Windows",
+      "source_url": "https://support.microsoft.com/en-us/topic/fb830bff-7702-6349-33cd-9443fe987f73"
+    },
+    {
+      "id": "check-connection",
+      "title": "Check paper, ink and the connection",
+      "detail": "Check that it has paper and ink and shows no error. Check the cable, or that it is on the same Wi-Fi as the computer.",
+      "why": "A printer on another network or with an error light cannot print.",
+      "source_name": "Microsoft: Fix printer connection and printing problems in Windows",
+      "source_url": "https://support.microsoft.com/en-us/topic/fb830bff-7702-6349-33cd-9443fe987f73"
+    },
+    {
+      "id": "remove-add",
+      "title": "Remove the printer and add it again",
+      "detail": "In Windows Settings, open Printers, remove this printer, then add it again.",
+      "why": "This fixes a broken printer setup on the computer.",
+      "source_name": "Microsoft: Fix printer connection and printing problems in Windows",
+      "source_url": "https://support.microsoft.com/en-us/topic/fb830bff-7702-6349-33cd-9443fe987f73"
+    },
+    {
+      "id": "clear-queue",
+      "title": "Ask your IT contact to clear the print queue",
+      "detail": "If jobs stay stuck, the print spooler may need to be cleared and restarted. Your IT contact can do it in a few minutes.",
+      "why": "A stuck job can block every print after it.",
+      "source_name": "Microsoft: Fix printer connection and printing problems in Windows",
+      "source_url": "https://support.microsoft.com/en-us/topic/fb830bff-7702-6349-33cd-9443fe987f73"
+    },
+    {
+      "id": "call-it-contact",
+      "title": "Still stuck? Call your IT contact",
+      "detail": "Tell them what you tried and what you see on screen. A photo of the screen helps.",
+      "why": "They can check settings and equipment you cannot reach.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    }
+  ]
+}

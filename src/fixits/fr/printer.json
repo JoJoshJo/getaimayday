@@ -1,0 +1,47 @@
+{
+  "id": "printer",
+  "topic": "printer",
+  "version": "1.0.0",
+  "steps": [
+    {
+      "id": "restart-printer",
+      "title": "Éteignez puis rallumez l’imprimante",
+      "detail": "Éteignez-la, débranchez-la 30 secondes, rebranchez-la et rallumez-la.",
+      "why": "Un redémarrage débloque la plupart des impressions bloquées.",
+      "source_name": "Microsoft : Résoudre les problèmes d’impression dans Windows",
+      "source_url": "https://support.microsoft.com/fr-fr/topic/fb830bff-7702-6349-33cd-9443fe987f73"
+    },
+    {
+      "id": "check-connection",
+      "title": "Vérifiez le papier, l’encre et la connexion",
+      "detail": "Vérifiez qu’elle a du papier et de l’encre et n’affiche pas d’erreur. Vérifiez le câble, ou qu’elle est sur le même Wi-Fi que l’ordinateur.",
+      "why": "Une imprimante sur un autre réseau ou en erreur ne peut pas imprimer.",
+      "source_name": "Microsoft : Résoudre les problèmes d’impression dans Windows",
+      "source_url": "https://support.microsoft.com/fr-fr/topic/fb830bff-7702-6349-33cd-9443fe987f73"
+    },
+    {
+      "id": "remove-add",
+      "title": "Supprimez l’imprimante et ajoutez-la à nouveau",
+      "detail": "Dans les Paramètres Windows, ouvrez Imprimantes, supprimez cette imprimante, puis ajoutez-la à nouveau.",
+      "why": "Cela répare une configuration d’imprimante cassée sur l’ordinateur.",
+      "source_name": "Microsoft : Résoudre les problèmes d’impression dans Windows",
+      "source_url": "https://support.microsoft.com/fr-fr/topic/fb830bff-7702-6349-33cd-9443fe987f73"
+    },
+    {
+      "id": "clear-queue",
+      "title": "Demandez à votre contact informatique de vider la file d’impression",
+      "detail": "Si les impressions restent bloquées, il faut peut-être vider et relancer le spouleur d’impression. Votre contact informatique peut le faire en quelques minutes.",
+      "why": "Une impression bloquée peut bloquer toutes les suivantes.",
+      "source_name": "Microsoft : Résoudre les problèmes d’impression dans Windows",
+      "source_url": "https://support.microsoft.com/fr-fr/topic/fb830bff-7702-6349-33cd-9443fe987f73"
+    },
+    {
+      "id": "call-it-contact",
+      "title": "Toujours bloqué ? Appelez votre contact informatique",
+      "detail": "Dites-lui ce que vous avez essayé et ce que vous voyez à l’écran. Une photo de l’écran aide.",
+      "why": "Il peut vérifier des réglages et du matériel auxquels vous n’avez pas accès.",
+      "source_name": "NIST Small Business Cybersecurity Corner",
+      "source_url": "https://www.nist.gov/itl/smallbusinesscyber"
+    }
+  ]
+}

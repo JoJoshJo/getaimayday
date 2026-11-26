@@ -1,11 +1,18 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useI18n } from '../../i18n'
-import type { Plan, PlanStep } from '../../plans/schema'
+import type { PlanStep } from '../../plans/schema'
 import { Progress } from '../../ui/components'
 import { StepRow, type StepState } from './StepRow'
 
+/** Anything with versioned steps: an incident plan or an IT fix-it. */
+export type StepGuide = { id: string; version: string; steps: PlanStep[] }
+
 type Props = {
-  plan: Plan
+  plan: StepGuide
+  /** Big title (incident name or fix-it name). */
+  title: string
+  /** Kicker above the title; defaults to "Incident plan · v…". */
+  kicker?: string
   /** step id → time checked (ms). Owned by the incident log (IndexedDB). */
   doneAt: Record<string, number>
   onToggle: (stepId: string, done: boolean) => void
@@ -15,7 +22,7 @@ type Props = {
   initialStep?: number
 }
 
-export function PlanView({ plan, doneAt, onToggle, stepExtras, initialStep = 0 }: Props) {
+export function PlanView({ plan, title, kicker, doneAt, onToggle, stepExtras, initialStep = 0 }: Props) {
   const { t } = useI18n()
   const [view, setView] = useState(initialStep)
   const [showAll, setShowAll] = useState(false)
@@ -64,9 +71,9 @@ export function PlanView({ plan, doneAt, onToggle, stepExtras, initialStep = 0 }
   return (
     <section className="plan" aria-labelledby="plan-title">
       <header className="plan__head">
-        <p className="kicker mono">{t('plan.kicker', { version: plan.version })}</p>
+        <p className="kicker mono">{kicker ?? t('plan.kicker', { version: plan.version })}</p>
         <h2 id="plan-title" className="plan__title">
-          {t(`incident.${plan.incident}` as 'incident.ransomware')}
+          {title}
         </h2>
         <Progress states={states} label={t('plan.progress', { done: pct(doneCount), total: pct(total) })} />
       </header>
