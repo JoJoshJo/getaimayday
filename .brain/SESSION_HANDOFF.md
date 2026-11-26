@@ -4,6 +4,12 @@ Append one entry per session: date, what was done, files changed, commit hashes,
 
 ---
 
+## J TODO (things only J can do: console, login, secrets, hand tests). Newest first. Tick when done.
+
+- [ ] (Session 3c) Re-test S2 samples 1–5 + one warm-up check (see the Session 3c entry).
+
+---
+
 ## 2026-11-23 — Planning (Claude chat)
 - Wrote .brain/MASTER.md (plan v1). No code yet.
 - Next: review MASTER.md with J (Tue Nov 24, 2–5 PM), pick design direction, manual Firebase setup, Spike S1.
@@ -420,3 +426,28 @@ M2 8 GB Mac, Chrome 158, `npm run dev`, App Check debug token, Remote Config fet
 ### Next step
 - Claude: score the S2 re-test (pass = ≥ 4/5 + injection ignored).
 - Then the "Something's wrong" flow (MUST #4) using `router.classify` and `routeTriage`.
+
+---
+
+## 2026-11-25 — Session 4: big build (Claude Code, autonomous mode)
+
+Brief: build MUST 1–9, then SHOULD 10–14, NICE 15–17, deploy prep, README; after each feature tests + lint + build + offline + design test pass, commit, push, handoff entry. Blocked items go to the J TODO list at the top of this file.
+
+### Step 0 — Start
+- `pwd && git remote -v` → `/Users/joshlawson/Desktop/getaimayday`, `github.com/JoJoshJo/getaimayday`. `git pull` → up to date (`22ebd24`).
+- Read MASTER §5–9, DESIGN.md, SPIKES.md, last handoff entries, the app shell, plan view, i18n, styles, design test.
+- New deps (exact versions): `dexie@4.4.7`, `dexie-react-hooks@4.4.0`, `minisearch@7.2.0` (search library, not an AI model); dev: `fake-indexeddb@6.2.8` (IndexedDB in vitest). `npm install` reports audit warnings from existing dev deps; not touched (out of scope).
+- New e2e/offline script (scratch, not committed): `…/scratchpad/pw/s4.mjs <repo> [shotsDir]`, env `BLOCKS=home,…` picks the checks, `SHOTS='[[name,url,w,h,scheme]]'` takes screenshots. It loads the built app once online (service worker), then runs every check **offline** in real headless Chrome. Replaces `session3.mjs`, which expected the plan on the home page.
+
+### Feature 1 — Home: "Something's wrong" (MUST #4)
+- `src/features/home/Home.tsx`: kicker + Display "What is happening?", the clean-device line (Do-not style: AVOID box, accent bar), optional description box, the one accent button "Something's wrong", a live status line with the real source badge, then the incident tiles.
+- Flow: `onDeviceAvailability() === 'available'` → `router.classify` (AI Logic, ONLY_ON_DEVICE) → `CLASSIFY_TO_INCIDENT` → opens `#/plan/<incident>?by=on-device`. Else (or if on-device fails) → `keywordMatch` (no model) → `?by=checklist`. No clear answer → focus moves to the tiles. Empty description → focus to tiles. Tiles always work, the checklist never waits on AI; leaving the page cancels a late AI answer (run counter).
+- `src/features/home/keywords.ts`: EN+FR weighted terms, accents stripped, whole words (`*` = stem). Picks an incident only when one clearly wins; a tie (e.g. "stolen password") → tiles.
+- `src/plans/incidents.ts`: `CLASSIFY_TO_INCIDENT` (invoice_fraud → bec, lost_device → lost-device, unknown → null), `incidentsWithPlan()`, `planIdFor()`, `isIncident()`. `src/plans/route.ts` now reuses `incidentsWithPlan`.
+- `src/features/home/IncidentTiles.tsx`: ruled rows (Display title, muted one-line description, arrow); only incidents that have a plan are shown (today: ransomware).
+- `src/app/router.ts`: hash router with query (`parseHash`, `useRoute`, `navigate`); `App.tsx` routes `#/` → Home, `#/plan/<incident>` → plan with a "chosen by" line (badge + "Not the right plan? Choose another").
+- Strings (EN/FR): `home.*`, `tile.*`, `incident.*` for all five incidents, `plan.chosenBy.*`, `plan.notRight`, `nav.home`.
+- CSS: `.field`, `.input`, `.home__*`, `.tiles`/`.tile`, `.chosen`. `.btn-mayday` gets vertical padding + title leading so it wraps cleanly on phones.
+- Tests: `tests/home.test.ts` (keyword cases EN/FR, ties, word boundaries, classify mapping). Caught and fixed: "down" matched inside "download".
+- Verified: `npm test` 141/141, lint 0, build ✔, `s4.mjs` (offline: home renders, keyword → ransomware plan with Checklist badge, unclear → tiles focused, tile opens plan, FR) all PASS; screenshots light desktop + dark mobile checked by eye.
+

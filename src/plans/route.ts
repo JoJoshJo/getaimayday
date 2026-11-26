@@ -13,7 +13,7 @@
  * found-on-screen panel always comes first (DESIGN.md §6).
  */
 import type { TriageType } from '../ai/schemas'
-import { rawPlans } from '.'
+import { incidentsWithPlan } from './incidents'
 import type { Incident as PlanIncident } from './schema'
 
 export type { PlanIncident }
@@ -28,13 +28,6 @@ export const TRIAGE_TO_INCIDENT: Record<TriageType, PlanIncident | null> = {
   phishing_page: 'phishing',
   other: null,
   not_an_incident: null,
-}
-
-/** Incidents that have a built-in plan (any language; the plans test enforces EN + FR). */
-export function incidentsWithPlan(): Set<string> {
-  const out = new Set<string>()
-  for (const byId of Object.values(rawPlans)) for (const p of Object.values(byId)) out.add((p as { incident?: string }).incident ?? '')
-  return out
 }
 
 export function routeTriage(type: TriageType, available: Set<string> = incidentsWithPlan()): TriageRoute {

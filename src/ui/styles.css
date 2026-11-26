@@ -327,7 +327,9 @@ a:hover {
   display: inline-flex;
   align-items: center;
   min-height: var(--size-tap-lg);
-  padding: 0 var(--space-5);
+  padding: var(--space-2) var(--space-5);
+  line-height: var(--leading-title);
+  text-align: left;
   border: 0;
   border-radius: var(--radius-sm);
   background: var(--color-accent);
@@ -836,4 +838,142 @@ a:hover {
   padding-left: var(--space-3);
   text-transform: none;
   letter-spacing: 0.02em;
+}
+
+/* ---------- App screens (Session 4) ---------- */
+
+/* Forms: square inputs, 2px ink border, 44px min height. */
+.field {
+  display: grid;
+  gap: var(--space-2);
+  max-width: var(--size-content);
+}
+
+.field__label {
+  color: var(--color-text);
+}
+
+.field__hint {
+  color: var(--color-text-muted);
+  font-size: var(--type-small);
+}
+
+.input {
+  font: inherit;
+  width: 100%;
+  min-height: var(--size-tap);
+  padding: var(--space-2) var(--space-3);
+  color: var(--color-text);
+  background: var(--color-bg);
+  border: var(--border-strong) solid var(--color-rule-strong);
+  border-radius: var(--radius-sm);
+}
+
+.input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.input--area {
+  resize: vertical;
+}
+
+/* Home */
+.home__lead {
+  display: grid;
+  gap: var(--space-5);
+  padding: var(--space-6) 0;
+  max-width: var(--size-content);
+}
+
+.home__title {
+  font-family: var(--font-display);
+  font-stretch: var(--font-display-stretch);
+  font-weight: var(--weight-black);
+  font-size: var(--type-display-xl);
+  letter-spacing: var(--tracking-display);
+  line-height: var(--leading-tight);
+  text-transform: uppercase;
+}
+
+.home__form {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.home__status {
+  min-height: var(--size-tap);
+}
+
+.home__line,
+.chosen {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
+}
+
+.chosen {
+  padding: var(--space-4) 0 0;
+  color: var(--color-text-muted);
+  font-size: var(--type-small);
+}
+
+.home__tiles {
+  padding-bottom: var(--space-6);
+}
+
+.home__tiles-title {
+  padding: var(--space-3) 0;
+  border-bottom: var(--border-strong) solid var(--color-rule-strong);
+}
+
+/* Tiles = ruled rows, not cards. */
+.tiles {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tile {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-1) var(--space-4);
+  width: 100%;
+  min-height: var(--size-tap-lg);
+  padding: var(--space-4) 0;
+  border: 0;
+  border-bottom: var(--border-hair) solid var(--color-rule);
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.tile__title {
+  font-family: var(--font-display);
+  font-stretch: var(--font-display-stretch);
+  font-weight: var(--weight-heavy);
+  font-size: var(--type-title);
+  line-height: var(--leading-title);
+  text-transform: uppercase;
+}
+
+.tile__desc {
+  grid-column: 1;
+  color: var(--color-text-muted);
+  max-width: var(--size-measure);
+}
+
+.tile__go {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  align-self: center;
+  font-size: var(--type-title);
+}
+
+.tile:hover .tile__title {
+  text-decoration: underline;
+  text-decoration-thickness: var(--border-strong);
+  text-underline-offset: 0.18em;
 }
