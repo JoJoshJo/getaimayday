@@ -6,6 +6,12 @@ Append one entry per session: date, what was done, files changed, commit hashes,
 
 ## J TODO (things only J can do: console, login, secrets, hand tests). Newest first. Tick when done.
 
+- [ ] (Session 4) **Deploy to Firebase Hosting** (needs your Firebase login):
+  1. In `.env.local`, make sure `VITE_RECAPTCHA_ENTERPRISE_KEY` is set (public site key; the key's domains must include `getaimayday.web.app` and `getaimayday.firebaseapp.com`).
+  2. `npm run build` (must end with "Secret check: no App Check debug token").
+  3. `npx firebase-tools login` (once), then `npx firebase-tools deploy --only hosting`.
+  4. Open https://getaimayday.web.app, check the chip says "Offline ready" after a reload, then turn Wi-Fi off and reload: the app must still open.
+  5. In the console: App Check → AI Logic stays **Enforced**; check the reCAPTCHA Enterprise key's allowed domains.
 - [ ] (Session 4) **Test the back-online jobs with real cloud AI** (App Check needed, as for the Pack): open an incident with a few checks and a note → Back online → Incident report → check the preview, untick/tick "Include my notes" → Send to cloud AI. Expect a document with the Cloud AI badge, [placeholders], no invented names. Try one draft in FR. Copy and Print.
 - [ ] (Session 4) **Test a real Offline Pack build** (needs App Check: run `npm run dev` with your debug token in `.env.local`, or the deployed site): Setup → fill with sample data → Offline Pack → Build → check the preview → Send to cloud AI. Expect 6 parts "saved" with the Cloud AI badge. Then go offline and search 10 questions EN + 10 FR; note how many are right (S3 spike target: 16/20). Report any "Not built" error text.
 - [ ] (Session 4) Review the new plan texts, EN + FR (BEC now; phishing, lost device, outage later this session). Plans: `src/plans/{en,fr}/*.json`.
@@ -540,3 +546,10 @@ Brief: build MUST 1–9, then SHOULD 10–14, NICE 15–17, deploy prep, README;
 - `#/print` (`src/features/print/PrintPlans.tsx`): contacts card + every plan, every step (checkbox square, detail, avoid, source with full URL), current language. "Print" records `kv.readiness.printed_at`. Print CSS hides top bar, footer, buttons and contact action buttons; one plan per page. This covers most of SHOULD #13 (printable plans).
 - Message keys built from state are cast to `MessageKey`; `tests/ready.test.ts` checks every key the screen can build exists in EN and FR, plus the readiness rules. Total 231/231.
 - E2E (all blocks, 46 PASS): checklist offline, on-device shown as Bonus, print page with all plans and contacts, printing recorded, print media hides the top bar and buttons, chip shows "Get ready · n/5" and links to `#/ready`. Screenshots desktop light and mobile dark checked.
+- Commit: `fdf626f`.
+
+### Deploy prep (after MUST)
+- `firebase.json`: Hosting site `getaimayday`, `public: dist`, SPA rewrite `** → /index.html`, `cleanUrls`. Headers: `sw.js` no-store (so updates arrive), `index.html` / `.webmanifest` / `/` no-cache, hashed `/assets/**` and `workbox-*.js` immutable for a year; `nosniff`, `strict-origin-when-cross-origin`, a Permissions-Policy (camera self for photos). `lab/**` (spike test images) is not deployed. No CSP yet: App Check (reCAPTCHA Enterprise) and Firebase need several origins; adding one is a follow-up that needs a real deploy to test.
+- `.firebaserc`: default project `getaimayday`.
+- `README.md` rewritten: what it does, "the cloud prepares, the device acts" table, source badges, the 8 GB laptop point, run steps, App Check debug-token note (never commit it), data and free-tier note, deploy commands, layout, disclaimer, Apache-2.0.
+- Not done here: the deploy itself (needs J's Firebase login) → J TODO at the top with exact steps. `firebase-tools` was not installed (it would be a new dependency); `npx firebase-tools` fetches it at deploy time.
