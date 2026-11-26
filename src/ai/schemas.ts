@@ -93,7 +93,13 @@ const NON_ANSWERS = new Set([
 export function isNonAnswer(v: unknown): boolean {
   if (v === null || v === undefined) return true
   if (typeof v === 'number') return !Number.isFinite(v) || v <= 0 // a ransom of 0 is not an answer
-  if (typeof v === 'string') return NON_ANSWERS.has(v.trim().toLowerCase().replace(/^["'([{.\s]+|["')\]}.\s]+$/g, ''))
+  if (typeof v === 'string') {
+    const t = v.trim()
+    // Session 12 (real Nano, samples 4 and 5: group_name ","): no letter or digit = no answer.
+    // Unicode-aware, so French accents count as letters.
+    if (!/[\p{L}\p{N}]/u.test(t)) return true
+    return NON_ANSWERS.has(t.toLowerCase().replace(/^["'([{.\s]+|["')\]}.\s]+$/g, ''))
+  }
   return false
 }
 

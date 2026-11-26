@@ -2033,6 +2033,34 @@ a.tile {
   font-weight: var(--weight-medium);
 }
 
+/* ---- New version ready (Session 12): calm info colours, never the accent ---- */
+.update__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  margin: var(--space-3) 0 0;
+  padding: var(--space-2) var(--space-2) var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--color-info-bg);
+  color: var(--color-info);
+  font-weight: var(--weight-medium);
+}
+
+.update__icon {
+  flex: none;
+}
+
+.update__text {
+  flex: 1 1 auto;
+}
+
+@media print {
+  .update {
+    display: none;
+  }
+}
+
 /* ---- IT fix-its (#/fixit) ---- */
 .fixits {
   display: grid;

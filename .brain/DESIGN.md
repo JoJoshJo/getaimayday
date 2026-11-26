@@ -158,6 +158,8 @@ Body never below 16px. Line length capped at ~66ch.
 
 **Found on screen · please confirm**: `bg2` panel, white inputs, one labelled row per field, the "Avoid" note, Confirm (primary) and Discard. Behaviour unchanged from v1 (spec in the v1 decisions below).
 
+**New version ready (Session 12)**: when a new service worker is waiting, a soft `info` on `infoBg` line under the top bar: refresh icon, "New version ready" / "Nouvelle version prête", and a primary "Reload" / "Recharger" button. `role="status"` (polite). Never the accent, never automatic: the new version only takes over when the person presses Reload. Hidden on paper.
+
 **Empty states**: a soft `bg2` line with an icon and plain words (no incidents yet, no contacts yet).
 
 **Icons** (`src/ui/icons.ts`): lucide-react, stroke 1.75, always `aria-hidden` next to words. Incidents: ransomware Lock, invoice fraud Receipt, phishing MailWarning, lost device Smartphone, outage WifiOff. Fix-its: Wifi, Mail, Monitor, Printer, KeyRound, Zap. No icon containers, no sparkles.
@@ -203,3 +205,4 @@ Plain, short, calm, imperative, sentence case. No buzzwords, no "!", no emoji, n
 - ✅ 2026-11-26 (Session 10): incident tints moved away from the danger colour: ransomware coral → navy, bec amber → gold, phishing blue → cyan blue. Test added.
 - ✅ 2026-11-26 (Session 10): answers that name a contact (IT contact, bank, insurer, lawyer, police, staff lead) show that contact's call button under them; not saved → "Add this contact". On paper, contacts are one plain line each ("IT contact: name · phone · email") and buttons lose their boxes.
 - ✅ 2026-11-26 (Session 11, J's live review): progress "0 of 16 done" with the current step outlined, never filled; visible "Mark done" label; disabled buttons look unavailable, not outlined; no underline on button hover; no version in the plan header; Home: no gap under "Something's wrong", full-width button on phones, two columns from 1024px; open incident card in its incident's tint. The "pink ransomware" seen live was a cached Session 9 build (see SESSION_HANDOFF Session 11), not the tokens.
+- ✅ 2026-11-26 (Session 12): "New version ready" banner (prompt, never auto-reload); French plurals through `Intl.PluralRules` with a `{n|one|other}` token in messages.

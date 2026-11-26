@@ -15,6 +15,12 @@
  *    user gesture: prepareOnDevice).
  *  - Never blocks the UI: scheduled on idle, errors are swallowed and logged.
  *  - One warm-up at a time.
+ *  - Session 12: J measured "warm" runs of 6–9 s after 86–139 s idle on the same page
+ *    (no focus change, so nothing re-warmed). Chrome unloads the model after idle even
+ *    though the SDK keeps a session open. So the app also calls rewarmIfIdle when the
+ *    user is about to need the model: the photo picker opens, the description box gets
+ *    focus. Same single warm-up model instance (the SDK destroys its previous session),
+ *    ONLY_ON_DEVICE, so no extra sessions and nothing sent to the cloud.
  */
 
 /** Same create options for every on-device session (availability check + SDK). */
@@ -30,8 +36,12 @@ export const ON_DEVICE_IO = {
 /** Re-warm when the last on-device activity is older than this (S1: unloaded after ~15–25 s). */
 export const REWARM_AFTER_MS = 15_000
 
-/** Thresholds the lab uses to label a run cold or warm (S1/S2 timings). */
-export const COLD_AFTER_SECONDS = { classify: 5, triage: 10 } as const
+/**
+ * Thresholds the lab uses to label a run cold or warm (S1/S2 timings).
+ * Triage (with an image) is 4.5–5.5 s warm and 17.7 s cold in S2, so above 7 s is cold
+ * (Session 12: 10 s labelled a 9.44 s cold run "warm").
+ */
+export const COLD_AFTER_SECONDS = { classify: 5, triage: 7 } as const
 
 export type WarmEvent = {
   at: string

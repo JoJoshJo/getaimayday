@@ -7,6 +7,7 @@ import { useI18n } from '../../i18n'
 import type { Plan } from '../../plans/schema'
 import type { IncidentRecord, LogEvent } from '../../storage/db'
 import { store } from '../../storage/localAdapter'
+import { rewarmIfIdle } from '../../ai/warmup'
 import { SourceBadge } from '../../ui/components'
 import { FoundOnScreen } from '../triage/FoundOnScreen'
 import { isDocJob } from '../online/jobs'
@@ -111,7 +112,8 @@ export function IncidentLog({ record, plan, extras }: { record: IncidentRecord; 
           <button type="submit" className="btn" disabled={!note.trim()}>
             {t('log.addNote')}
           </button>
-          <label className="btn">
+          {/* Session 12: Chrome unloads Nano after ~15–25 s idle; start loading it while the photo is picked. */}
+          <label className="btn" onClick={() => rewarmIfIdle('photo-picker')}>
             {t('log.addPhoto')}
             <input
               name="photo"

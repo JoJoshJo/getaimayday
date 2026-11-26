@@ -11,7 +11,7 @@
 import { Lock } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { router, type Source } from '../../ai/router'
-import { onDeviceAvailability } from '../../ai/warmup'
+import { onDeviceAvailability, rewarmIfIdle } from '../../ai/warmup'
 import { useI18n } from '../../i18n'
 import { CLASSIFY_TO_INCIDENT, incidentsWithPlan, type Incident } from '../../plans/incidents'
 import { DoNot, SourceBadge } from '../../ui/components'
@@ -97,6 +97,7 @@ export function Home() {
           <label className="field">
             <span className="field__label mono">{t('home.describe')}</span>
             <textarea
+              onFocus={() => rewarmIfIdle('describe-focus')}
               name="description"
               className="input input--area"
               rows={3}

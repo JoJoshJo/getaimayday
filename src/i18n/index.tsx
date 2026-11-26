@@ -41,7 +41,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     () => ({
       lang,
       setLang,
-      t: (key, vars) => format(messages[lang][key] ?? messages.en[key] ?? key, vars),
+      t: (key, vars) => format(messages[lang][key] ?? messages.en[key] ?? key, vars, messages[lang][key] ? lang : 'en'),
     }),
     [lang, setLang],
   )

@@ -71,4 +71,26 @@ describe('rewarmIfIdle', () => {
     await vi.waitFor(() => expect(warmOnDevice).toHaveBeenCalledTimes(1))
     t.mockRestore()
   })
+  // Session 12: the photo picker and the description box call rewarmIfIdle. Opening the picker
+  // (label click + input click) must never start a second on-device warm-up at the same time.
+  it('several triggers while warming → one warm-up call (no extra sessions)', async () => {
+    setLM('available')
+    let release = () => {}
+    warmOnDevice.mockImplementation(() => new Promise<void>((r) => (release = r)))
+    const w = await fresh()
+    w.rewarmIfIdle('photo-picker')
+    w.rewarmIfIdle('photo-picker')
+    w.rewarmIfIdle('describe-focus')
+    await vi.waitFor(() => expect(warmOnDevice).toHaveBeenCalledTimes(1))
+    release()
+    await vi.waitFor(() => expect(w.lastWarmEvent()?.outcome).toBe('warmed'))
+    expect(warmOnDevice).toHaveBeenCalledTimes(1)
+  })
+  it('no on-device model → no warm-up (never the cloud)', async () => {
+    setLM('downloadable')
+    const w = await fresh()
+    w.rewarmIfIdle('photo-picker')
+    await vi.waitFor(() => expect(w.lastWarmEvent()?.outcome).toBe('skipped'))
+    expect(warmOnDevice).not.toHaveBeenCalled()
+  })
 })

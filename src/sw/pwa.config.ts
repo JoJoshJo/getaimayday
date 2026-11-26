@@ -5,8 +5,12 @@ import { tokens } from '../ui/tokens.ts'
 // Goal: after the first online load, the app shell, built-in plans (bundled
 // into the JS) and all static assets are precached and work fully offline.
 export const pwaOptions: Partial<VitePWAOptions> = {
-  registerType: 'autoUpdate',
-  injectRegister: 'auto',
+  // Session 12: 'prompt' + useRegisterSW (src/ui/UpdateBanner.tsx): a new version waits
+  // until the person presses Reload. Was 'autoUpdate', which left the old build on screen
+  // with no sign that a new one was ready. Registration comes from the virtual module,
+  // so no injected registerSW.js.
+  registerType: 'prompt',
+  injectRegister: false,
   pwaAssets: {
     // Generates PNG icons + favicon from public/logo.svg (placeholder logo).
     config: true,

@@ -19,6 +19,8 @@ import { useDemo } from './features/demo/demo'
 import { useI18n } from './i18n'
 import { LangToggle, StatusChip, Wordmark } from './ui/components'
 import { useConnection } from './ui/useConnection'
+import { UpdateBanner } from './ui/UpdateBanner'
+import { useSwUpdate } from './ui/useSwUpdate'
 
 const Styleguide = lazy(() => import('./features/styleguide/Styleguide'))
 // Hidden dev page; its chunk pulls in Firebase. The main shell never loads Firebase.
@@ -103,6 +105,7 @@ export default function App() {
   const { t } = useI18n()
   const route = useRoute()
   const demo = useDemo()
+  const sw = useSwUpdate()
 
   if (route.path === '/styleguide' || route.path === '/lab') {
     return (
@@ -110,6 +113,7 @@ export default function App() {
         {route.path === '/lab' ? (
           <div className="page">
             <TopBar />
+            <UpdateBanner show={sw.needRefresh} onReload={sw.reload} />
             <Lab />
           </div>
         ) : (
@@ -140,6 +144,7 @@ export default function App() {
   return (
     <div className="page">
       <TopBar />
+      <UpdateBanner show={sw.needRefresh} onReload={sw.reload} />
       {demo && (
         <p className="demo-banner mono" role="note">
           {t('demo.banner')}

@@ -56,6 +56,27 @@ describe('(b) non-answers become null before validation', () => {
   })
 })
 
+describe('Session 12: values with no letter or digit become null (real Nano: group_name ",")', () => {
+  const base = { incident_type: 'ransomware', is_ransom_demand: true, ransom_amount: 500, currency: 'EUR', file_extension: '.crypt7', confidence: 'high' }
+  it.each([',', ' ', '-', '...', 'N/A', 'null', '—', '¿?', ' , '])('group_name %j → null, not counted as found', (junk) => {
+    const r = normalizeTriage(TriageRaw.parse({ ...base, group_name: junk, contact_method: junk, deadline: junk }))
+    expect(r.group_name).toBeNull()
+    expect(r.contact_method).toBeNull()
+    expect(r.deadline).toBeNull()
+    // only amount, currency, extension are found: 3 → high; with junk counted it would also be high, so check the count directly
+    expect(computeConfidence({ ...r, currency: null, file_extension: null })).toBe('medium')
+  })
+  it('junk alone gives low confidence, not medium', () => {
+    const r = normalizeTriage(TriageRaw.parse({ incident_type: 'tech_support_scam', is_ransom_demand: false, group_name: ',', deadline: '...', confidence: 'high' }))
+    expect([r.group_name, r.deadline]).toEqual([null, null])
+    expect(r.confidence).toBe('low')
+  })
+  it.each(['Groupe Été', 'Équipe Noire', '.crypt7', '3 jours', '0x80070005'])('real value %j is kept', (v) => {
+    expect(isNonAnswer(v)).toBe(false)
+    expect(normalizeTriage(TriageRaw.parse({ ...base, group_name: v })).group_name).toBe(v)
+  })
+})
+
 describe('(3c) new triage types + is_ransom_demand', () => {
   it('types are exactly the five from the brief', () =>
     expect([...TRIAGE_TYPES]).toEqual(['ransomware', 'tech_support_scam', 'phishing_page', 'other', 'not_an_incident']))
