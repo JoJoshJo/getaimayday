@@ -9,12 +9,13 @@
  * The description never leaves the device (on-device model or plain matching).
  */
 import { useEffect, useRef, useState } from 'react'
-import { navigate } from '../../app/router'
 import { router, type Source } from '../../ai/router'
 import { onDeviceAvailability } from '../../ai/warmup'
 import { useI18n } from '../../i18n'
 import { CLASSIFY_TO_INCIDENT, incidentsWithPlan, type Incident } from '../../plans/incidents'
 import { DoNot, SourceBadge } from '../../ui/components'
+import { startIncident } from '../incident/start'
+import { OpenIncidents } from '../log/OpenIncidents'
 import { IncidentTiles } from './IncidentTiles'
 import { keywordMatch } from './keywords'
 
@@ -24,12 +25,7 @@ type Status =
   | { kind: 'unsure'; source: Source }
   | { kind: 'found'; incident: Incident; source: Source }
 
-/** Where the plan was chosen from, shown on the plan page (honest source). */
-export type ChosenBy = Source | 'tile'
-
-export function openPlan(incident: Incident, by: ChosenBy) {
-  navigate(`/plan/${incident}?by=${by}`)
-}
+const openPlan = (incident: Incident, by: Source | 'tile') => void startIncident(incident, by)
 
 export function Home() {
   const { t } = useI18n()
@@ -87,6 +83,7 @@ export function Home() {
 
   return (
     <div className="home">
+      <OpenIncidents />
       <section className="home__lead" aria-labelledby="home-title">
         <p className="kicker mono">{t('home.kicker')}</p>
         <h1 id="home-title" className="home__title">
@@ -133,6 +130,9 @@ export function Home() {
           {t('home.tiles')}
         </h2>
         <IncidentTiles available={available} onPick={(i) => openPlan(i, 'tile')} />
+        <p className="home__more">
+          <a href="#/incidents">{t('log.past')}</a>
+        </p>
       </section>
     </div>
   )

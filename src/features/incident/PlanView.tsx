@@ -1,17 +1,23 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import { useI18n } from '../../i18n'
-import type { Plan } from '../../plans/schema'
+import type { Plan, PlanStep } from '../../plans/schema'
 import { Progress } from '../../ui/components'
 import { StepRow, type StepState } from './StepRow'
 
-type Props = { plan: Plan }
+type Props = {
+  plan: Plan
+  /** step id → time checked (ms). Owned by the incident log (IndexedDB). */
+  doneAt: Record<string, number>
+  onToggle: (stepId: string, done: boolean) => void
+  /** Extra controls under each step (contacts, ask a question). */
+  stepExtras?: (step: PlanStep) => ReactNode
+  /** Start on this step (e.g. the first unchecked one when resuming). */
+  initialStep?: number
+}
 
-// Check state (with the time each step was logged) is in memory for now;
-// the incident log (MASTER.md §6 #5) will persist it.
-export function PlanView({ plan }: Props) {
+export function PlanView({ plan, doneAt, onToggle, stepExtras, initialStep = 0 }: Props) {
   const { t } = useI18n()
-  const [doneAt, setDoneAt] = useState<Record<string, Date | undefined>>({})
-  const [view, setView] = useState(0)
+  const [view, setView] = useState(initialStep)
   const [showAll, setShowAll] = useState(false)
   const stepRef = useRef<HTMLElement>(null)
   const navigated = useRef(false)
@@ -24,7 +30,7 @@ export function PlanView({ plan }: Props) {
   const states = plan.steps.map((_, i) => stateOf(i))
   const doneCount = states.filter((s) => s === 'done').length
 
-  const toggle = (id: string) => setDoneAt((d) => ({ ...d, [id]: d[id] ? undefined : new Date() }))
+  const toggle = (id: string) => onToggle(id, !isDone(id))
   const go = (i: number) => {
     navigated.current = true
     setView(Math.max(0, Math.min(total - 1, i)))
@@ -92,8 +98,9 @@ export function PlanView({ plan }: Props) {
               index={i}
               total={total}
               state={states[i]}
-              doneAt={doneAt[s.id]}
+              doneAt={doneAt[s.id] ? new Date(doneAt[s.id]) : undefined}
               onToggle={() => toggle(s.id)}
+              extras={stepExtras?.(s)}
             />
           )
         })}

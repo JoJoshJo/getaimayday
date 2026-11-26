@@ -450,4 +450,16 @@ Brief: build MUST 1–9, then SHOULD 10–14, NICE 15–17, deploy prep, README;
 - CSS: `.field`, `.input`, `.home__*`, `.tiles`/`.tile`, `.chosen`. `.btn-mayday` gets vertical padding + title leading so it wraps cleanly on phones.
 - Tests: `tests/home.test.ts` (keyword cases EN/FR, ties, word boundaries, classify mapping). Caught and fixed: "down" matched inside "download".
 - Verified: `npm test` 141/141, lint 0, build ✔, `s4.mjs` (offline: home renders, keyword → ransomware plan with Checklist badge, unclear → tiles focused, tile opens plan, FR) all PASS; screenshots light desktop + dark mobile checked by eye.
+- Commit: `874da4e`.
+
+### Feature 2 — Incident log (MUST #5)
+- `src/storage/db.ts`: Dexie DB `aimayday` v1: `incidents` (id, started_at, status), `photos` (id, incident_id; blobs kept apart), `kv` (key: profile, contacts, pack, settings). Types: `IncidentRecord` (incident, plan_id, plan_version, started_at, status, `steps` = step id → time checked, `events[]`), `LogEvent` union (started with chosen_by, step check/uncheck, note, photo, triage, ai, closed, reopened), `PhotoRecord`, `ChosenBy` (real source or "tile").
+- `src/storage/StorageAdapter.ts` (interface) + `localAdapter.ts` (`createLocalAdapter(db, now)`, default `store`). Every event is timestamped by the adapter; unchecks are logged too (honest audit). Cloud sync (NICE) can implement the same interface.
+- Flow change: choosing a plan (AI, keywords or tile) now **starts an incident** (`src/features/incident/start.ts`) and opens `#/incident/<id>`. The `#/plan/<incident>` route from feature 1 is gone; `openPlan` moved out of Home.tsx (fixes the lint warning from feature 1).
+- `IncidentView.tsx`: plan + "chosen by" line from the `started` event; resumes on the first unchecked step; **optimistic ticks** (the box changes at once, IndexedDB catches up; found by the e2e test: a controlled checkbox waiting for the live query lagged).
+- `PlanView` is now controlled (`doneAt`, `onToggle`, `initialStep`) with a `stepExtras` slot per step (used later by contacts and "ask a question"). `StepRow` renders the extras.
+- `src/features/log/IncidentLog.tsx`: timeline (newest first, mono times), add note, add photo (PNG/JPEG only, stored as a Blob in `photos`), close / reopen. `OpenIncidents.tsx` banner on home ("Continue"). `IncidentList.tsx` at `#/incidents`. `format.ts` date helpers (Intl, follows EN/FR).
+- Strings `log.*`, `plan.progressShort`, `plan.chosenBy.pack|cloud` (EN/FR). CSS: `.screen`, `.muted`, `.openinc*`, `.log*`, `.thumb`, `.step__extras`.
+- Tests: `tests/storage.test.ts` with `fake-indexeddb/auto` (start, timestamps, persistence across a new adapter = reload, uncheck logged, notes/photos/close/reopen, newest-first list, kv, unknown incident rejected).
+- Verified: tests 147/147, lint 0, build ✔; `s4.mjs` BLOCKS=home,log all PASS **offline**: tile starts incident, check + note + photo survive an offline reload, resumes on step 2, home banner, list, closing removes the banner. Screenshot of the incident page checked by eye (time column widened so "09:58 PM" doesn't wrap).
 

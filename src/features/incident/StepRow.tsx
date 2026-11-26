@@ -1,4 +1,4 @@
-import { forwardRef } from 'react'
+import { forwardRef, type ReactNode } from 'react'
 import { useI18n } from '../../i18n'
 import type { PlanStep } from '../../plans/schema'
 import { DoNot, Stamp } from '../../ui/components'
@@ -12,10 +12,11 @@ type Props = {
   state: StepState
   doneAt?: Date
   onToggle: () => void
+  extras?: ReactNode
 }
 
 /** One QRH-style step: huge number in the left margin, square checkbox, action, details, footnotes. */
-export const StepRow = forwardRef<HTMLElement, Props>(function StepRow({ step, index, total, state, doneAt, onToggle }, ref) {
+export const StepRow = forwardRef<HTMLElement, Props>(function StepRow({ step, index, total, state, doneAt, onToggle, extras }, ref) {
   const { t } = useI18n()
   const n = String(index + 1).padStart(2, '0')
   const checked = state === 'done'
@@ -46,6 +47,8 @@ export const StepRow = forwardRef<HTMLElement, Props>(function StepRow({ step, i
         </p>
 
         {step.do_not && <DoNot>{step.do_not}</DoNot>}
+
+        {extras && <div className="step__extras">{extras}</div>}
 
         <dl className="notes">
           <div className="notes__row">
