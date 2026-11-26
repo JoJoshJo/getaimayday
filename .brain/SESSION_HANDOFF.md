@@ -6,6 +6,21 @@ Append one entry per session: date, what was done, files changed, commit hashes,
 
 ## J TODO (things only J can do: console, login, secrets, hand tests). Newest first. Tick when done.
 
+**Deploy command (every time):**
+
+```bash
+npm run build && npx firebase-tools deploy --only hosting
+```
+
+The build must end with "Secret check: no App Check debug token". Then open https://getaimayday.web.app and reload once so the new version loads.
+
+- [ ] (Session 7) **Deploy Session 7** (search ranking, form names, no layout shift, robots.txt, printed fix-its) with the command above, then on the live site:
+  1. Wi-Fi off → Offline Pack → search "should we pay the ransom": the first answer must be a ransomware one, not lost device.
+  2. DevTools → Issues panel: expect 0 (it was ~23). Visit Home, a plan, Pack, Setup, Contacts.
+  3. Get ready → Print plans → print preview: after the five plans comes "Everyday IT problems" with the 6 fix-its.
+  4. Optional: run Lighthouse in DevTools on the live Home (mobile) and paste the four scores; local scores are in the Session 7 entry.
+- [ ] (Session 7) **Edit `.brain/SUBMISSION.md` into your own words** and paste it into Devpost (tagline, Built with tags, the sections). Check every number is one you are happy to stand behind. Add the YouTube link and the live URL.
+- [x] (Session 6b) Deploy the schema hotfix: done by J 2026-11-25/26. Live: Pack 133 EN / 114 FR, a 500 was retried and saved, offline Pack search works.
 - [ ] (Session 6b) **Deploy the schema hotfix** (replaces the Session 6 deploy item below; do this one):
   1. `npm run build && npx firebase-tools deploy --only hosting` (must end with "Secret check: no App Check debug token").
   2. Open https://getaimayday.web.app and reload once so the new version loads.
@@ -13,7 +28,7 @@ Append one entry per session: date, what was done, files changed, commit hashes,
   4. If any part still fails, the row now shows plain words; open **Details** under it and paste that text in the next session.
   5. Then one **full** build; paste the counts ("… in English, … in French", each row's "N saved" and any "left out by the safety check"). In DevTools → Console, any "fewer answers than asked" line shows a part under 24; paste those too.
 
-- [ ] (Session 6) **Deploy the Pack retry fix**, then check it on the live site:
+- [x] (Session 6) **Deploy the Pack retry fix** (done, see 6b), then check it on the live site:
   1. `npm run build && npx firebase-tools deploy --only hosting` (the build must end with "Secret check: no App Check debug token").
   2. Open https://getaimayday.web.app, reload once so the new version loads (the chip says "Offline ready").
   3. Offline Pack: if it still lists "2 parts of your Pack did not build" (fr:outage, fr:phishing from your last build), press **Retry failed parts** → the preview says "2 separate requests" → Send. Expect both saved and the list gone. If you see "Busy, trying again in … s (1 of 3)", that is the retry working.
@@ -25,7 +40,7 @@ Append one entry per session: date, what was done, files changed, commit hashes,
 - [ ] (Session 5) **Hand-check the judge path** on a normal laptop without on-device AI, offline, after building a Pack: home → plan → Ask a question (Offline Pack badge) → log → Print. And open `#/fixit/printer`, Ask: expect "No answer on this device for this step" with the call button.
 
 - [ ] (Session 4) **Test the cloud double-check** on a ransom-screen photo (online, App Check working): Read the screen → Double-check with cloud AI → check the preview → Send. Expect "Use this" only under fields that differ and that you did not edit; after Confirm the log says "checked with cloud AI".
-- [ ] (Session 4) **Deploy to Firebase Hosting** (needs your Firebase login):
+- [x] (Session 4) **Deploy to Firebase Hosting** (done: live on getaimayday.web.app, App Check + reCAPTCHA Enterprise working, no CSP errors) (needs your Firebase login):
   1. In `.env.local`, make sure `VITE_RECAPTCHA_ENTERPRISE_KEY` is set (public site key; the key's domains must include `getaimayday.web.app` and `getaimayday.firebaseapp.com`).
   2. `npm run build` (must end with "Secret check: no App Check debug token").
   3. `npx firebase-tools login` (once), then `npx firebase-tools deploy --only hosting`.
@@ -33,7 +48,7 @@ Append one entry per session: date, what was done, files changed, commit hashes,
   5. In the console: App Check → AI Logic stays **Enforced**; check the reCAPTCHA Enterprise key's allowed domains.
   6. (Session 5, CSP) On the live site open DevTools → Console, go to Offline Pack → Build → Send, and to `#/lab`. There must be **no** "Refused to … Content Security Policy" errors, and the Pack parts must say "saved". If App Check fails with a CSP error, send the blocked URL.
 - [ ] (Session 4) **Test the back-online jobs with real cloud AI** (App Check needed, as for the Pack): open an incident with a few checks and a note → Back online → Incident report → check the preview, untick/tick "Include my notes" → Send to cloud AI. Expect a document with the Cloud AI badge, [placeholders], no invented names. Try one draft in FR. Copy and Print.
-- [ ] (Session 4) **Test a real Offline Pack build** (needs App Check: run `npm run dev` with your debug token in `.env.local`, or the deployed site): Setup → fill with sample data → Offline Pack → Build → check the preview → Send to cloud AI. Expect 12 parts (5 plans × EN/FR + 2 glossaries) "saved" with the Cloud AI badge. Then go offline and search 10 questions EN + 10 FR; note how many are right (S3 spike target: 16/20). Report any "Not built" error text.
+- [x] (Session 4) **Test a real Offline Pack build** (done live: 133 EN / 114 FR) (needs App Check: run `npm run dev` with your debug token in `.env.local`, or the deployed site): Setup → fill with sample data → Offline Pack → Build → check the preview → Send to cloud AI. Expect 12 parts (5 plans × EN/FR + 2 glossaries) "saved" with the Cloud AI badge. Then go offline and search 10 questions EN + 10 FR; note how many are right (S3 spike target: 16/20). Report any "Not built" error text.
 - [ ] (Session 4) Review the new plan texts, EN + FR, as Security+ / French reviewer: BEC, phishing, lost device, outage, and the ransomware `report-outside-us` step. Plans: `src/plans/{en,fr}/*.json`.
 - [ ] (Session 4) Run the **hand-test script** at the end of the Session 4 entry, on a real Chrome with Nano if you have one.
 - [ ] (Session 3c) Re-test S2 samples 1–5 + one warm-up check (see the Session 3c entry).
@@ -860,3 +875,34 @@ Brief (architect, via J): live site verified by J (App Check + reCAPTCHA Enterpr
 - Print CSS: each plan and the fix-it part start a new page; fix-its are short, so several share a page, each kept whole (`break-inside: avoid`).
 - `print.intro` now mentions the fix-its; new `print.fixitIntro`; EN + FR.
 - Checked: `s4.mjs` new check (6 fix-its, ≥ 24 steps, Microsoft source on the first), print-media screenshots and a Letter PDF (scratchpad `shots4/print.pdf`), reviewed by eye. 381/381, build, lint 0, all e2e, CSP, judge pass.
+- Commit: `80facea`.
+
+### Item 5 — Devpost submission draft
+- `.brain/SUBMISSION.md`: tagline, "Built with" tags, Inspiration, What it does, How we built it, Challenges, Accomplishments, What we learned, What's next. J's voice, plain words, no em dashes, no "!", no buzzwords (checked by grep).
+- Only built and measured facts: S1 12/12 on-device (cold 11–16 s, warm 1–2 s), S2 first test 3/5 and why that led to "please confirm" + computed confidence, live Pack 133 EN / 114 FR, the live 500 retried, the schema 400, the French guard bug (54 → 114 FR), the ranking fix (19 → 20/20), Lighthouse, 381 tests, 5 plans / 64 steps, 6 fix-its.
+- Honest on inference modes: the app uses `ONLY_ON_DEVICE` on incident day, `ONLY_IN_CLOUD` for the Pack and documents, `PREFER_IN_CLOUD` for the cloud double-check; `PREFER_ON_DEVICE` was only compared in the `#/lab` page. The brief listed PREFER_ON_DEVICE as used; it is not in the product, so the text says "tried in the test lab".
+- Hardware facts from MASTER §12 (S1): J's M2 8 GB Mac passes Chrome's check through GPU memory (5461 MiB vs 3000 needed), the old bypass flag no longer exists.
+- "What's next" lists only the two items cut by the architect (cloud sync, plan builder) plus more plans/languages and testing with real businesses.
+- Commit: `d10d530`.
+
+### Item 6 — DEMO_SCRIPT.md
+- Scene 9 (print): the preview now also shows the IT fix-its after the plans; stop on "Everyday IT problems" for a second.
+- Before filming, step 2: J's live counts (133 EN, 114 FR), and what to do if a part shows "Busy, trying again" or "Retry failed parts".
+- Nothing else on screen changed: the search ranking fix affects only the Pack page search box (scene 6 uses Ask on a plan step, which is plan-scoped and unchanged), and the form names, layout-shift fixes and robots.txt are invisible.
+- Commit: `d10d530`.
+
+### Item 7 — Session 7 summary
+| # | What | Commit |
+| --- | --- | --- |
+| 1 | Pack search ranks the plan the incident words point to; 20-question set 19 → 20/20 | `b7bd740` |
+| 2 | DevTools Issues 39 → 0 (form field names), test | `4b47a77` |
+| 3 | Lighthouse: a11y / best practices / SEO 100 on 8 pages EN + FR; perf 95–100 mobile; installable PWA; no demo-line/footer layout shift; robots.txt | `90c21ea` |
+| 4 | Printed plan includes the 6 IT fix-its | `80facea` |
+| 5–6 | SUBMISSION.md; DEMO_SCRIPT updated | `d10d530` |
+| 7 | This summary + J TODO (deploy command at the top, live-verified items ticked) | (this commit) |
+
+**State:** 381 tests, lint 0, build + secret check OK; scratch e2e `s4.mjs` (all blocks + demo), `csp.mjs`, `judge.mjs`, `retry.mjs`, `issues.mjs` (0), `lh.mjs`, `pwa.mjs` all pass. Scratch scripts live in the session scratchpad, not the repo.
+
+**Not verified (needs J):** Session 7 on the live site (deploy item at the top of J TODO), live Lighthouse, the final wording of SUBMISSION.md, the video.
+
+**Next step:** J deploys, checks the three live items, edits SUBMISSION.md, films with DEMO_SCRIPT.md, submits before Mon Nov 30, 2:00 PM PST.
