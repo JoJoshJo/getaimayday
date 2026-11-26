@@ -16,7 +16,7 @@ Two machines:
 On both, on the live site (`getaimayday.web.app`, after the J TODO deploy steps, so App Check works):
 
 1. Open `#/demo-setup` → **Load demo data**. Sunrise Dental and 6 fake contacts appear.
-2. Go to **Offline Pack** → build it (preview, then Send). Wait until it says English and French answers are saved. This is a real cloud build; do not fake it.
+2. Go to **Offline Pack** → build it (preview, then Send). Wait until it says English and French answers are saved (J's live build: 133 EN, 114 FR). If a part says "Busy, trying again", let it finish; if any part is listed as not built, press **Retry failed parts**. This is a real cloud build; do not fake it.
 3. Open the app once more, then turn Wi-Fi off and reload: it must open. Turn Wi-Fi back on.
 4. Have the fake ransom note ready as a photo on Machine A: `public/lab/s2-4.png` on a second screen or printed, plus a phone or webcam photo of it saved to the desktop. It says "FAKE TEST IMAGE" in the corner; keep that in.
 5. Close every incident (Past incidents) so the home screen is clean.
@@ -69,7 +69,7 @@ After filming: `#/demo-setup` → **Delete all local data**.
 - **Proves:** EN + FR, outside-the-US reporting step.
 
 ### 9 · Print the plan · 2:25 to 2:35
-- **On screen:** **Get ready → Print plans**. The print preview shows the contacts sheet and the plans. Optional: hold up the printed page.
+- **On screen:** **Get ready → Print plans**. The print preview shows the contacts sheet, the five plans, then the everyday IT fix-its (Session 7). Scroll past one plan and stop on "Everyday IT problems" for a second. Optional: hold up the printed page.
 - **J says:** "And print it. When no device works, paper still does."
 - **Proves:** printable plans and contacts, Get ready checklist.
 
