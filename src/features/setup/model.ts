@@ -64,7 +64,7 @@ export const SAMPLE_PROFILE: Profile = {
   type: 'health',
   city: 'Riverdale, GA',
   country: 'US',
-  staff: '8',
+  staff: '6',
   email_provider: 'Microsoft 365',
   key_systems: 'Patient records (Dentrix), card reader at the front desk, shared drive on the office server',
   backups: 'yes',

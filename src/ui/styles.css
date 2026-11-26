@@ -1636,3 +1636,14 @@ a.tile {
   gap: var(--space-2);
   margin: var(--space-1) 0 0;
 }
+
+/* ---- Demo data line (only while #/demo-setup data is loaded) ---- */
+.demo-banner {
+  margin: 0;
+  padding: var(--space-2) 0;
+  border-bottom: var(--border-hair) solid var(--color-rule);
+  color: var(--color-warn);
+  font-size: var(--type-mono-sm);
+  letter-spacing: var(--tracking-mono);
+  text-transform: uppercase;
+}

@@ -286,5 +286,18 @@
   "triage.cloud.failed": "Cloud check didn't work. The fields above are unchanged.",
   "triage.cloud.use": "Use this",
   "triage.cloud.imageAlt": "The photo that will be sent",
-  "triage.cloud.logged": "checked with cloud AI"
+  "triage.cloud.logged": "checked with cloud AI",
+  "demo.kicker": "Hidden page · for filming",
+  "demo.title": "Demo setup",
+  "demo.intro": "Loads a made-up business so you can film or test without real data. Nothing here is sent anywhere.",
+  "demo.loadTitle": "Load demo data",
+  "demo.what": "Sunrise Dental, Riverdale GA, 6 staff, with invented contacts (555-01xx numbers). It replaces the business details and contacts on this device.",
+  "demo.load": "Load demo data",
+  "demo.loaded": "Demo data loaded. Every screen now shows a \"Demo data\" line.",
+  "demo.home": "Go to home",
+  "demo.resetTitle": "Start fresh",
+  "demo.resetWhat": "Deletes everything this app saved on this device: incidents, photos, business details, contacts, the Offline Pack and the language choice. The app itself stays installed.",
+  "demo.reset": "Delete all local data",
+  "demo.resetConfirm": "Yes, delete everything",
+  "demo.banner": "Demo data · Sunrise Dental is a made-up business"
 }

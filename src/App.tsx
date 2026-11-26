@@ -12,6 +12,8 @@ import { PackScreen } from './features/pack/PackScreen'
 import { ReadyScreen } from './features/ready/ReadyScreen'
 import { useReadiness } from './features/ready/useReadiness'
 import { PrintPlans } from './features/print/PrintPlans'
+import { DemoSetup } from './features/demo/DemoSetup'
+import { useDemo } from './features/demo/demo'
 import { useI18n } from './i18n'
 import { LangToggle, StatusChip, Wordmark } from './ui/components'
 import { useConnection } from './ui/useConnection'
@@ -47,6 +49,7 @@ function TopBar() {
 export default function App() {
   const { t } = useI18n()
   const route = useRoute()
+  const demo = useDemo()
 
   if (route.path === '/styleguide' || route.path === '/lab') {
     return (
@@ -77,10 +80,16 @@ export default function App() {
   else if (route.path === '/pack') content = <PackScreen />
   else if (route.path === '/ready') content = <ReadyScreen />
   else if (route.path === '/print') content = <PrintPlans />
+  else if (route.path === '/demo-setup') content = <DemoSetup />
 
   return (
     <div className="page">
       <TopBar />
+      {demo && (
+        <p className="demo-banner mono" role="note">
+          {t('demo.banner')}
+        </p>
+      )}
       <main className="main">{content}</main>
       <footer className="footer">
         <p>{t('disclaimer')}</p>

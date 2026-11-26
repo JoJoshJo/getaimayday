@@ -286,5 +286,18 @@
   "triage.cloud.failed": "La vérification cloud n’a pas fonctionné. Les champs ci-dessus n’ont pas changé.",
   "triage.cloud.use": "Utiliser",
   "triage.cloud.imageAlt": "La photo qui sera envoyée",
-  "triage.cloud.logged": "vérifié avec l’IA cloud"
+  "triage.cloud.logged": "vérifié avec l’IA cloud",
+  "demo.kicker": "Page cachée · pour le tournage",
+  "demo.title": "Configuration de démo",
+  "demo.intro": "Charge une entreprise inventée pour filmer ou tester sans vraies données. Rien n’est envoyé.",
+  "demo.loadTitle": "Charger les données de démo",
+  "demo.what": "Sunrise Dental, Riverdale GA, 6 personnes, avec des contacts inventés (numéros 555-01xx). Cela remplace les informations et les contacts de cet appareil.",
+  "demo.load": "Charger les données de démo",
+  "demo.loaded": "Données de démo chargées. Chaque écran affiche maintenant une ligne « Données de démo ».",
+  "demo.home": "Aller à l’accueil",
+  "demo.resetTitle": "Repartir de zéro",
+  "demo.resetWhat": "Supprime tout ce que l’application a enregistré sur cet appareil : incidents, photos, informations, contacts, Pack hors ligne et choix de la langue. L’application reste installée.",
+  "demo.reset": "Supprimer toutes les données locales",
+  "demo.resetConfirm": "Oui, tout supprimer",
+  "demo.banner": "Données de démo · Sunrise Dental est une entreprise inventée"
 }
