@@ -37,10 +37,22 @@ export function tokensCss(): string {
 `
 }
 
-/** Injects tokens as CSS custom properties. Call once at startup. */
+/**
+ * Injects tokens as CSS custom properties. Call once at startup.
+ * Uses a constructable stylesheet (CSSOM), which the production CSP allows
+ * with `style-src 'self'`; an injected <style> element would be blocked.
+ * Older browsers without adoptedStyleSheets fall back to a <style> element.
+ */
 export function applyTokens(): void {
+  const css = tokensCss()
+  if ('adoptedStyleSheets' in Document.prototype && 'replaceSync' in CSSStyleSheet.prototype) {
+    const sheet = new CSSStyleSheet()
+    sheet.replaceSync(css)
+    document.adoptedStyleSheets = [sheet, ...document.adoptedStyleSheets]
+    return
+  }
   const el = document.createElement('style')
   el.id = 'design-tokens'
-  el.textContent = tokensCss()
+  el.textContent = css
   document.head.prepend(el)
 }

@@ -1,3 +1,4 @@
+import './zodConfig' // first: before any schema is parsed
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 // Self-hosted fonts (bundled by Vite, precached by the service worker → work offline).
