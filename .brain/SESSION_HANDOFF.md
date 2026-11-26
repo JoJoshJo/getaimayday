@@ -614,3 +614,13 @@ Use Chrome. Start online, in `npm run dev` (debug token in `.env.local`) or on t
 8. **Back online:** turn Wi-Fi on. In the same incident, Back online → Incident report → check the preview (toggle "Include my notes") → Send to cloud AI. Read the report, Copy it, Print it. Try "Message to the bank" in FR (switch FR first).
 9. **Cloud double-check (optional):** on another photo, Read the screen → Double-check with cloud AI → Send. Check "Use this" appears only on fields you did not edit.
 Report back: what failed, any wording that sounds wrong, Nano yes/no on your machine, Pack count out of 20.
+
+---
+
+## 2026-11-25 — Session 5: polish for judging + demo (Claude Code)
+
+Brief (architect, via J): CSP + security headers; demo setup route with reset; NICE fix-it library (EN + FR); judge path check without Nano; `.brain/DEMO_SCRIPT.md` (2:45 shot list); final handoff. Work autonomously, commit after each item with tests, lint, build, offline check and anti-slop test passing.
+
+### Step 0
+- `pwd && git remote -v` → `/Users/joshlawson/Desktop/getaimayday`, origin `github.com/JoJoshJo/getaimayday`. `git pull` → already at `205d813`.
+- Scope cut by the architect: cloud sync and custom plan builder are **post-hackathon**. The brief calls them NICE 16/17 (Session 4 numbering); in MASTER §6 they are items 19 and 20, now struck through and marked "Post-hackathon". The fix-it library is MASTER item 18 (brief: NICE 15).

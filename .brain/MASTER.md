@@ -175,8 +175,8 @@ getaimayday/
 
 ### NICE
 18. Basic IT fix-it library (Wi-Fi, email not sending, frozen PC, printer, locked account, power outage).
-19. Opt-in cloud sync (Auth + Firestore offline persistence) behind `StorageAdapter`.
-20. Custom plan builder (cloud drafts plan from profile → owner edits → saved offline).
+19. ~~Opt-in cloud sync (Auth + Firestore offline persistence) behind `StorageAdapter`.~~ **Post-hackathon** (cut by the architect, Session 5, 2026-11-25). `StorageAdapter` stays as the seam for it.
+20. ~~Custom plan builder (cloud drafts plan from profile → owner edits → saved offline).~~ **Post-hackathon** (cut by the architect, Session 5, 2026-11-25).
 
 **Feature freeze: Thursday Nov 26 evening (Thanksgiving — plan around it).**
 
