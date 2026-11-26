@@ -813,3 +813,21 @@ All rules (lengths, counts, unsafe advice, real step ids) are enforced with zod 
 **Gotcha (for every future schema):** Gemini compiles the response schema into a decoding state machine. Array length limits (and likely other numeric/length limits) can make it refuse the whole request with HTTP 400. "Ignored if unsupported" in the docs does not mean "safe". Keep schemas to type / properties / required / items / short enum / description; check everything else in code. The test above enforces this.
 
 **Not verified (needs J):** the live retry after deploy, and the new FR counts. J TODO at the top.
+
+---
+
+## 2026-11-26 — Session 7: polish + submission prep (Claude Code)
+
+Brief (architect, via J): live site verified by J (App Check + reCAPTCHA Enterprise OK; Pack 133 EN / 114 FR with real Gemini; a live 500 was retried and saved; offline Pack search works). Items: 1 Pack search ranking bug, 2 DevTools Issues, 3 Lighthouse pass, 4 print the fix-its, 5 `.brain/SUBMISSION.md`, 6 DEMO_SCRIPT update, 7 final handoff.
+
+**Step 0.** `pwd && git remote -v`, `git pull` (at `dad8bfe`). Read MASTER, DESIGN, DEMO_SCRIPT, the Session 6/6b entries.
+
+### Item 1 — Pack search ranking without a plan
+- Live bug (J, Wi-Fi off, `#/pack`): "should we pay the ransom" → the lost-device answer "Should I pay a ransom if someone contacts me about the lost device?".
+- Reproduced in `tests/fixtures/pack-ranking.ts`: a 5-plan EN + FR Pack written in the live style, with the cross-plan look-alikes (that lost-device item, a phishing item about a fake invoice, an outage item about ransomware, many ransomware items that all say "ransom"). 20 realistic questions (12 EN, 8 FR) with the expected plan.
+- Why: MiniSearch BM25 ranks the look-alike first because it matches both "pay" and "ransom" in its question and phrasings, while each ransomware item matches only one word ("ransom" is in nearly all of them).
+- Tried first: a ×3 score boost for the hinted plan (MiniSearch `boostDocument`). Not enough (59.1 vs 13.2 × 3). Dropped.
+- Fix (`src/pack/match.ts`), only when no plan is given: `keywordMatch()` (the same EN + FR matcher as "Something's wrong" on Home: ransom/encrypt/bitcoin → ransomware, invoice/bank details/IBAN/RIB → BEC, password/link/clicked → phishing, lost/stolen/laptop/phone → lost device, internet/power/down/panne → outage). If one plan clearly wins (a tie gives no hint), that plan's matches come first; inside it, answers matching more of the OTHER words ("pay") come first, then the usual score. Other plans' matches still follow, so nothing is hidden. The confidence rule is unchanged, so a one-word match still shows "closest answers + call your IT contact".
+- Plan-scoped search (Ask on a step, fix-its) is unchanged: filter only, no hint. Tested.
+- **Top-1 plan accuracy on the 20 questions: before 19/20 (the miss was exactly the live bug), after 20/20.** The live question now returns the ransomware "pay" answer first.
+- Tests: `tests/pack-ranking.test.ts` (live bug → ransomware pay answer; ≥ 19/20, logs the score and misses; plan-scoped unchanged; a question with no incident words still searches all plans). The older 20-question set in `tests/pack.test.ts` still passes. Total 378/378, build + secret check, lint 0, `s4.mjs` all blocks, `csp.mjs`, `judge.mjs` pass.

@@ -9,6 +9,8 @@
  * result matched (stop words removed, accents ignored, small typos allowed).
  */
 import MiniSearch from 'minisearch'
+import { keywordMatch } from '../features/home/keywords'
+import { planIdFor } from '../plans/incidents'
 import type { Pack, PackLang, PackQa } from './schema'
 
 const STOP = new Set(
@@ -53,6 +55,16 @@ export function buildIndex(pack: Pack, lang: PackLang): PackIndex {
 export type PackHit = PackQa & { plan_id: string; score: number }
 export type PackMatch = { confident: boolean; top: PackHit[] }
 
+/**
+ * Without a plan (the #/pack search box), when the incident keywords clearly
+ * point to one plan (same matcher as "Something's wrong" on Home; a tie gives
+ * no hint), that plan's matches are ranked first. "should we pay the ransom" is
+ * a ransomware question even if a lost-device answer says "pay a ransom" in
+ * both its question and phrasings (live bug, Session 7). A score multiplier was
+ * tried first (×3): not enough, because BM25 favours the look-alike that
+ * matches both words. Other plans' answers still follow, so nothing is hidden.
+ */
+
 /** Threshold: the top result must match at least this share of the question's words. */
 export const MIN_COVERAGE = 0.6
 
@@ -65,7 +77,18 @@ export function matchPack(index: PackIndex, question: string, opts: { planId?: s
   )
   if (!qTerms.size) return { confident: false, top: [] }
   const filter = opts.planId ? (r: { plan_id: string }) => r.plan_id === opts.planId : undefined
-  const results = index.search.search(question, filter ? { filter: filter as never } : undefined)
+  // Plan-scoped search (a plan step) is unchanged: filter only, no boost.
+  const hinted = opts.planId ? null : keywordMatch(question)
+  const hintPlan = hinted ? planIdFor(hinted.incident) : null
+  const raw = index.search.search(question, filter ? { filter: filter as never } : undefined)
+  let results = raw
+  if (hinted && hintPlan) {
+    // Inside the hinted plan, the incident word ("ransom") is in almost every answer, so the
+    // OTHER words ("pay") decide: more of them matched first, then the usual score.
+    const others = (r: (typeof raw)[number]) => new Set(r.queryTerms.filter((t) => keywordMatch(t)?.incident !== hinted.incident)).size
+    const inPlan = raw.filter((r) => r.plan_id === hintPlan).sort((a, b) => others(b) - others(a) || b.score - a.score)
+    results = [...inPlan, ...raw.filter((r) => r.plan_id !== hintPlan)]
+  }
   const top = results.slice(0, 3).map((r) => ({ ...index.byId.get(String(r.id))!, score: r.score }))
   if (!top.length) return { confident: false, top }
   const matched = new Set(results[0].queryTerms.map(normalizeTerm).filter(Boolean)).size
