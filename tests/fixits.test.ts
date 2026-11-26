@@ -100,7 +100,7 @@ describe('ask a question on a fix-it', () => {
       },
       loadPack: pack,
     })
-    expect(a).toEqual({ kind: 'none', reason: 'no-answer' })
+    expect(a).toEqual({ kind: 'none', reason: 'no-ai' })
   })
 
   it('the prompt says it is an everyday IT problem, not an incident', async () => {

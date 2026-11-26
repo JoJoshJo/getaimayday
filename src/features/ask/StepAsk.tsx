@@ -94,7 +94,7 @@ export function StepAsk({ plan, step, incidentId }: { plan: AskGuide; step: Plan
         {res?.kind === 'none' && (
           <div className="packans">
             <p className="packans__head">
-              <SourceBadge source="checklist" /> {res.reason === 'no-pack' ? t('ask.noPack') : t('pack.nothing')}
+              <SourceBadge source="checklist" /> {res.reason === 'no-pack' ? t('ask.noPack') : res.reason === 'no-ai' ? t('ask.noAi') : t('pack.nothing')}
             </p>
             <div className="log__actions">
               {c && hasContact(c) && c.phone.trim() ? (

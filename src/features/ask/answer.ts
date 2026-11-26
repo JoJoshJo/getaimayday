@@ -18,7 +18,7 @@ import type { PlanStep } from '../../plans/schema'
 export type AskAnswer =
   | { kind: 'ai'; source: 'on-device'; text: string }
   | { kind: 'pack'; match: PackMatch }
-  | { kind: 'none'; reason: 'no-pack' | 'no-answer' }
+  | { kind: 'none'; reason: 'no-pack' | 'no-answer' | 'no-ai' }
 
 export type AskDeps = {
   availability: () => Promise<string>
@@ -33,7 +33,7 @@ export async function answerQuestion(question: string, plan: AskGuide, step: Pla
     if (r.source === 'on-device' && r.data?.in_plan && text && !isUnsafeAdvice(text)) return { kind: 'ai', source: 'on-device', text }
   }
   const planId = plan.packPlan === undefined ? plan.id : plan.packPlan
-  if (planId === null) return { kind: 'none', reason: 'no-answer' }
+  if (planId === null) return { kind: 'none', reason: 'no-ai' }
   const pack = await deps.loadPack()
   if (!pack) return { kind: 'none', reason: 'no-pack' }
   const match = matchPack(buildIndex(pack, lang), question, { planId })

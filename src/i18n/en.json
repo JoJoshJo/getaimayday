@@ -217,6 +217,7 @@
   "ask.fromStep": "Based on this step of your plan",
   "ask.checkWith": "If you are not sure, call your IT contact before you act.",
   "ask.noPack": "No answer on this device. Build the Offline Pack on a calm day for more answers.",
+  "ask.noAi": "No answer on this device for this step. Your IT contact can help.",
   "log.ev.ask": "Question asked: {question}",
   "online.title": "Back online",
   "online.offline": "When you are back online, cloud AI can write an incident report, next steps and messages for your staff, customers, bank and insurer from this log. Nothing is sent until you choose.",

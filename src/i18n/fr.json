@@ -217,6 +217,7 @@
   "ask.fromStep": "D’après cette étape de votre plan",
   "ask.checkWith": "En cas de doute, appelez votre contact informatique avant d’agir.",
   "ask.noPack": "Pas de réponse sur cet appareil. Créez le Pack hors ligne un jour calme pour avoir plus de réponses.",
+  "ask.noAi": "Pas de réponse sur cet appareil pour cette étape. Votre contact informatique peut vous aider.",
   "log.ev.ask": "Question posée : {question}",
   "online.title": "De retour en ligne",
   "online.offline": "De retour en ligne, l’IA cloud pourra rédiger à partir de ce journal un rapport d’incident, les prochaines étapes et des messages pour votre personnel, vos clients, votre banque et votre assureur. Rien n’est envoyé sans votre choix.",
