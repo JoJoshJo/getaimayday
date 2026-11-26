@@ -2,7 +2,7 @@
  * Incident log (MASTER §6 MUST #5): timeline of everything that happened,
  * notes, photos. Every entry is timestamped by the app. Stays on the device.
  */
-import { useEffect, useState, type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { useI18n } from '../../i18n'
 import type { Plan } from '../../plans/schema'
 import type { IncidentRecord, LogEvent } from '../../storage/db'
@@ -12,24 +12,7 @@ import { FoundOnScreen } from '../triage/FoundOnScreen'
 import { isDocJob } from '../online/jobs'
 import type { TriageFieldName } from '../../storage/db'
 import { fmtDateTime, fmtTime, PHOTO_TYPES } from './format'
-
-export function PhotoThumb({ photoId, alt }: { photoId: string; alt: string }) {
-  const [url, setUrl] = useState<string>()
-  useEffect(() => {
-    let u: string | undefined
-    let live = true
-    store.getPhoto(photoId).then((p) => {
-      if (!p || !live) return
-      u = URL.createObjectURL(p.blob)
-      setUrl(u)
-    })
-    return () => {
-      live = false
-      if (u) URL.revokeObjectURL(u)
-    }
-  }, [photoId])
-  return url ? <img className="thumb" src={url} alt={alt} /> : <span className="thumb thumb--empty" />
-}
+import { PhotoThumb } from './PhotoThumb'
 
 export function IncidentLog({ record, plan, extras }: { record: IncidentRecord; plan: Plan; extras?: ReactNode }) {
   const { lang, t } = useI18n()
@@ -82,6 +65,7 @@ export function IncidentLog({ record, plan, extras }: { record: IncidentRecord; 
           <span className="log__triage">
             <span className="home__line">
               <SourceBadge source={e.source} /> {t('log.ev.triage')}
+              {e.cloud_checked && <span className="mono muted"> · {t('triage.cloud.logged')}</span>}
             </span>
             <dl className="log__fields">
               {(Object.keys(e.fields) as TriageFieldName[])

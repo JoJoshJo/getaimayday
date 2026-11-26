@@ -6,6 +6,7 @@ Append one entry per session: date, what was done, files changed, commit hashes,
 
 ## J TODO (things only J can do: console, login, secrets, hand tests). Newest first. Tick when done.
 
+- [ ] (Session 4) **Test the cloud double-check** on a ransom-screen photo (online, App Check working): Read the screen → Double-check with cloud AI → check the preview → Send. Expect "Use this" only under fields that differ and that you did not edit; after Confirm the log says "checked with cloud AI".
 - [ ] (Session 4) **Deploy to Firebase Hosting** (needs your Firebase login):
   1. In `.env.local`, make sure `VITE_RECAPTCHA_ENTERPRISE_KEY` is set (public site key; the key's domains must include `getaimayday.web.app` and `getaimayday.firebaseapp.com`).
   2. `npm run build` (must end with "Secret check: no App Check debug token").
@@ -572,3 +573,11 @@ Brief: build MUST 1–9, then SHOULD 10–14, NICE 15–17, deploy prep, README;
 - All five incidents now have plans: home shows 5 tiles, classify/keywords/triage routing all land on a plan, print shows 5 plans, the Pack builds 5 plans × 2 languages + 2 glossaries (12 requests).
 - Tests 258/258, E2E 46 PASS.
 - J TODO (existing item): review lost-device and outage wording EN + FR.
+- Commit: `dbe2c31`.
+
+### SHOULD #13 + #14 — Printable plans; "Double-check with cloud AI"
+- #13: done with feature 9 (`#/print`, print CSS). The incident page itself has no special print layout; the print page is the paper version.
+- #14 in `FoundOnScreen.tsx` per DESIGN §6: button only when online (offline it is not rendered); tap → preview with the exact photo thumbnail, "Sent to: Google Gemini (cloud) via Firebase AI Logic", "What is sent: this image and fixed instructions… No name, no contacts, no log." → Send → `router.triage(image, 'prefer_in_cloud')` (string value of `InferenceMode.PREFER_IN_CLOUD`; a type-only import keeps Firebase out of the main bundle). Only `source === 'cloud'` counts; anything else → "Cloud check didn't work. The fields above are unchanged."
+- `cloudSuggestions(opened, current, cloud)` (pure, tested): a "Cloud AI · value · Use this" line appears only under fields where the cloud found a different non-empty value AND the user has not edited the field. Nothing is overwritten. The triage event gets `cloud_checked: true`; the log shows "checked with cloud AI". The image is not stored again.
+- `PhotoThumb` moved to `src/features/log/PhotoThumb.tsx` (used by the log and the preview; avoids an import cycle).
+- Tests 260/260. E2E 49 PASS: offline no button; online (stub on-device prefill) the preview shows image + what is sent; Cancel leaves the fields. A real cloud answer needs App Check → J TODO.

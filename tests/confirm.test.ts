@@ -1,7 +1,7 @@
 /** Session 4 feature 3: found-on-screen panel logic (DESIGN.md §6). */
 import { describe, expect, it } from 'vitest'
 import { normalizeTriage, parseJson, TriageRaw } from '../src/ai/schemas'
-import { EMPTY_FORM, fieldStatuses, fromForm, toForm } from '../src/features/triage/confirm'
+import { cloudSuggestions, EMPTY_FORM, fieldStatuses, fromForm, toForm } from '../src/features/triage/confirm'
 
 // J's real S2 sample 4 output, adapted to the Session 3c schema.
 const s4 = normalizeTriage(
@@ -41,5 +41,18 @@ describe('field status: what the AI read vs what the user confirmed', () => {
   it('no AI: typed fields are "added", the rest "empty"', () => {
     const st = fieldStatuses(null, fromForm({ ...EMPTY_FORM, incident_type: 'ransomware', deadline: '72 hours' }))
     expect(st).toMatchObject({ incident_type: 'added', deadline: 'added', currency: 'empty', is_ransom_demand: 'empty' })
+  })
+})
+
+describe('cloudSuggestions (cloud double-check never overwrites)', () => {
+  const opened = { ...EMPTY_FORM, incident_type: 'ransomware' as const, currency: 'EUR', group_name: 'CRYPTO' }
+  const cloud = { ...EMPTY_FORM, incident_type: 'ransomware' as const, currency: 'BTC', group_name: 'LockBit', deadline: '72 hours' }
+  it('suggests only differing, non-empty cloud values on fields the user did not edit', () => {
+    const current = { ...opened, group_name: 'my edit' }
+    expect(cloudSuggestions(opened, current, cloud)).toEqual({ currency: 'BTC', deadline: '72 hours' })
+  })
+  it('no suggestion when the cloud agrees or found nothing', () => {
+    expect(cloudSuggestions(opened, opened, { ...opened })).toEqual({})
+    expect(cloudSuggestions(opened, opened, EMPTY_FORM)).toEqual({})
   })
 })

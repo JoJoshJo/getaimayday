@@ -277,5 +277,14 @@
   "ready.downloaded": "Téléchargée et prête",
   "print.title": "Imprimer vos plans",
   "print.intro": "Tous les plans, toutes les étapes et vos contacts sur papier. Gardez-le près de l’accueil et mettez-le à jour quand vos contacts changent.",
-  "print.button": "Imprimer"
+  "print.button": "Imprimer",
+  "triage.cloud.check": "Vérifier avec l’IA cloud",
+  "triage.cloud.what": "Ce qui est envoyé : cette image et des instructions fixes pour lire l’écran. Aucun nom, aucun contact, aucun journal.",
+  "triage.cloud.sending": "L’IA cloud lit l’image",
+  "triage.cloud.differs": "L’IA cloud a lu certains champs autrement. Vos champs n’ont pas changé : choisissez « Utiliser » seulement là où c’est juste.",
+  "triage.cloud.same": "L’IA cloud n’a rien trouvé de différent. Vos champs n’ont pas changé.",
+  "triage.cloud.failed": "La vérification cloud n’a pas fonctionné. Les champs ci-dessus n’ont pas changé.",
+  "triage.cloud.use": "Utiliser",
+  "triage.cloud.imageAlt": "La photo qui sera envoyée",
+  "triage.cloud.logged": "vérifié avec l’IA cloud"
 }

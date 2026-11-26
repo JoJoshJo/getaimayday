@@ -74,3 +74,18 @@ export function fieldStatuses(ai: TriageResult | null, saved: Saved): Record<Tri
   }
   return out
 }
+
+/**
+ * Cloud double-check (DESIGN.md §6): which fields get a "Use this" suggestion.
+ * Only fields the user has NOT edited (current === what the panel opened with),
+ * where the cloud found a value that differs. The cloud never overwrites.
+ */
+export function cloudSuggestions(opened: FormValues, current: FormValues, cloud: FormValues): Partial<FormValues> {
+  const out: Partial<FormValues> = {}
+  for (const k of Object.keys(cloud) as (keyof FormValues)[]) {
+    const c = cloud[k].trim()
+    if (c === '' || current[k] !== opened[k] || c === current[k].trim()) continue
+    ;(out as Record<string, string>)[k] = c
+  }
+  return out
+}

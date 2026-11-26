@@ -277,5 +277,14 @@
   "ready.downloaded": "Downloaded and ready",
   "print.title": "Print your plans",
   "print.intro": "Every plan, every step, and your contacts on paper. Keep it near the front desk and update it when your contacts change.",
-  "print.button": "Print"
+  "print.button": "Print",
+  "triage.cloud.check": "Double-check with cloud AI",
+  "triage.cloud.what": "What is sent: this image and fixed instructions to read the screen. No name, no contacts, no log.",
+  "triage.cloud.sending": "Cloud AI is reading the image",
+  "triage.cloud.differs": "Cloud AI read some fields differently. Your fields are unchanged: choose \"Use this\" only where it is right.",
+  "triage.cloud.same": "Cloud AI found nothing different. Your fields are unchanged.",
+  "triage.cloud.failed": "Cloud check didn't work. The fields above are unchanged.",
+  "triage.cloud.use": "Use this",
+  "triage.cloud.imageAlt": "The photo that will be sent",
+  "triage.cloud.logged": "checked with cloud AI"
 }
