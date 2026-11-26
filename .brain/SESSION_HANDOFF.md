@@ -840,3 +840,16 @@ Brief (architect, via J): live site verified by J (App Check + reCAPTCHA Enterpr
 - **After: 0 issues** on every screen.
 - Every field already had a visible `<label>`; this only adds names (no layout change).
 - Test `tests/forms.test.ts`: scans every `.tsx` for `<input|textarea|select>` without `name`/`id`, and static names that are autocomplete tokens. 381/381.
+- Commit: `4b47a77`.
+
+### Item 3 — Lighthouse pass (EN + FR)
+- Tool: Lighthouse 13.6.0 (installed in the session scratchpad only, not a project dependency), Chrome headless, against `npm run build` + `vite preview` (same security headers as Hosting). Scratch `lh.mjs` seeds a profile first (demo data, language, one open ransomware incident) and runs with `--disable-storage-reset`, so the plan page is a real incident. Pages: Home, a plan (`#/incident/<id>`), Pack, Get ready; EN and FR. Lighthouse 12+ has **no PWA category** any more, so installability was checked separately (below).
+- **First run (desktop, no throttling):** accessibility 100, best practices 100 on all 8. Performance 77 (plan), 79 (Get ready), 90 (Pack), 99–100 (Home); SEO 91 everywhere.
+  - Performance: layout shift (CLS 0.73 plan, 0.52 Get ready). Cause: the "Demo data" line appeared after IndexedDB loaded and pushed `main` down; the footer also jumped when "Loading" became the screen.
+  - SEO: `robots-txt` invalid (the SPA fallback served index.html for /robots.txt).
+- Fixes: `useDemo()` starts from a localStorage hint (`aimayday.demo`, set by Load demo data, cleared by Delete all local data; IndexedDB stays the truth) so the line is there on the first paint; `.main { min-height: 100vh }` keeps the footer below the fold while a screen loads; `public/robots.txt` (`Allow: /`).
+- **After (desktop): 100 / 100 / 100 / 100** (performance, accessibility, best practices, SEO) on all 8 pages, EN and FR.
+- **After (Lighthouse default mobile: simulated slow 4G + 4× CPU):** accessibility 100, best practices 100, SEO 100 on all 8. Performance 100 on plan, Pack and Get ready; Home 95 (EN) / 96 (FR), stable over 2 more runs (one first run gave 72 from a one-off 1.9 s of main-thread work in a cold browser; not repeatable). Home's remaining shift (0.116) is the "Open incidents" banner that appears above the form when an incident is open; left as is: it only happens with an open incident and moving it would hide "Continue".
+- **PWA (CDP `Page.getInstallabilityErrors` + `getAppManifest`):** no installability errors, no manifest errors; standalone, icons 64/192/512 + 512 maskable, theme/background colours; reload offline opens the app.
+- Reports (HTML + JSON) are in the scratchpad `lh/` folder, not committed.
+- Checks: 381/381, build + secret check, lint 0, `s4.mjs` all blocks + demo, `csp.mjs`, `judge.mjs` pass.
