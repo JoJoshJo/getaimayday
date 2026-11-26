@@ -110,12 +110,15 @@ export default function Lab() {
     setBusy(false)
   }
 
+  // Session 12b: re-warm on the pick itself too (keyboard, and a file dialog left open > 15 s).
   async function pickSample(n: number, url: string) {
+    rewarmIfIdle('photo-picker')
     const blob = await (await fetch(url)).blob()
     setImage({ label: `s2-${n}.png`, blob, url })
   }
 
   function pickFile(f: File | undefined) {
+    if (f) rewarmIfIdle('photo-picker')
     if (f) setImage({ label: f.name, blob: f, url: URL.createObjectURL(f) })
   }
 
@@ -131,12 +134,12 @@ export default function Lab() {
   const chromeVersion = navigator.userAgent.match(/Chrome\/([\d.]+)/)?.[1] ?? 'not Chrome'
 
   const markdown = () =>
-    [`Warm-up: ${fmtWarm(warm)}`, '', '| time | job | mode | input | source | seconds | idle before | cold/warm | data | error |', '|---|---|---|---|---|---|---|---|---|---|']
+    [`Warm-up: ${fmtWarm(warm)}`, '', '| time | job | mode | input | source | seconds | idle before | cold/warm | after checks | error | model raw |', '|---|---|---|---|---|---|---|---|---|---|---|']
       .concat(
         log
           .slice()
           .reverse()
-          .map((r) => `| ${r.at} | ${r.job} | ${r.mode} | ${r.input.replace(/\|/g, '/')} | ${r.result.source} | ${r.result.seconds} | ${fmtIdle(r.idle)} | ${coldWarm(r)} | \`${JSON.stringify(r.result.data)}\`${r.job === 'triage' && r.result.data !== null ? ` → ${routeLabel(r.result.data as TriageResult)}` : ''} | ${r.result.error ?? ''} |`),
+          .map((r) => `| ${r.at} | ${r.job} | ${r.mode} | ${r.input.replace(/\|/g, '/')} | ${r.result.source} | ${r.result.seconds} | ${fmtIdle(r.idle)} | ${coldWarm(r)} | \`${JSON.stringify(r.result.data)}\`${r.job === 'triage' && r.result.data !== null ? ` → ${routeLabel(r.result.data as TriageResult)}` : ''} | ${r.result.error ?? ''} | ${r.result.raw === undefined ? '' : `\`${r.result.raw.replace(/\s+/g, ' ').replace(/\|/g, '/')}\``} |`),
       )
       .join('\n')
 
@@ -234,6 +237,13 @@ export default function Lab() {
               </span>
             </div>
             <p className="sg__muted lab__input">{r.input}</p>
+            {r.result.raw !== undefined && (
+              <>
+                <h3 className="mono sg__muted">Model raw</h3>
+                <pre className="lab__pre">{r.result.raw}</pre>
+                <h3 className="mono sg__muted">After checks</h3>
+              </>
+            )}
             <pre className="lab__pre">{JSON.stringify(r.result.data, null, 2)}</pre>
             {r.job === 'triage' && r.result.data !== null && <p className="mono sg__muted">{routeLabel(r.result.data as TriageResult)}</p>}
             {r.result.error && <p className="lab__error mono">{r.result.error}</p>}

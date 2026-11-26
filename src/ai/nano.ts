@@ -18,9 +18,8 @@ import {
   askJsonSchema,
   ClassifyResult,
   classifyJsonSchema,
-  normalizeTriage,
   parseJson,
-  TriageRaw,
+  triageFromModelText,
   triageJsonSchema,
   type IncidentType,
   type TriageResult,
@@ -29,7 +28,7 @@ import {
 export { InferenceMode, InferenceSource } from 'firebase/ai'
 export { onDeviceAvailability } from './warmup'
 
-export type JobResult<T> = { data: T; inferenceSource: InferenceSource | undefined }
+export type JobResult<T> = { data: T; inferenceSource: InferenceSource | undefined; /** Model text before any check (triage only, for the Lab). */ raw?: string }
 
 function makeModel(mode: InferenceMode, jsonSchema: object): GenerativeModel {
   return getGenerativeModel(ai, {
@@ -126,8 +125,9 @@ export async function triageRansomScreen(
     TRIAGE_PROMPT,
     { type: 'inlineData', inlineData: { data: image.base64, mimeType: image.mimeType } },
   ])
-  const raw = parseJson(result.response.text(), TriageRaw)
-  return track({ data: normalizeTriage(raw), inferenceSource: result.response.inferenceSource })
+  const text = result.response.text()
+  // raw: the model's own text, for the Lab's "Model raw" (the app shows only data).
+  return track({ data: triageFromModelText(text), inferenceSource: result.response.inferenceSource, raw: text })
 }
 
 /** Read a File/Blob as base64 (no data: prefix) for inlineData. */

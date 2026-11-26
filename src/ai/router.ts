@@ -26,9 +26,11 @@ export type Routed<T> = {
   seconds: number
   /** Present when the AI path failed and we fell back. */
   error?: string
+  /** Session 12b: the model's text before any check, when there was one (Lab "Model raw"). */
+  raw?: string
 }
 
-type JobResult<T> = { data: T; inferenceSource: InferenceSource | undefined }
+type JobResult<T> = { data: T; inferenceSource: InferenceSource | undefined; raw?: string }
 
 export type RouterDeps = {
   classify: (text: string, mode?: InferenceMode) => Promise<JobResult<IncidentType>>
@@ -52,9 +54,11 @@ export function createRouter(deps: RouterDeps) {
     const secs = () => Math.round((deps.now() - t0) / 10) / 100
     try {
       const r = await job()
-      return { data: r.data, source: toSource(r.inferenceSource), seconds: secs() }
+      return { data: r.data, source: toSource(r.inferenceSource), seconds: secs(), ...(r.raw !== undefined && { raw: r.raw }) }
     } catch (e) {
-      return { data: fallback, source: 'checklist', seconds: secs(), error: message(e) }
+      // AiOutputError carries the model text; read it by shape so the router does not pull zod in.
+      const raw = typeof (e as { raw?: unknown })?.raw === 'string' ? (e as { raw: string }).raw : undefined
+      return { data: fallback, source: 'checklist', seconds: secs(), error: message(e), ...(raw !== undefined && { raw }) }
     }
   }
 

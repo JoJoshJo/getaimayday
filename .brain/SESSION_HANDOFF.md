@@ -14,6 +14,11 @@ npm run build && npx firebase-tools deploy --only hosting
 
 The build must end with "Secret check: no App Check debug token". Then open https://getaimayday.web.app and reload once so the new version loads.
 
+- [ ] (Session 12b) Not pushed yet: `cd ~/Desktop/getaimayday && git push origin main` first.
+  1) **Deploy:** `cd ~/Desktop/getaimayday && npm run build && npx firebase-tools deploy --only hosting`
+  2) **One time only, after this deploy:** close EVERY AIMayday tab and window (and the installed app, if you installed it), then open https://getaimayday.web.app again. A reload is not enough this once: a tab that opened the Session 11 build keeps running the Session 11 code (that is why the Lab still showed `group_name ","` and "warm" at 8.69 s). Or: DevTools → Application → Service workers → "skipWaiting". From then on the "New version ready · Reload" banner handles updates.
+  3) **Lab: run Sample 4, After checks shows group_name null.** The result now has two blocks: "Model raw" (what Nano wrote, may still contain `","`) and "After checks" (what the app uses). Note: sample 4 still says `confidence: "high"` after checks, because amount, currency, wallet, deadline and extension are 5 real fields (rule: 3 or more found = high). The "," no longer counts.
+  4) Re-warm: on the Lab, wait 2 minutes, press Tab to a Sample button and Enter (keyboard), then Run triage: the Warm-up row shows "photo-picker". On an incident, "Add photo", pick a file: same.
 - [ ] (Session 12) Not pushed yet: `cd ~/Desktop/getaimayday && git push origin main` first.
   1) **Deploy:** `cd ~/Desktop/getaimayday && npm run build && npx firebase-tools deploy --only hosting` (the build now also prints "Lab samples: 5 in dist/").
   2) **Live check:** https://getaimayday.web.app/#/lab shows samples 1–5 (real images, not broken). On your Mac with Nano ready, run triage on **Sample 4** and **Sample 5**: `group_name` must be `null` (was ","). Also run 1, 2 and 3 once and paste the lab table (Copy as Markdown) into the next session. The "On-device model" row should say "ready (warmed …)" after the app-load warm-up.
@@ -1173,3 +1178,29 @@ Brief (architect, via J): live site verified by J (App Check + reCAPTCHA Enterpr
 **Committed, not pushed, not deployed** (as asked).
 
 **Next:** J pushes (`git push origin main`), deploys and runs the Session 12 checks in J TODO.
+
+## 2026-11-26 — Session 12b: why the triage cleanup did not show on the live site (Claude Code)
+
+**Cause (proved, not a code path bug).** The Lab and the app already shared one path: Lab "Run triage" → `router.triage` → `triageRansomScreen` (src/ai/nano.ts) → `parseJson(text, TriageRaw)` (drops `","`) → `normalizeTriage` (guard + confidence). `FoundOnScreen.tsx` calls the same `router.triage`. The Lab printed `Routed.data`, the cleaned result, never the raw text. The live bundle (`index-Bk7nBLnC.js`, curl) does contain the Session 12 rule. What J ran was the Session 11 code still in his tab:
+- Session 11 shipped `registerType: 'autoUpdate'` with a plain `registerSW.js`. Session 12 switched to `'prompt'`: the new `sw.js` waits for a `SKIP_WAITING` message that only the new page code sends. The old page never sends it, so the new worker stays "waiting" until every AIMayday tab/window is closed. Reloads keep serving the old precached JS.
+- The sample images loaded anyway because `lab/**` is not precached: they come from the network, so "images load" did not prove the new build.
+- Second clue: 8.69 s was labelled "warm". The Session 12 threshold (7 s) labels it "cold"; the Session 11 one (10 s) said "warm".
+- Proof run (`scratchpad/pw/swstuck.mjs`, Session 11 build from a worktree of 327d788, then the current dist on the same URL): load A → Session 11 JS; "deploy" B, reload ×4 → Session 11 JS every time; close the tab, open again → Session 12 JS.
+- One-time fix for J (in the J TODO): close all AIMayday tabs/windows once after deploying. Later updates show the banner.
+
+**Fix (still asked for: one named function, raw vs after checks).**
+- `src/ai/schemas.ts`: `triageFromModelText(text)` = parse → drop junk → strict schema → consistency guard → computed confidence. The only path from model text to app data. There is no "verbatim check" in code (that was a manual comparison against the image); the junk filter is the code check, verbatim copying is a prompt rule.
+- `src/ai/nano.ts`: `triageRansomScreen` uses it and returns `raw` (the model text). `src/ai/router.ts`: `Routed.raw` passed through, also on a failed parse (from `AiOutputError.raw`, read by shape so the router chunk does not pull in zod).
+- `src/features/lab/Lab.tsx`: each triage result shows "Model raw" and "After checks"; Copy as Markdown adds a "model raw" column. The app UI is unchanged (it only uses `data`).
+- Re-warm: Lab `pickSample` and `pickFile` call `rewarmIfIdle('photo-picker')` (so keyboard picks count, and a file dialog left open past 15 s), as does the incident log photo input `onChange` (`IncidentLog.tsx`). The log has the only file input in the app. Same single warm-up instance via `warmUpNano` (deduped by `inFlight`).
+
+**Honest limit.** The brief expected sample 4 confidence below "high". With `","` dropped, sample 4 still has 5 real fields (500, EUR, wallet, 3 days, .crypt7), and the rule says 3 or more = high. So "high" is correct by the rule; the test pins this. The test that "," cannot lift confidence uses the same answer with only two real fields: medium. Changing the rule is a design call, not made here.
+
+**Tests (489/489, was 483).** `tests/triage-path.test.ts` (new): drives the real `router.triage` → `triageRansomScreen` with `firebase/ai` mocked to return J's sample 4 text (`group_name ","`): group_name null, `raw` kept, data equal to `triageFromModelText`; "," does not make "high"; sample 4 stays high (5 fields); bad JSON → checklist with raw. `tests/warmup.test.ts` +2 (picks re-warm in the Lab and the log).
+
+**Verified.** vitest 489, tsc, oxlint clean, `npm run build` (secret check, lab samples check), s4 blocks, demo, lab12, csp, issues: pass.
+
+**Files.** src/ai/schemas.ts, src/ai/nano.ts, src/ai/router.ts, src/features/lab/Lab.tsx, src/features/log/IncidentLog.tsx, tests/triage-path.test.ts, tests/warmup.test.ts, .brain/SESSION_HANDOFF.md.
+
+Committed, not pushed, not deployed.
+

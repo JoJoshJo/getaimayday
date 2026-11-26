@@ -197,3 +197,15 @@ export function parseJson<T>(text: string, schema: z.ZodType<T>): T {
   if (!r.success) throw new AiOutputError(`Model output does not match the schema: ${r.error.message}`, text)
   return r.data
 }
+
+/**
+ * Session 12b: the ONE path from the model's text to what the app shows, used by the
+ * real app (photo step, "Found on screen" panel) and the Lab alike, through
+ * triageRansomScreen. Order: parse JSON → drop junk fields (",", "unknown", 0…) →
+ * strict schema → consistency guard (no ransom, no amount or currency) → confidence
+ * computed in code. There is no separate "verbatim" step in code: copying text
+ * verbatim is a prompt rule (prompts/triage.ts), and the junk filter is the code check.
+ */
+export function triageFromModelText(text: string): TriageResult {
+  return normalizeTriage(parseJson(text, TriageRaw))
+}

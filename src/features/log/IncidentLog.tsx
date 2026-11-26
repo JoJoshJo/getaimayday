@@ -121,6 +121,8 @@ export function IncidentLog({ record, plan, extras }: { record: IncidentRecord; 
               type="file"
               accept="image/png,image/jpeg"
               onChange={(e) => {
+                // Session 12b: again on the pick, in case the file dialog stayed open past the idle limit.
+                if (e.target.files?.[0]) rewarmIfIdle('photo-picker')
                 const input = e.target
                 void addPhoto(input.files?.[0]).then(() => (input.value = ''))
               }}

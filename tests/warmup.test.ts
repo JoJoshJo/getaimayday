@@ -1,5 +1,7 @@
 /** (d) warm-up gating: only when the Prompt API says "available", one at a time, never throws. */
 import { afterEach, describe, expect, it, vi } from 'vitest'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 
 const warmOnDevice = vi.fn(async () => {})
 vi.mock('../src/ai/nano', () => ({ warmOnDevice }))
@@ -92,5 +94,17 @@ describe('rewarmIfIdle', () => {
     w.rewarmIfIdle('photo-picker')
     await vi.waitFor(() => expect(w.lastWarmEvent()?.outcome).toBe('skipped'))
     expect(warmOnDevice).not.toHaveBeenCalled()
+  })
+})
+
+describe('Session 12b: picking a photo re-warms (Lab samples, Lab file, real app photo)', () => {
+  const src = (p: string) => readFileSync(join(__dirname, '..', 'src', p), 'utf8')
+  it('Lab: the sample pick and the file pick call rewarmIfIdle (mouse and keyboard)', () => {
+    const lab = src('features/lab/Lab.tsx')
+    expect(lab).toMatch(/async function pickSample[^{]*\{\s*(\/\/.*\s*)?rewarmIfIdle\('photo-picker'\)/)
+    expect(lab).toMatch(/function pickFile[^{]*\{\s*if \(f\) rewarmIfIdle\('photo-picker'\)/)
+  })
+  it('real app: the incident log photo input re-warms on change', () => {
+    expect(src('features/log/IncidentLog.tsx')).toMatch(/onChange=\{\(e\) => \{[\s\S]{0,200}rewarmIfIdle\('photo-picker'\)/)
   })
 })
