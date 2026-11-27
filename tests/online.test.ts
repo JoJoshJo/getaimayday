@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { cleanDoc, DOC_JOBS, docTime, incidentSummary, jobPlaceholders, jobPrompt, RULE_STEP_IDS, runDocJob, type DocGenerate } from '../src/features/online/jobs'
+import { cleanDoc, DOC_JOBS, docTime, incidentSummary, timelineLines, jobPlaceholders, jobPrompt, RULE_STEP_IDS, runDocJob, type DocGenerate } from '../src/features/online/jobs'
 import { rawPlans } from '../src/plans'
 import type { Plan } from '../src/plans/schema'
 import type { IncidentRecord } from '../src/storage/db'
@@ -113,7 +113,10 @@ describe('Session 13: every document prompt has the shared rules (EN and FR)', (
       expect(p).toMatch(/Never reword a ticked step/)
       expect(p).toMatch(/never fill in real contact details/)
       for (const ph of jobPlaceholders(job, lang)) expect(p).toContain(ph)
-      expect(p).toContain(lang === 'fr' ? 'Note ajoutée' : 'Note added')
+      // Session 13b: the prompt no longer names the note label (the model put it on every line).
+      expect(p).not.toMatch(/Note added|Note ajoutée/)
+      expect(p).toMatch(/copy those lines exactly as written/)
+      expect(p).toMatch(/add no labels of your own/)
     })
   it('bank and insurer get what they need to act', () => {
     expect(jobPlaceholders('draft_bank', 'en')).toEqual(['[Business name]', '[Account number]', '[Your name]', '[Phone number]'])
@@ -127,5 +130,43 @@ describe('Session 13: "Include my notes" is off by default', () => {
   it('BackOnline starts with includeNotes false', () => {
     const src = readFileSync(join(__dirname, '..', 'src', 'features', 'online', 'BackOnline.tsx'), 'utf8')
     expect(src).toMatch(/const \[includeNotes, setIncludeNotes\] = useState\(false\)/)
+  })
+})
+
+// ---- Session 13b: "Note added" was put on every timeline line by the model ----
+describe('Session 13b: the timeline is built in code', () => {
+  // J's live case: 4 ticked steps, "Include my notes" unticked.
+  const T = Date.UTC(2026, 10, 26, 20, 3)
+  const j: IncidentRecord = {
+    ...record, started_at: T - 60_000,
+    steps: { 'use-clean-device': T, 'disconnect-network': T + 10_000, 'check-other-devices': T + 20_000, 'restore-with-it': T + 60_000 },
+    events: [{ at: T - 60_000, kind: 'started', chosen_by: 'tile' }, { at: T + 30_000, kind: 'note', text: 'it happened in the morning' }],
+  }
+  const opts = { timeZone: NY }
+  it('ticked steps, notes unticked: no "Note added" line at all', () => {
+    const tl = timelineLines(j, plan, { ...opts, includeNotes: false })
+    expect(tl).toEqual([
+      'Nov 26, 3:02 PM EST: Incident started in AIMayday',
+      'Nov 26, 3:03 PM EST: Marked done: Use a clean device, not the infected computer',
+      'Nov 26, 3:03 PM EST: Marked done: Disconnect the infected computer from the network',
+      'Nov 26, 3:03 PM EST: Marked done: Check your other computers',
+      'Nov 26, 3:04 PM EST: Marked done: Restore only with your IT contact',
+    ])
+    expect(incidentSummary(j, plan, { ...opts, includeNotes: false })).not.toMatch(/Note added/)
+  })
+  it('one note ticked: exactly one "Note added" line, in time order', () => {
+    const tl = timelineLines(j, plan, { ...opts, includeNotes: true })
+    expect(tl.filter((t) => t.includes('Note added'))).toEqual(['Nov 26, 3:03 PM EST: Note added: it happened in the morning'])
+    expect(tl.indexOf('Nov 26, 3:03 PM EST: Note added: it happened in the morning')).toBe(4) // after the 3 steps at 3:03
+    const sum = incidentSummary(j, plan, { ...opts, includeNotes: true })
+    expect(sum.match(/Note added/g)).toHaveLength(1)
+  })
+  it('every line starts with its time; labels only from the entry kind', () => {
+    for (const t of timelineLines(record, plan, { ...opts, includeNotes: true })) expect(t).toMatch(/^[A-Z][a-z]{2} \d{1,2}, \d{1,2}:\d\d [AP]M [A-Z]+: (Incident started|Marked done: |Note added: |Details confirmed from a photo)/)
+  })
+  it('FR: same rules ("Cochée", "Note ajoutée" once)', () => {
+    const tl = timelineLines(j, frPlan, { ...opts, includeNotes: true, lang: 'fr' })
+    expect(tl.filter((t) => t.includes('Note ajoutée'))).toHaveLength(1)
+    expect(tl.filter((t) => t.includes('Cochée: '))).toHaveLength(4)
   })
 })

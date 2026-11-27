@@ -14,6 +14,11 @@ npm run build && npx firebase-tools deploy --only hosting
 
 The build must end with "Secret check: no App Check debug token". Then open https://getaimayday.web.app and reload once so the new version loads.
 
+- [ ] (Session 13b) Timeline fix. Not pushed yet.
+  1) **Push:** `cd ~/Desktop/getaimayday && git push origin main`
+  2) **Deploy:** `cd ~/Desktop/getaimayday && npm run build && npx firebase-tools deploy --only hosting`
+  3) **Close all AIMayday tabs and windows once**, then open https://getaimayday.web.app again.
+  4) **Regenerate the Incident report** on the demo incident (notes unticked) and **check the Timeline**: one line per entry, each starting with its time ("Nov 26, 3:03 PM EST: Marked done: Use a clean device, not the infected computer"), first line "Incident started in AIMayday", **no "Note added" anywhere**. Then tick "Include my notes" and regenerate: exactly one "Note added: …" line per note. Paste the Timeline into the next session.
 - [ ] (Session 13) Back-online documents. Not pushed yet.
   1) **Push:** `cd ~/Desktop/getaimayday && git push origin main`
   2) **Deploy:** `cd ~/Desktop/getaimayday && npm run build && npx firebase-tools deploy --only hosting`
@@ -1226,6 +1231,39 @@ Scope kept to the log builder, document prompts and send preview (`src/features/
 - Browser (`scratchpad/pw/s4.mjs`, updated): preview shows notes off by default and checkbox unticked; log part has no UTC, local "h:mm AM/PM ZONE", Remember; ticking adds "Note added: …"; unticking removes it. Full run 58 pass, 0 fail; demo, csp (0 violations), issues (0), pwa offline reload, fallback pass. vitest, tsc, oxlint clean; build with secret + lab checks; Lighthouse a11y 100 on all 16 (desktop + mobile).
 
 **Not verified here:** real gemini-3.5-flash-lite output with the new prompts (needs App Check on the live site): J TODO step 4.
+
+Committed, not pushed, not deployed.
+
+## 2026-11-26 — Session 13b: "Note added" on every timeline line (Claude Code)
+
+**Cause: the prompt, not the builder.** For J's case (ransomware, 4 steps ticked, notes unticked) the log the app sent (Session 13 code, rebuilt here with the same entries) had no "Note added" anywhere:
+```
+Plan steps marked done by the user:
+- Nov 26, 3:03 PM EST: Marked done: Use a clean device, not the infected computer
+- Nov 26, 3:03 PM EST: Marked done: Disconnect the infected computer from the network
+- Nov 26, 3:03 PM EST: Marked done: Check your other computers
+- Nov 26, 3:04 PM EST: Marked done: Restore only with your IT contact
+```
+The Session 13 shared rule said: 'In a timeline, write each one as "Note added: <text>"'. flash-lite read that as a timeline format and put the label on every line it wrote.
+
+**Fix: the timeline is built in code (chosen over a reworded prompt rule).** A model that copies is more reliable than a model that formats; code decides each label from the entry kind, so "Note added" can only come from a note.
+- `src/features/online/jobs.ts`: new `timelineLines(record, plan, opts)` → one line per entry, sorted by time, each `<local time>: <text>`: "Incident started in AIMayday", "Marked done: <exact title>", "Details confirmed from a photo of the screen (listed below)", "Note added: <text>" (only if "Include my notes" is ticked), "Incident closed/reopened". FR: "Incident ouvert dans AIMayday", "Cochée", "Note ajoutée", ….
+- `incidentSummary` now sends a "Timeline (built by the app from the log; copy these lines as they are)" section in place of the separate "Plan steps marked done" and "Notes" lists (no duplicate lines for the model to merge). Open steps, Remember and the confirmed screen fields are unchanged.
+- Prompts: the note-label rule is removed. New shared rule: wherever you give a timeline, copy the log's Timeline lines exactly, one per line, each starting with its time; do not add, remove or change any label, add no labels of your own. The report task's Timeline section says the same. The prompt no longer contains "Note added" at all.
+- New log for J's case:
+```
+Timeline (built by the app from the log; copy these lines as they are):
+- Nov 26, 3:02 PM EST: Incident started in AIMayday
+- Nov 26, 3:03 PM EST: Marked done: Use a clean device, not the infected computer
+- Nov 26, 3:03 PM EST: Marked done: Disconnect the infected computer from the network
+- Nov 26, 3:03 PM EST: Marked done: Check your other computers
+- Nov 26, 3:04 PM EST: Marked done: Restore only with your IT contact
+```
+
+**Tests (513, was 509), `tests/online.test.ts`.** J's case with notes unticked → the exact 5 lines above, no "Note added" in the timeline or the whole log; one note ticked → exactly one "Note added" line, in time order; every line starts with its time and uses only the kind labels; FR: 4 "Cochée", 1 "Note ajoutée". Session 13 prompt test updated: the prompt must NOT contain "Note added"/"Note ajoutée" and must have the copy-as-is rule.
+Verified: tsc, oxlint, build (secret + lab checks), s4 browser run 58 pass / 0 fail (incl. "ticking Include my notes adds Note added"), 0 CSP violations.
+
+**Not verified here:** real flash-lite output: J TODO step 4.
 
 Committed, not pushed, not deployed.
 
